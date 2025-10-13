@@ -528,6 +528,15 @@
 </head>
 <body>
     <div id="financial-dashboard">
+        <!-- Disclaimer -->
+        <div class="db-container" style="background-color: #fff3cd; border-color: #ffeeba; margin-bottom: 16px;">
+            <p style="color: #856404; margin: 0; font-size: 14px;">
+                <strong data-i18n="important_note">Nota importante:</strong> 
+                <span data-i18n="disclaimer_text">Los saldos bancarios no incluye las facturas pendientes (impagadas o sin registrar). 
+                El reparto de gastos 'Per Home' es un promedio simple (total de gastos / 160) y no considera el coeficiente de participación específico de cada propietario.</span>
+            </p>
+        </div>
+
         <!-- Active Filters Panel -->
         <div id="active-filters" class="active-filters">
             <strong style="font-size: 13px;">Filtros activos:</strong>
@@ -727,7 +736,11 @@
                     'count': 'Count',
                     'expenses_sum': 'Suma Gastos',
                     'total_percent': '% del Total',
-                    'total': 'TOTAL'
+                    'total': 'TOTAL',
+
+                    // Disclaimer
+                    'important_note': 'Nota importante:',
+                    'disclaimer_text': 'Los saldos bancarios no incluye las facturas pendientes (impagadas o sin registrar). El reparto de gastos \'Per Home\' es un promedio simple (total de gastos / 160) y no considera el coeficiente de participación específico de cada propietario.'
                 },
                 en: {
                     // Section titles
@@ -764,7 +777,11 @@
                     'count': 'Count',
                     'expenses_sum': 'Expenses Sum',
                     'total_percent': 'Total %',
-                    'total': 'TOTAL'
+                    'total': 'TOTAL',
+
+                    // Disclaimer
+                    'important_note': 'Important note:',
+                    'disclaimer_text': 'Bank balances do not include pending invoices (unpaid or unregistered). The \'Per Home\' expense distribution is a simple average (total expenses / 160) and does not consider the specific participation coefficient of each owner.'
                 }
             };
 
