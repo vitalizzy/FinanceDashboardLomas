@@ -550,24 +550,24 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="filter-select">Período rápido:</label>
+                    <label for="filter-select" data-i18n="quick_period">Período rápido:</label>
                     <select id="filter-select" class="filter-select">
-                        <option value="all">Todos los datos</option>
-                        <option value="current_month">Mes actual</option>
-                        <option value="current_year" selected>Año actual</option>
-                        <option value="last_3_months">Últimos 3 meses</option>
-                        <option value="last_6_months">Últimos 6 meses</option>
-                        <option value="last_12_months">Últimos 12 meses</option>
+                        <option value="all" data-i18n="all_data">Todos los datos</option>
+                        <option value="current_month" data-i18n="current_month">Mes actual</option>
+                        <option value="current_year" selected data-i18n="current_year">Año actual</option>
+                        <option value="last_3_months" data-i18n="last_3_months">Últimos 3 meses</option>
+                        <option value="last_6_months" data-i18n="last_6_months">Últimos 6 meses</option>
+                        <option value="last_12_months" data-i18n="last_12_months">Últimos 12 meses</option>
                     </select>
                 </div>
                 
                 <div class="filter-group">
-                    <label for="start-date-select">Fecha desde:</label>
+                    <label for="start-date-select" data-i18n="from_date">Fecha desde:</label>
                     <input type="month" id="start-date-select" class="filter-input">
                 </div>
 
                 <div class="filter-group">
-                    <label for="end-date-select">Fecha hasta:</label>
+                    <label for="end-date-select" data-i18n="to_date">Fecha hasta:</label>
                     <input type="month" id="end-date-select" class="filter-input">
                 </div>
             </div>
@@ -645,7 +645,7 @@
 
         <!-- Category Summary Table -->
         <div class="db-container">
-            <h3 class="db-container-title">📋 Resumen por categorías</h3>
+            <h3 class="db-container-title" data-i18n="category_summary">📋 Resumen por categorías</h3>
             <div style="overflow-x: auto;">
                 <div id="category-summary-table"></div>
             </div>
@@ -702,6 +702,17 @@
                     'category_summary': '📋 Resumen por categorías',
                     'all_transactions': '💳 Todas las transacciones',
 
+                    // Filtros
+                    'quick_period': 'Período rápido:',
+                    'from_date': 'Fecha desde:',
+                    'to_date': 'Fecha hasta:',
+                    'all_data': 'Todos los datos',
+                    'current_month': 'Mes actual',
+                    'current_year': 'Año actual',
+                    'last_3_months': 'Últimos 3 meses',
+                    'last_6_months': 'Últimos 6 meses',
+                    'last_12_months': 'Últimos 12 meses',
+
                     // Encabezados de tabla
                     'date': 'Fecha',
                     'category': 'Categoría',
@@ -728,6 +739,17 @@
                     'category_summary': '📋 Category Summary',
                     'all_transactions': '💳 All Transactions',
 
+                    // Filters
+                    'quick_period': 'Quick period:',
+                    'from_date': 'From date:',
+                    'to_date': 'To date:',
+                    'all_data': 'All data',
+                    'current_month': 'Current month',
+                    'current_year': 'Current year',
+                    'last_3_months': 'Last 3 months',
+                    'last_6_months': 'Last 6 months',
+                    'last_12_months': 'Last 12 months',
+
                     // Table headers
                     'date': 'Date',
                     'category': 'Category',
@@ -744,7 +766,7 @@
                 }
             };
 
-            let currentLanguage = localStorage.getItem('dashboardLanguage') || 'es';
+            let currentLanguage = localStorage.getItem('dashboardLanguage') || 'en';
             
             // --- ESTADO DE LA APLICACIÓN ---
             let financialData = [];
