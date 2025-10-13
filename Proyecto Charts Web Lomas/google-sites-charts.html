@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos Financieros - Google Sites</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e1e8ed;
+            margin: 20px 0;
+            padding: 24px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: left;
+            border-bottom: 2px solid #34495e;
+            padding-bottom: 8px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 320px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #e1e8ed;
+            border-top: 3px solid #34495e;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .summary-card.ingresos {
+            border-top-color: #27ae60;
+        }
+        
+        .summary-card.gastos {
+            border-top-color: #e74c3c;
+        }
+        
+        .summary-card.saldo {
+            border-top-color: #3498db;
+        }
+        
+        .summary-card.transacciones {
+            border-top-color: #f39c12;
+        }
+        
+        .summary-card h3 {
+            margin: 0 0 12px 0;
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .summary-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .summary-card.ingresos .value {
+            color: #27ae60;
+        }
+        
+        .summary-card.gastos .value {
+            color: #e74c3c;
+        }
+        
+        .summary-card.saldo .value {
+            color: #3498db;
+        }
+        
+        .summary-card.transacciones .value {
+            color: #f39c12;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+            font-size: 16px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .error {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 16px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid #fed7d7;
+            font-weight: 500;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            background: white;
+            padding: 16px;
+            border-radius: 4px;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            background: white;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .filter-select:hover {
+            border-color: #95a5a6;
+        }
+        
+        .per-unit-btn {
+            padding: 10px 16px;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            background: white;
+            color: #3498db;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 12px;
+        }
+        
+        .per-unit-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+        
+        .per-unit-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        
+        /* Estilos para los gráficos */
+        .chart-container canvas {
+            border-radius: 4px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                justify-content: center;
+            }
+            
+            .chart-title {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="loading">Cargando datos financieros...</div>
+    </div>
+
+    <script>
+        // URL del TSV público
+        const TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbRz_jPWvTjSM4jmrlUdShW9JzuNagS1LaSQ43rUupeA4e6XbdEqg-UupxL7mn5lNwGftn_8FDPikX/pub?gid=1981585980&single=true&output=tsv';
+        
+        // Variables globales
+        let financialData = [];
+        let currentFilter = 'all';
+        let showPerUnit = false; // Toggle para mostrar valores por vivienda
+        const UNITS_COUNT = 160; // Número de viviendas
+        
+        // Función para parsear TSV
+        function parseTSV(tsvText) {
+            const lines = tsvText.split('\n');
+            const headers = lines[0].split('\t');
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const values = lines[i].split('\t');
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header.trim()] = values[index] ? values[index].trim() : '';
+                    });
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+        
+        // Función para limpiar y convertir números (formato TSV español con €)
+        function parseAmount(amountStr) {
+            if (!amountStr || amountStr === '') return 0;
+            
+            // Remover símbolo de euro, comillas y espacios
+            let cleanStr = amountStr.replace(/€/g, '').replace(/"/g, '').trim();
+            
+            // Si está vacío después de limpiar, retornar 0
+            if (!cleanStr) return 0;
+            
+            // Manejar formato español: punto para miles, coma para decimales
+            // Ejemplos: "22.840,15 €" -> 22840.15, "622,82 €" -> 622.82
+            if (cleanStr.includes('.') && cleanStr.includes(',')) {
+                // Hay tanto puntos como comas: punto es separador de miles, coma es decimal
+                cleanStr = cleanStr.replace(/\./g, '').replace(',', '.');
+            } else if (cleanStr.includes(',') && !cleanStr.includes('.')) {
+                // Solo hay comas: probablemente es decimal
+                cleanStr = cleanStr.replace(',', '.');
+            }
+            
+            const result = parseFloat(cleanStr);
+            return isNaN(result) ? 0 : result;
+        }
+        
+        // Función para formatear números como moneda
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-ES', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(amount);
+        }
+        
+        // Función para calcular valor por vivienda
+        function getPerUnitValue(amount) {
+            return showPerUnit ? amount / UNITS_COUNT : amount;
+        }
+        
+        // Función para formatear valores (originales o por vivienda)
+        function formatValue(amount) {
+            const value = getPerUnitValue(amount);
+            return formatCurrency(value);
+        }
+        
+        // Función para obtener datos filtrados
+        function getFilteredData() {
+            if (currentFilter === 'all') {
+                return financialData;
+            }
+            
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1;
+            
+            return financialData.filter(item => {
+                const itemDate = new Date(item['F. Operativa']);
+                const itemYear = itemDate.getFullYear();
+                const itemMonth = itemDate.getMonth() + 1;
+                
+                switch (currentFilter) {
+                    case 'current_month':
+                        return itemYear === currentYear && itemMonth === currentMonth;
+                    case 'current_year':
+                        return itemYear === currentYear;
+                    case 'last_3_months':
+                        const threeMonthsAgo = new Date(currentDate.getFullYear(), currentDate.getMonth() - 2, 1);
+                        return itemDate >= threeMonthsAgo;
+                    default:
+                        return true;
+                }
+            });
+        }
+        
+        // Función para calcular resumen financiero
+        function calculateSummary(data) {
+            const summary = {
+                totalIngresos: 0,
+                totalGastos: 0,
+                saldoFinal: 0,
+                transacciones: data.length
+            };
+            
+            // Debug: mostrar algunos valores de muestra
+            console.log('Debug - Primeros 3 registros:');
+            data.slice(0, 3).forEach((item, index) => {
+                console.log(`Registro ${index + 1}:`, {
+                    Gastos: item.Gastos,
+                    Ingresos: item.Ingresos,
+                    'Saldo Ingreso': item['Saldo Ingreso'],
+                    GastosParsed: parseAmount(item.Gastos),
+                    IngresosParsed: parseAmount(item.Ingresos)
+                });
+            });
+            
+            // Usar las columnas específicas del CSV
+            data.forEach((item, index) => {
+                // Sumar la columna "Gastos"
+                const gastos = parseAmount(item.Gastos || '0');
+                summary.totalGastos += gastos;
+                
+                // Sumar la columna "Ingresos"
+                const ingresos = parseAmount(item.Ingresos || '0');
+                summary.totalIngresos += ingresos;
+            });
+            
+            // Obtener el valor más reciente del balance (primer registro - más reciente)
+            if (data.length > 0) {
+                const primerRegistro = data[0]; // Primer registro = más reciente
+                summary.saldoFinal = parseAmount(primerRegistro['Saldo Ingreso'] || '0');
+                console.log('Balance más reciente (primer registro):', primerRegistro['Saldo Ingreso'], '->', summary.saldoFinal);
+            }
+            
+            console.log('Resumen calculado:', summary);
+            return summary;
+        }
+        
+        // Función para generar datos del gráfico de gastos por categoría
+        function getExpensesByCategory(data) {
+            const categories = {};
+            
+            console.log('Debug - Distribución de gastos:');
+            console.log('Columnas disponibles:', Object.keys(data[0] || {}));
+            
+            // Usar la columna "Gastos" directamente del CSV
+            data.forEach((item, index) => {
+                const gastos = parseAmount(item.Gastos || '0');
+                if (gastos > 0) { // Solo procesar si hay gastos
+                    const category = item.Categoria || 'Sin categoría';
+                    categories[category] = (categories[category] || 0) + gastos;
+                    
+                    // Debug: mostrar algunos ejemplos
+                    if (index < 5) {
+                        console.log(`Registro ${index + 1}:`, {
+                            Categoria: item.Categoria,
+                            Gastos: item.Gastos,
+                            GastosParsed: gastos,
+                            Concepto: item.Concepto
+                        });
+                    }
+                }
+            });
+            
+            console.log('Categorías encontradas:', categories);
+            
+            return Object.entries(categories)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10); // Top 10 categorías
+        }
+        
+        // Función para generar datos del gráfico de flujo mensual
+        function getMonthlyFlow(data) {
+            const monthlyData = {};
+            
+            data.forEach(item => {
+                const date = new Date(item['F. Operativa']);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = { ingresos: 0, gastos: 0 };
+                }
+                
+                const amount = parseAmount(item.Importe);
+                if (item.Tipo === 'Ingreso') {
+                    monthlyData[monthKey].ingresos += amount;
+                } else if (item.Tipo === 'Gasto') {
+                    monthlyData[monthKey].gastos += amount;
+                }
+            });
+            
+            return Object.entries(monthlyData)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .slice(-12); // Últimos 12 meses
+        }
+        
+        // Función para crear gráfico de barras
+        function createBarChart(canvasId, data, title) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // Truncar nombres largos de categorías
+            const truncatedLabels = data.map(([label]) => {
+                return label.length > 15 ? label.substring(0, 15) + '...' : label;
+            });
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: truncatedLabels,
+                    datasets: [{
+                        label: showPerUnit ? 'Gastos por Vivienda (€)' : 'Gastos (€)',
+                        data: data.map(([, value]) => getPerUnitValue(value)),
+                        backgroundColor: 'rgba(52, 73, 94, 0.8)',
+                        borderColor: 'rgba(52, 73, 94, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    // Mostrar el nombre completo en el tooltip
+                                    const index = context[0].dataIndex;
+                                    return data[index][0]; // Nombre completo de la categoría
+                                },
+                                label: function(context) {
+                                    return 'Gastos: ' + formatValue(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#7f8c8d',
+                                maxRotation: 45,
+                                minRotation: 0
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(127, 140, 141, 0.2)'
+                            },
+                            ticks: {
+                                color: '#7f8c8d',
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Función para crear gráfico de líneas
+        function createLineChart(canvasId, data, title) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(([month]) => {
+                        const [year, monthNum] = month.split('-');
+                        return `${monthNum}/${year}`;
+                    }),
+                    datasets: [{
+                        label: showPerUnit ? 'Ingresos por Vivienda' : 'Ingresos',
+                        data: data.map(([, values]) => getPerUnitValue(values.ingresos)),
+                        borderColor: 'rgba(39, 174, 96, 1)',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        tension: 0.2,
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(39, 174, 96, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }, {
+                        label: showPerUnit ? 'Gastos por Vivienda' : 'Gastos',
+                        data: data.map(([, values]) => getPerUnitValue(values.gastos)),
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        tension: 0.2,
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#2c3e50',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(127, 140, 141, 0.2)'
+                            },
+                            ticks: {
+                                color: '#7f8c8d'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(127, 140, 141, 0.2)'
+                            },
+                            ticks: {
+                                color: '#7f8c8d',
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Función para crear gráfico de dona
+        function createDoughnutChart(canvasId, data, title) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const colors = [
+                '#34495e', '#2c3e50', '#7f8c8d', '#95a5a6', '#bdc3c7',
+                '#e67e22', '#d35400', '#27ae60', '#16a085', '#2980b9'
+            ];
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(([label]) => label),
+                    datasets: [{
+                        data: data.map(([, value]) => getPerUnitValue(value)),
+                        backgroundColor: colors.slice(0, data.length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#2c3e50',
+                                font: {
+                                    size: 12
+                                },
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map((label, i) => {
+                                            const value = data.datasets[0].data[i];
+                                            const percentage = ((value / data.datasets[0].data.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+                                            return {
+                                                text: `${label}: ${formatValue(value)} (${percentage}%)`,
+                                                fillStyle: data.datasets[0].backgroundColor[i],
+                                                strokeStyle: data.datasets[0].borderColor,
+                                                lineWidth: data.datasets[0].borderWidth,
+                                                pointStyle: 'circle',
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                            label: function(context) {
+                                const value = context.parsed;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${context.label}: ${formatValue(value)} (${percentage}%)`;
+                            }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Función para actualizar todos los gráficos
+        function updateCharts() {
+            const filteredData = getFilteredData();
+            const summary = calculateSummary(filteredData);
+            
+            // Actualizar tarjetas de resumen
+            document.getElementById('total-ingresos').textContent = formatValue(summary.totalIngresos);
+            document.getElementById('total-gastos').textContent = formatValue(summary.totalGastos);
+            document.getElementById('saldo-final').textContent = formatValue(summary.saldoFinal);
+            document.getElementById('total-transacciones').textContent = summary.transacciones;
+            
+            // Destruir gráficos existentes
+            Chart.helpers.each(Chart.instances, function(instance) {
+                instance.destroy();
+            });
+            
+            // Crear nuevos gráficos
+            const expensesByCategory = getExpensesByCategory(filteredData);
+            const monthlyFlow = getMonthlyFlow(filteredData);
+            
+            if (expensesByCategory.length > 0) {
+                createBarChart('expenses-chart', expensesByCategory, 'Gastos por Categoría');
+                createDoughnutChart('expenses-doughnut', expensesByCategory, 'Distribución de Gastos');
+            }
+            
+            if (monthlyFlow.length > 0) {
+                createLineChart('monthly-flow-chart', monthlyFlow, 'Flujo Mensual de Ingresos y Gastos');
+            }
+        }
+        
+        // Función para crear la interfaz
+        function createInterface() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="filters">
+                    <label style="font-weight: 600; color: #2c3e50; margin-right: 8px;">Filtrar por período:</label>
+                    <select class="filter-select" id="filter-select" onchange="changeFilter(this.value)">
+                        <option value="all">Todos los datos</option>
+                        <option value="current_month">Mes actual</option>
+                        <option value="current_year">Año actual</option>
+                        <option value="last_3_months">Últimos 3 meses</option>
+                    </select>
+                    
+                    <button id="per-unit-toggle" class="per-unit-btn" onclick="togglePerUnit()">
+                        <span id="per-unit-text">Mostrar por vivienda</span>
+                    </button>
+                </div>
+                
+                <div class="summary-cards">
+                    <div class="summary-card ingresos">
+                        <h3 id="ingresos-title">Total Ingresos</h3>
+                        <div class="value" id="total-ingresos">€0,00</div>
+                        <small style="color: #7f8c8d; font-size: 11px;" id="ingresos-desc">Suma columna Ingresos</small>
+                    </div>
+                    <div class="summary-card gastos">
+                        <h3 id="gastos-title">Total Gastos</h3>
+                        <div class="value" id="total-gastos">€0,00</div>
+                        <small style="color: #7f8c8d; font-size: 11px;" id="gastos-desc">Suma columna Gastos</small>
+                    </div>
+                    <div class="summary-card saldo">
+                        <h3 id="saldo-title">Balance Actual</h3>
+                        <div class="value" id="saldo-final">€0,00</div>
+                        <small style="color: #7f8c8d; font-size: 11px;" id="saldo-desc">Valor más reciente del balance</small>
+                    </div>
+                    <div class="summary-card transacciones">
+                        <h3>Total Transacciones</h3>
+                        <div class="value" id="total-transacciones">0</div>
+                        <small style="color: #7f8c8d; font-size: 11px;">Registros procesados</small>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Flujo Mensual de Ingresos y Gastos</div>
+                    <div class="chart-wrapper">
+                        <canvas id="monthly-flow-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Gastos por Categoría</div>
+                    <div class="chart-wrapper">
+                        <canvas id="expenses-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Distribución de Gastos</div>
+                    <div class="chart-wrapper">
+                        <canvas id="expenses-doughnut"></canvas>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Función para cambiar filtro
+        function changeFilter(filter) {
+            currentFilter = filter;
+            updateCharts();
+        }
+        
+        // Función para alternar vista por vivienda
+        function togglePerUnit() {
+            showPerUnit = !showPerUnit;
+            updatePerUnitDisplay();
+            updateCharts();
+        }
+        
+        // Función para actualizar la visualización del toggle
+        function updatePerUnitDisplay() {
+            const button = document.getElementById('per-unit-toggle');
+            const text = document.getElementById('per-unit-text');
+            
+            if (showPerUnit) {
+                button.classList.add('active');
+                text.textContent = 'Mostrar valores totales';
+                
+                // Actualizar títulos
+                document.getElementById('ingresos-title').textContent = 'Ingresos por Vivienda';
+                document.getElementById('gastos-title').textContent = 'Gastos por Vivienda';
+                document.getElementById('saldo-title').textContent = 'Balance por Vivienda';
+                
+                document.getElementById('ingresos-desc').textContent = `Suma columna Ingresos ÷ ${UNITS_COUNT}`;
+                document.getElementById('gastos-desc').textContent = `Suma columna Gastos ÷ ${UNITS_COUNT}`;
+                document.getElementById('saldo-desc').textContent = `Balance más reciente ÷ ${UNITS_COUNT}`;
+            } else {
+                button.classList.remove('active');
+                text.textContent = 'Mostrar por vivienda';
+                
+                // Restaurar títulos originales
+                document.getElementById('ingresos-title').textContent = 'Total Ingresos';
+                document.getElementById('gastos-title').textContent = 'Total Gastos';
+                document.getElementById('saldo-title').textContent = 'Balance Actual';
+                
+                document.getElementById('ingresos-desc').textContent = 'Suma columna Ingresos';
+                document.getElementById('gastos-desc').textContent = 'Suma columna Gastos';
+                document.getElementById('saldo-desc').textContent = 'Valor más reciente del balance';
+            }
+        }
+        
+        // Función principal para cargar datos
+        async function loadData() {
+            try {
+                const response = await fetch(TSV_URL);
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const tsvText = await response.text();
+                financialData = parseTSV(tsvText);
+                
+                if (financialData.length === 0) {
+                    throw new Error('No se encontraron datos en el TSV');
+                }
+                
+                createInterface();
+                updateCharts();
+                
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                document.getElementById('app').innerHTML = `
+                    <div class="error">
+                        Error al cargar los datos: ${error.message}
+                        <br><br>
+                        Verifica que el enlace TSV sea público y accesible.
+                    </div>
+                `;
+            }
+        }
+        
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
