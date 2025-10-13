@@ -653,15 +653,17 @@
 
         <!-- All Transactions -->
         <div class="db-container">
-            <h3 class="db-container-title" data-i18n="all_transactions">💳 Todas las transacciones</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="db-container-title" style="margin-bottom: 0;" data-i18n="all_transactions">💳 Todas las transacciones</h3>
+                <button class="action-btn" style="margin: 0;" onclick="window.exportToCSV()" data-i18n="export_csv">
+                    📊 Exportar CSV
+                </button>
+            </div>
             
             <div class="actions-bar">
                 <div class="search-box">
                     <input type="text" id="transaction-search" data-i18n="search_by_concept" placeholder="Buscar por concepto...">
                 </div>
-                <button class="action-btn" onclick="window.exportToCSV()" data-i18n="export_csv">
-                    📥 Exportar CSV
-                </button>
             </div>
             
             <div id="all-transactions-table" style="max-height: 600px; overflow-y: auto;"></div>
