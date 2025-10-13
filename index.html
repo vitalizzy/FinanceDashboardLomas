@@ -884,17 +884,37 @@
             }
 
             function getTopMovements(data) {
-                const movementsWithAbsoluteValue = data.map(item => {
+                // Primero, encontramos las 5 categorías con mayor suma de movimientos
+                const categoryTotals = {};
+                data.forEach(item => {
+                    const category = item.Categoria || 'Sin categoría';
                     const ingresos = parseAmount(item.Ingresos || '0');
                     const gastos = parseAmount(item.Gastos || '0');
-                    const amount = ingresos > 0 ? ingresos : -gastos;
-                    const absoluteValue = Math.abs(amount);
-                    return { ...item, amount, absoluteValue };
+                    const absoluteValue = Math.abs(ingresos > 0 ? ingresos : -gastos);
+                    
+                    if (!categoryTotals[category]) {
+                        categoryTotals[category] = { total: 0, movements: [] };
+                    }
+                    categoryTotals[category].total += absoluteValue;
+                    categoryTotals[category].movements.push({
+                        ...item,
+                        amount: ingresos > 0 ? ingresos : -gastos,
+                        absoluteValue
+                    });
                 });
 
-                movementsWithAbsoluteValue.sort((a, b) => b.absoluteValue - a.absoluteValue);
+                // Ordenamos las categorías por el total y tomamos las top 5
+                const top5Categories = Object.entries(categoryTotals)
+                    .sort(([,a], [,b]) => b.total - a.total)
+                    .slice(0, 5);
 
-                return movementsWithAbsoluteValue.slice(0, 5);
+                // Para cada categoría top, encontramos su movimiento más alto
+                const topMovements = top5Categories.map(([category, data]) => {
+                    const topMovement = data.movements.sort((a, b) => b.absoluteValue - a.absoluteValue)[0];
+                    return topMovement;
+                });
+
+                return topMovements;
             }
 
             // --- FUNCIONES DE GRÁFICOS Y TABLAS ---
@@ -1072,6 +1092,7 @@
                     <thead>
                         <tr>
                             <th>Fecha</th>
+                            <th>Categoría</th>
                             <th>Concepto</th>
                             <th class="text-right">Importe</th>
                         </tr>
@@ -1086,6 +1107,7 @@
                     
                     tableHTML += `<tr>
                         <td class="color-secondary">${fechaStr}</td>
+                        <td class="color-secondary">${item.Categoria || 'Sin categoría'}</td>
                         <td>${item.Concepto || ''}</td>
                         <td class="text-right ${amountClass}" style="font-weight: 500;">${formatCurrency(amount)}</td>
                     </tr>`;
