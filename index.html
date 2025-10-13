@@ -914,6 +914,9 @@
                     return topMovement;
                 });
 
+                // Ordenamos los movimientos seleccionados por valor absoluto
+                topMovements.sort((a, b) => b.absoluteValue - a.absoluteValue);
+
                 return topMovements;
             }
 
