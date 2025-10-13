@@ -653,13 +653,13 @@
 
         <!-- All Transactions -->
         <div class="db-container">
-            <h3 class="db-container-title">💳 Todas las transacciones</h3>
+            <h3 class="db-container-title" data-i18n="all_transactions">💳 Todas las transacciones</h3>
             
             <div class="actions-bar">
                 <div class="search-box">
-                    <input type="text" id="transaction-search" placeholder="Buscar por concepto...">
+                    <input type="text" id="transaction-search" data-i18n="search_by_concept" placeholder="Buscar por concepto...">
                 </div>
-                <button class="action-btn" onclick="window.exportToCSV()">
+                <button class="action-btn" onclick="window.exportToCSV()" data-i18n="export_csv">
                     📥 Exportar CSV
                 </button>
             </div>
@@ -1275,13 +1275,13 @@
 
                 let tableHTML = '<table class="db-table"><thead><tr>';
                 const columns = [
-                    { key: 'Tipo', label: 'Tipo', sortable: true },
-                    { key: 'F. Operativa', label: 'Fecha', sortable: true },
-                    { key: 'Concepto', label: 'Concepto', sortable: true },
-                    { key: 'Categoria', label: 'Categoría', sortable: true },
-                    { key: 'Gastos', label: 'Gasto', sortable: true, align: 'right' },
-                    { key: 'Ingresos', label: 'Ingreso', sortable: true, align: 'right' },
-                    { key: 'per Home', label: 'per Home', sortable: true, align: 'right' }
+                    { key: 'Tipo', labelKey: 'type', sortable: true },
+                    { key: 'F. Operativa', labelKey: 'date', sortable: true },
+                    { key: 'Concepto', labelKey: 'concept', sortable: true },
+                    { key: 'Categoria', labelKey: 'category', sortable: true },
+                    { key: 'Gastos', labelKey: 'expense', sortable: true, align: 'right' },
+                    { key: 'Ingresos', labelKey: 'income', sortable: true, align: 'right' },
+                    { key: 'per Home', labelKey: 'per_home', sortable: true, align: 'right' }
                 ];
                 
                 columns.forEach(col => {
@@ -1289,7 +1289,7 @@
                         (sortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc') : 
                         (col.sortable ? 'sortable' : '');
                     const alignClass = col.align ? `text-${col.align}` : '';
-                    tableHTML += `<th class="${sortClass} ${alignClass}" onclick="window.sortTable('${col.key}')">${col.label}</th>`;
+                    tableHTML += `<th class="${sortClass} ${alignClass}" onclick="window.sortTable('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey)}</th>`;
                 });
                 
                 tableHTML += '</tr></thead><tbody>';
@@ -1326,7 +1326,7 @@
                 let html = '';
                 html += `<button onclick="window.changePage(1)" ${currentPage === 1 ? 'disabled' : ''}>««</button>`;
                 html += `<button onclick="window.changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
-                html += `<span class="page-info">Página ${currentPage} de ${totalPages} (${totalItems} registros)</span>`;
+                html += `<span class="page-info">${translate('page')} ${currentPage} ${translate('of')} ${totalPages} (${totalItems} ${translate('records')})</span>`;
                 html += `<button onclick="window.changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
                 html += `<button onclick="window.changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>»»</button>`;
                 
