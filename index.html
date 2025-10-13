@@ -1098,6 +1098,7 @@
                             <th>Categoría</th>
                             <th>Concepto</th>
                             <th class="text-right">Importe</th>
+                            <th class="text-right">per Home</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -1106,6 +1107,7 @@
                     const fecha = parseDate(item['F. Operativa']);
                     const fechaStr = fecha ? fecha.toLocaleDateString('es-ES') : 'N/A';
                     const amount = item.amount;
+                    const perHome = parseAmount(item['per Home'] || '0');
                     const amountClass = amount >= 0 ? 'color-ingresos' : 'color-gastos';
                     
                     tableHTML += `<tr>
@@ -1113,6 +1115,7 @@
                         <td class="color-secondary">${item.Categoria || 'Sin categoría'}</td>
                         <td>${item.Concepto || ''}</td>
                         <td class="text-right ${amountClass}" style="font-weight: 500;">${formatCurrency(amount)}</td>
+                        <td class="text-right color-per-home" style="font-weight: 500;">${formatCurrency(perHome)}</td>
                     </tr>`;
                 });
                 
