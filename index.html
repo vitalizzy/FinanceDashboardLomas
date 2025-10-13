@@ -538,10 +538,17 @@
         </div>
         <!-- Filtros -->
         <div class="db-container">
-            <h3 class="db-container-title">
+            <h3 class="db-container-title" data-i18n="filters">
                 🔍 Filtros
             </h3>
             <div class="filters-container">
+                <div class="filter-group" style="max-width: 120px;">
+                    <label for="language-select">🌐 Idioma:</label>
+                    <select id="language-select" class="filter-select">
+                        <option value="es">Español</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
                 <div class="filter-group">
                     <label for="filter-select">Período rápido:</label>
                     <select id="filter-select" class="filter-select">
@@ -605,8 +612,8 @@
         <div class="chart-grid">
             <div class="db-container">
                 <h3 class="db-container-title">
-                    📈 Movimientos bancarios mensuales 
-                    <small style="font-size: 11px; font-weight: normal; opacity: 0.7;">(Click en puntos para filtrar por mes)</small>
+                    <span data-i18n="monthly_movements">📈 Movimientos bancarios mensuales</span>
+                    <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="click_points">(Click en puntos para filtrar por mes)</small>
                 </h3>
                 <div class="chart-wrapper">
                     <canvas id="monthly-flow-chart"></canvas>
@@ -616,8 +623,8 @@
             <div class="chart-grid-double">
                 <div class="db-container">
                     <h3 class="db-container-title">
-                        🏆 Top 5 Movimientos
-                        <small style="font-size: 11px; font-weight: normal; opacity: 0.7;">(Mayores ingresos o gastos)</small>
+                        <span data-i18n="top_movements">🏆 Top 5 Movimientos</span>
+                        <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="highest_moves">(Mayores ingresos o gastos)</small>
                     </h3>
                     <div id="top-movements-table" style="overflow-x: auto;">
                         <!-- La tabla se generará aquí -->
@@ -626,8 +633,8 @@
                 
                 <div class="db-container">
                     <h3 class="db-container-title">
-                        📊 Gastos por categoría 
-                        <small style="font-size: 11px; font-weight: normal; opacity: 0.7;">(Click para filtrar)</small>
+                        <span data-i18n="expenses_by_category">📊 Gastos por categoría</span>
+                        <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="click_to_filter">(Click para filtrar)</small>
                     </h3>
                     <div class="chart-wrapper">
                         <canvas id="expenses-chart"></canvas>
@@ -680,6 +687,64 @@
             
             // --- CONFIGURACIÓN ---
             const TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbRz_jPWvTjSM4jmrlUdShW9JzuNagS1LaSQ43rUupeA4e6XbdEqg-UupxL7mn5lNwGftn_8FDPikX/pub?gid=1981585980&single=true&output=tsv';
+
+            // --- TRADUCCIONES ---
+            const translations = {
+                es: {
+                    // Títulos de secciones
+                    'filters': '🔍 Filtros',
+                    'monthly_movements': '📈 Movimientos bancarios mensuales',
+                    'click_points': '(Click en puntos para filtrar por mes)',
+                    'top_movements': '🏆 Top 5 Movimientos',
+                    'highest_moves': '(Mayores ingresos o gastos)',
+                    'expenses_by_category': '📊 Gastos por categoría',
+                    'click_to_filter': '(Click para filtrar)',
+                    'category_summary': '📋 Resumen por categorías',
+                    'all_transactions': '💳 Todas las transacciones',
+
+                    // Encabezados de tabla
+                    'date': 'Fecha',
+                    'category': 'Categoría',
+                    'concept': 'Concepto',
+                    'amount': 'Importe',
+                    'per_home': 'per Home',
+                    'type': 'Tipo',
+                    'income': 'Ingreso',
+                    'expense': 'Gasto',
+                    'count': 'Count',
+                    'expenses_sum': 'Suma Gastos',
+                    'total_percent': '% del Total',
+                    'total': 'TOTAL'
+                },
+                en: {
+                    // Section titles
+                    'filters': '🔍 Filters',
+                    'monthly_movements': '📈 Monthly Bank Movements',
+                    'click_points': '(Click on points to filter by month)',
+                    'top_movements': '🏆 Top 5 Movements',
+                    'highest_moves': '(Highest income or expenses)',
+                    'expenses_by_category': '📊 Expenses by Category',
+                    'click_to_filter': '(Click to filter)',
+                    'category_summary': '📋 Category Summary',
+                    'all_transactions': '💳 All Transactions',
+
+                    // Table headers
+                    'date': 'Date',
+                    'category': 'Category',
+                    'concept': 'Concept',
+                    'amount': 'Amount',
+                    'per_home': 'per Home',
+                    'type': 'Type',
+                    'income': 'Income',
+                    'expense': 'Expense',
+                    'count': 'Count',
+                    'expenses_sum': 'Expenses Sum',
+                    'total_percent': 'Total %',
+                    'total': 'TOTAL'
+                }
+            };
+
+            let currentLanguage = localStorage.getItem('dashboardLanguage') || 'es';
             
             // --- ESTADO DE LA APLICACIÓN ---
             let financialData = [];
@@ -1094,11 +1159,11 @@
                 let tableHTML = `<table class="db-table">
                     <thead>
                         <tr>
-                            <th>Fecha</th>
-                            <th>Categoría</th>
-                            <th>Concepto</th>
-                            <th class="text-right">Importe</th>
-                            <th class="text-right">per Home</th>
+                            <th data-i18n="date">Fecha</th>
+                            <th data-i18n="category">Categoría</th>
+                            <th data-i18n="concept">Concepto</th>
+                            <th class="text-right" data-i18n="amount">Importe</th>
+                            <th class="text-right" data-i18n="per_home">per Home</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -1148,7 +1213,7 @@
                 const totalTransactions = sortedCategories.reduce((sum, [, stats]) => sum + stats.count, 0);
                 const totalPerHomeGeneral = sortedCategories.reduce((sum, [, stats]) => sum + stats.totalPerHome, 0);
 
-                let tableHTML = `<table class="db-table"><thead><tr><th>Categoría</th><th class="text-center">Count</th><th class="text-right">Suma Gastos</th><th class="text-right">per Home</th><th class="text-right">% del Total</th></tr></thead><tbody>`;
+                let tableHTML = `<table class="db-table"><thead><tr><th data-i18n="category">Categoría</th><th class="text-center" data-i18n="count">Count</th><th class="text-right" data-i18n="expenses_sum">Suma Gastos</th><th class="text-right" data-i18n="per_home">per Home</th><th class="text-right" data-i18n="total_percent">% del Total</th></tr></thead><tbody>`;
                  sortedCategories.forEach(([category, stats]) => {
                     const percentage = totalGastos > 0 ? ((stats.total / totalGastos) * 100).toFixed(1) : '0.0';
                     const isSelected = selectedCategories.has(category);
@@ -1496,6 +1561,31 @@
                 currentPage = 1;
                 createAllTransactionsTable(getFilteredData());
             });
+
+            function translate(key) {
+                return translations[currentLanguage][key] || key;
+            }
+
+            function updateLanguage(lang) {
+                currentLanguage = lang;
+                localStorage.setItem('dashboardLanguage', lang);
+                
+                // Actualizar títulos de secciones
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    element.textContent = translate(key);
+                });
+
+                // Forzar actualización de tablas para actualizar encabezados
+                updateCharts();
+            }
+
+            document.getElementById('language-select').addEventListener('change', function() {
+                updateLanguage(this.value);
+            });
+
+            // Establecer el idioma inicial
+            document.getElementById('language-select').value = currentLanguage;
 
             loadData();
         })();
