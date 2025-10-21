@@ -600,6 +600,10 @@
                 bottom: 20px;
             }
         }
+        /* Dashboard header styles */
+        .dashboard-header { display:flex; align-items:flex-start; gap:12px; margin-bottom: 16px; }
+        .dashboard-title { margin:0; font-size:22px; font-weight:800; color:var(--text-primary); letter-spacing:0.2px; }
+        .dashboard-subtitle { margin:6px 0 0 0; color:var(--text-secondary); font-size:13px; }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -614,6 +618,13 @@
                 <span data-i18n="disclaimer_text">Los saldos bancarios no incluye las facturas pendientes (impagadas o sin registrar). 
                 El reparto de gastos 'Per Home' es un promedio simple (total de gastos / 160) y no considera el coeficiente de participación específico de cada propietario.</span>
             </p>
+        </div>
+        <!-- Dashboard title (moved below Nota) -->
+        <div class="dashboard-header">
+            <div style="flex:1;">
+                <h1 id="dashboard-title" class="dashboard-title">Dashboard Financiero</h1>
+                <p id="dashboard-subtitle" class="dashboard-subtitle">Resumen financiero y análisis</p>
+            </div>
         </div>
 
         <!-- Active Filters Panel -->
@@ -955,6 +966,12 @@
             translations.en.kpi_transacciones = 'Transactions';
             translations.en.kpi_transacciones_note = 'Processed records';
             translations.en.label_language = '🌐 Language:';
+
+            // Title
+            translations.es.dashboard_title = 'Dashboard Financiero';
+            translations.en.dashboard_title = 'Finance Dashboard';
+            translations.es.dashboard_subtitle = 'Resumen financiero y análisis de la cuenta bancaria';
+            translations.en.dashboard_subtitle = 'Financial summary and analysis of the bank statements';
 
             let currentLanguage = localStorage.getItem('dashboardLanguage') || 'es';
             
@@ -1925,6 +1942,12 @@
 
                 const fab = document.getElementById('clear-filters-fab');
                 if (fab) fab.title = translate('clear_all_title');
+
+                // Dashboard title (not using data-i18n directly to preserve layout)
+                const dashTitle = document.getElementById('dashboard-title');
+                if (dashTitle) dashTitle.textContent = translate('dashboard_title');
+                const dashSubtitle = document.getElementById('dashboard-subtitle');
+                if (dashSubtitle) dashSubtitle.textContent = translate('dashboard_subtitle');
 
                 const exportBtn = document.querySelector('[data-i18n="export_csv"]');
                 if (exportBtn) exportBtn.textContent = translate('export_csv');
