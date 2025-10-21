@@ -623,7 +623,6 @@
 </head>
 <body>
     <div id="financial-dashboard">
-        <!-- Disclaimer -->
         <div class="db-container" style="background-color: #fff3cd; border-color: #ffeeba; margin-bottom: 16px;">
             <p style="color: #856404; margin: 0; font-size: 14px;">
                 <strong data-i18n="important_note">Nota importante:</strong> 
@@ -631,7 +630,6 @@
                 El reparto de gastos 'Per Home' es un promedio simple (total de gastos / 160) y no considera el coeficiente de participación específico de cada propietario.</span>
             </p>
         </div>
-        <!-- Dashboard title (moved below Nota) -->
         <div class="dashboard-header">
             <div style="flex:1;">
                 <h1 id="dashboard-title" class="dashboard-title">Dashboard Financiero</h1>
@@ -639,13 +637,11 @@
             </div>
         </div>
 
-        <!-- Active Filters Panel -->
         <div id="active-filters" class="active-filters">
             <strong style="font-size: 13px;" data-i18n="active_filters">Filtros activos:</strong>
             <div id="filter-badges" style="flex-grow: 1; display: flex; flex-wrap: wrap; gap: 8px;"></div>
             <button class="clear-all-btn" onclick="window.clearAllFilters()" data-i18n="clear_all">✕ Limpiar todos</button>
         </div>
-        <!-- Filtros -->
         <div class="db-container">
             <h3 class="db-container-title" data-i18n="filters">
                 🔍 Filtros
@@ -681,11 +677,9 @@
                 </div>
             </div>
             <div id="last-update-date" style="text-align: right; font-size: 12px; color: var(--text-secondary); margin-top: 10px;">
-                <!-- La fecha de actualización se insertará aquí -->
-            </div>
+                </div>
         </div>
 
-        <!-- KPI Cards -->
         <div class="kpi-cards">
             <div class="kpi-card ingresos">
                 <h3 data-i18n="kpi_total_ingresos">Total Ingresos</h3>
@@ -717,7 +711,6 @@
             </div>
         </div>
 
-        <!-- Charts -->
         <div class="chart-grid">
             <div class="db-container">
                 <h3 class="db-container-title">
@@ -748,8 +741,7 @@
                             </div>
                         </h3>
                     <div id="top-movements-table" style="overflow-x: auto;">
-                        <!-- La tabla se generará aquí -->
-                    </div>
+                        </div>
                     
                 </div>
                 
@@ -771,7 +763,6 @@
             </div>
         </div>
 
-        <!-- Category Summary Table -->
         <div class="db-container">
             <h3 class="db-container-title">
                 <span data-i18n="category_summary">📋 Resumen por categorías</span>
@@ -789,7 +780,6 @@
             
         </div>
 
-        <!-- All Transactions -->
         <div class="db-container">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3 class="db-container-title" style="margin-bottom: 0;">
@@ -818,10 +808,8 @@
         <div id="loading" data-i18n="loading_data">Cargando datos financieros... ⏳</div>
         <div id="error"></div>
         
-        <!-- Floating Action Button -->
         <button id="clear-filters-fab" class="fab" title="" onclick="window.clearAllFilters()" data-i18n="clear_all_title">
             <span class="fab-icon" aria-hidden="true">
-                <!-- simple funnel icon -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
                     <path d="M3 5h18v2l-7 7v5l-4 2v-7L3 7V5z" />
                 </svg>
@@ -894,7 +882,17 @@
                 'page': 'Página',
                 'of': 'de',
                 'records': 'registros',
-                'no_data_export': 'No hay datos para exportar'
+                'no_data_export': 'No hay datos para exportar',
+                
+                // Chart Labels (NUEVO)
+                'chart_label_expenses': 'Gastos (€)',
+                'chart_label_income': 'Ingresos',
+                'chart_label_expenses_only': 'Gastos',
+                'chart_label_per_home': 'per Home',
+                'chart_label_min_balance': 'Saldo Mínimo',
+                'chart_axis_income_expenses': 'Ingresos / Gastos (€)',
+                'chart_axis_per_home': 'per Home (€)',
+                'chart_tooltip_expenses': 'Gastos:'
                 },
                 en: {
                     // Section titles
@@ -948,7 +946,17 @@
                 'page': 'Page',
                 'of': 'of',
                 'records': 'records',
-                'no_data_export': 'No data to export'
+                'no_data_export': 'No data to export',
+                
+                // Chart Labels (NUEVO)
+                'chart_label_expenses': 'Expenses (€)',
+                'chart_label_income': 'Income',
+                'chart_label_expenses_only': 'Expenses',
+                'chart_label_per_home': 'per Home',
+                'chart_label_min_balance': 'Min. Balance',
+                'chart_axis_income_expenses': 'Income / Expenses (€)',
+                'chart_axis_per_home': 'per Home (€)',
+                'chart_tooltip_expenses': 'Expenses:'
                 }
             };
 
@@ -1248,7 +1256,7 @@
                     data: {
                         labels: data.map(([label]) => label.length > 15 ? label.substring(0, 15) + '...' : label),
                         datasets: [{
-                            label: 'Gastos (€)',
+                            label: translate('chart_label_expenses'), // <-- MODIFICADO
                             data: data.map(([, value]) => value),
                             backgroundColor: data.map(([label]) => 
                                 selectedCategories.has(label) ? hexToRgba(chartColors.balance, 0.8) : (pendingSelectedCategories.has(label) ? 'rgba(255, 193, 7, 0.9)' : 'rgba(52, 73, 94, 0.8)')
@@ -1275,7 +1283,7 @@
                             tooltip: {
                                 callbacks: {
                                     title: context => data[context[0].dataIndex][0],
-                                    label: context => 'Gastos: ' + formatCurrency(data[context.dataIndex][1])
+                                    label: context => `${translate('chart_tooltip_expenses')} ${formatCurrency(data[context.dataIndex][1])}` // <-- MODIFICADO
                                 }
                             }
                         },
@@ -1309,7 +1317,7 @@
                             return `${monthNum}/${year}`;
                         }),
                         datasets: [{
-                            label: 'Ingresos',
+                            label: translate('chart_label_income'), // <-- MODIFICADO
                             data: last12MonthsData.map(([, values]) => values.ingresos),
                             borderColor: chartColors.ingresos,
                             backgroundColor: hexToRgba(chartColors.ingresos, 0.1),
@@ -1318,7 +1326,7 @@
                             pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.ingresos)),
                             pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                         }, {
-                            label: 'Gastos',
+                            label: translate('chart_label_expenses_only'), // <-- MODIFICADO
                             data: last12MonthsData.map(([, values]) => values.gastos),
                             borderColor: chartColors.gastos,
                             backgroundColor: hexToRgba(chartColors.gastos, 0.1),
@@ -1327,7 +1335,7 @@
                                 pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.gastos)),
                             pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                         }, {
-                            label: 'per Home',
+                            label: translate('chart_label_per_home'), // <-- MODIFICADO
                             data: last12MonthsData.map(([, values]) => values.perHome),
                             borderColor: chartColors.perHome,
                             backgroundColor: hexToRgba(chartColors.perHome, 0.1),
@@ -1337,7 +1345,7 @@
                             pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                             yAxisID: 'y1'
                         }, {
-                            label: 'Saldo Mínimo',
+                            label: translate('chart_label_min_balance'), // <-- MODIFICADO
                             data: last12MonthsData.map(([, values]) => values.minBalance),
                             borderColor: chartColors.saldoMinimo,
                             backgroundColor: hexToRgba(chartColors.saldoMinimo, 0.1),
@@ -1371,7 +1379,7 @@
                                 x: { 
                                     grid: { color: 'rgba(127, 140, 141, 0.2)' },
                                     ticks: { color: '#7f8c8d' }
-                                 },
+                               },
                                 y: {
                                     type: 'linear',
                                     display: true,
@@ -1379,8 +1387,8 @@
                                     beginAtZero: true,
                                     grid: { color: 'rgba(127, 140, 141, 0.2)' },
                                     ticks: { color: '#7f8c8d', callback: value => formatCurrency(value) },
-                                    title: { display: true, text: 'Ingresos / Gastos (€)', color: '#2c3e50'}
-                                 },
+                                    title: { display: true, text: translate('chart_axis_income_expenses'), color: '#2c3e50'} // <-- MODIFICADO
+                               },
                                 y1: {
                                     type: 'linear',
                                     display: true,
@@ -1388,8 +1396,8 @@
                                     beginAtZero: true,
                                     grid: { drawOnChartArea: false },
                                     ticks: { color: chartColors.perHome, callback: value => formatCurrency(value) },
-                                    title: { display: true, text: 'per Home (€)', color: chartColors.perHome}
-                                 }
+                                    title: { display: true, text: translate('chart_axis_per_home'), color: chartColors.perHome} // <-- MODIFICADO
+                               }
                         }
                     }
                 });
@@ -1404,16 +1412,16 @@
                 }
 
                 let tableHTML = `<table class="db-table">
-                    <thead>
-                        <tr>
-                            <th data-i18n="date">Fecha</th>
-                            <th data-i18n="category">Categoría</th>
-                            <th data-i18n="concept">Concepto</th>
-                            <th class="text-right" data-i18n="amount">Importe</th>
-                            <th class="text-right" data-i18n="per_home">per Home</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
+                        <thead>
+                            <tr>
+                                <th data-i18n="date">Fecha</th>
+                                <th data-i18n="category">Categoría</th>
+                                <th data-i18n="concept">Concepto</th>
+                                <th class="text-right" data-i18n="amount">Importe</th>
+                                <th class="text-right" data-i18n="per_home">per Home</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
                 
                 data.forEach(item => {
                     const fecha = parseDate(item['F. Operativa']);
@@ -1463,7 +1471,7 @@
                 const totalPerHomeGeneral = sortedCategories.reduce((sum, [, stats]) => sum + stats.totalPerHome, 0);
 
                 let tableHTML = `<table class="db-table"><thead><tr><th data-i18n="category">Categoría</th><th class="text-center" data-i18n="count">Count</th><th class="text-right" data-i18n="expenses_sum">Suma Gastos</th><th class="text-right" data-i18n="per_home">per Home</th><th class="text-right" data-i18n="total_percent">% del Total</th></tr></thead><tbody>`;
-                                 sortedCategories.forEach(([category, stats]) => {
+                                   sortedCategories.forEach(([category, stats]) => {
                                         const percentageValue = totalGastos > 0 ? ((stats.total / totalGastos) * 100) : 0;
                                         const percentage = formatNumber(percentageValue, 1, 1);
                                         const isSelected = selectedCategories.has(category);
@@ -1477,15 +1485,15 @@
                                                 <td class="text-right color-per-home" style="font-weight: 500;">${formatCurrency(stats.totalPerHome)}</td>
                                                 <td class="text-right color-secondary">${percentage}%</td>
                                         </tr>`;
-                                 });
+                               });
                 tableHTML += `</tbody><tfoot>
-                    <tr>
-                        <td>${translate('total')}</td>
-                        <td class="text-center">${formatNumber(totalTransactions, 0, 0)}</td>
-                        <td class="text-right">${formatCurrency(totalGastos)}</td>
-                        <td class="text-right">${formatCurrency(totalPerHomeGeneral)}</td>
-                        <td class="text-right">${formatNumber(100, 1, 1)}%</td>
-                    </tr>
+                        <tr>
+                            <td>${translate('total')}</td>
+                            <td class="text-center">${formatNumber(totalTransactions, 0, 0)}</td>
+                            <td class="text-right">${formatCurrency(totalGastos)}</td>
+                            <td class="text-right">${formatCurrency(totalPerHomeGeneral)}</td>
+                            <td class="text-right">${formatNumber(100, 1, 1)}%</td>
+                        </tr>
                 </tfoot></table>`;
                 tableContainer.innerHTML = tableHTML;
             }
