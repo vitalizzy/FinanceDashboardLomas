@@ -585,31 +585,31 @@
             font-family: var(--font-primary);
         }
         
-        /* --- INICIO DE MODIFICACIÓN 1 --- */
+/* --- INICIO DE MODIFICACIÓN (Lógica Invertida) --- */
         /* Lógica de columnas secretas para Concepto */
         
         /* Por defecto (bloqueado):
-           - .col-secreta (Concepto Real) está oculta.
-           - .col-concepto-original está visible.
+           - .col-secreta (Concepto Real) está VISIBLE.
+           - .col-concepto-original está OCULTA.
         */
         .col-secreta {
-            display: none;
+            display: table-cell; /* <-- CAMBIADO */
         }
         .col-concepto-original {
-            display: table-cell;
+            display: none; /* <-- CAMBIADO */
         }
 
         /* Desbloqueado (cuando el contenedor tiene .show-secret-col):
-           - .col-secreta (Concepto Real) se muestra.
-           - .col-concepto-original se oculta.
+           - .col-secreta (Concepto Real) se OCULTA.
+           - .col-concepto-original se MUESTRA.
         */
         #all-transactions-table.show-secret-col .col-secreta {
-            display: table-cell;
+            display: none; /* <-- CAMBIADO */
         }
         #all-transactions-table.show-secret-col .col-concepto-original {
-            display: none;
+            display: table-cell; /* <-- CAMBIADO */
         }
-        /* --- FIN DE MODIFICACIÓN 1 --- */
+        /* --- FIN DE MODIFICACIÓN --- */
         
 
         @media (max-width: 768px) {
@@ -2072,7 +2072,7 @@
                 } else {
                     // Si está oculta, pedir contraseña
                     // --- INICIO DE MODIFICACIÓN 4 ---
-                    const pass = prompt('Introduce la contraseña para ver el concepto real:');
+                    const pass = prompt('Introduce la contraseña para ver el concepto original:');
                     // --- FIN DE MODIFICACIÓN 4 ---
                     if (pass === SECRET_PASSWORD) {
                         tableContainer.classList.add('show-secret-col');
