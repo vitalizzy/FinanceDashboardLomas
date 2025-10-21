@@ -271,6 +271,68 @@
             background-color: #c0392b; /* Darker red */
             transform: scale(1.05);
         }
+
+        /* FAB icon layout: show funnel and small X */
+        .fab .fab-icon { display: inline-flex; align-items: center; justify-content: center; }
+        .fab .fab-icon svg { width: 18px; height: 18px; fill: white; }
+        .fab .fab-x { display: inline-block; font-size: 14px; line-height: 1; margin-left: 6px; }
+
+        /* Icon buttons for confirm/cancel */
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 0;
+        }
+
+        .icon-confirm {
+            background: #28a745; /* green */
+            color: white;
+            border-color: rgba(40,167,69,0.9);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(40,167,69,0.12);
+            font-size: 16px;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .icon-cancel {
+            background: #6c757d; /* gray background with white X */
+            color: white;
+            border-color: rgba(0,0,0,0.08);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            font-size: 16px;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+
+.icon-btn:focus {
+    outline: 3px solid rgba(13,110,253,0.16);
+    outline-offset: 2px;
+}
+
+.icon-confirm:hover, .icon-cancel:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+        /* Hide per-table icons by default; shown only when pending selections exist */
+        #top-confirm-icon, #top-cancel-icon, #cat-confirm-icon, #cat-cancel-icon {
+            display: none;
+        }
+
+        /* Pending selection visual */
+        .pending-selected { background-color: rgba(13,110,253,0.08); }
         
         /* Charts */
         .chart-grid {
@@ -539,11 +601,9 @@
 
         <!-- Active Filters Panel -->
         <div id="active-filters" class="active-filters">
-            <strong style="font-size: 13px;">Filtros activos:</strong>
+            <strong style="font-size: 13px;" data-i18n="active_filters">Filtros activos:</strong>
             <div id="filter-badges" style="flex-grow: 1; display: flex; flex-wrap: wrap; gap: 8px;"></div>
-            <button class="clear-all-btn" onclick="window.clearAllFilters()">
-                ✕ Limpiar todos
-            </button>
+            <button class="clear-all-btn" onclick="window.clearAllFilters()" data-i18n="clear_all">✕ Limpiar todos</button>
         </div>
         <!-- Filtros -->
         <div class="db-container">
@@ -552,10 +612,10 @@
             </h3>
             <div class="filters-container">
                 <div class="filter-group" style="max-width: 120px;">
-                    <label for="language-select">🌐 Idioma:</label>
+                    <label for="language-select" data-i18n="label_language">🌐 Idioma:</label>
                     <select id="language-select" class="filter-select">
-                        <option value="es">Español</option>
-                        <option value="en">English</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="en">🇬🇧 English</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -588,32 +648,32 @@
         <!-- KPI Cards -->
         <div class="kpi-cards">
             <div class="kpi-card ingresos">
-                <h3>Total Ingresos</h3>
+                <h3 data-i18n="kpi_total_ingresos">Total Ingresos</h3>
                 <div id="total-ingresos" class="value">€0,00</div>
                 <div id="trend-ingresos" class="trend" style="display: none;"></div>
-                <small>Suma de ingresos</small>
+                <small data-i18n="kpi_total_ingresos_note">Suma de ingresos</small>
             </div>
             <div class="kpi-card gastos">
-                <h3>Total Gastos</h3>
+                <h3 data-i18n="kpi_total_gastos">Total Gastos</h3>
                 <div id="total-gastos" class="value">€0,00</div>
                 <div id="trend-gastos" class="trend" style="display: none;"></div>
-                <small>Suma de gastos</small>
+                <small data-i18n="kpi_total_gastos_note">Suma de gastos</small>
             </div>
             <div class="kpi-card per-home">
-                <h3>Total Per Home</h3>
+                <h3 data-i18n="kpi_total_per_home">Total Per Home</h3>
                 <div id="total-per-home" class="value">€0,00</div>
                 <div id="trend-per-home" class="trend" style="display: none;"></div>
-                <small>Gastos per home</small>
+                <small data-i18n="kpi_total_per_home_note">Gastos per home</small>
             </div>
             <div class="kpi-card balance">
-                <h3>Balance Actual</h3>
+                <h3 data-i18n="kpi_balance_actual">Balance Actual</h3>
                 <div id="saldo-final" class="value">€0,00</div>
-                <small>Saldo más reciente (global)</small>
+                <small data-i18n="kpi_balance_actual_note">Saldo más reciente (global)</small>
             </div>
             <div class="kpi-card transacciones">
-                <h3>Transacciones</h3>
+                <h3 data-i18n="kpi_transacciones">Transacciones</h3>
                 <div id="total-transacciones" class="value">0</div>
-                <small>Registros procesados</small>
+                <small data-i18n="kpi_transacciones_note">Registros procesados</small>
             </div>
         </div>
 
@@ -632,12 +692,17 @@
             <div class="chart-grid-double">
                 <div class="db-container">
                     <h3 class="db-container-title">
-                        <span data-i18n="top_movements">🏆 Top 5 Movimientos</span>
-                        <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="highest_moves">(Mayores ingresos o gastos)</small>
-                    </h3>
+                            <span data-i18n="top_movements">🏆 Top Movimientos por categoría</span>
+                            <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                                <button id="top-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()">✓</button>
+                                <button id="top-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()">✕</button>
+                            </div>
+                            <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="highest_moves">(Mayores ingresos o gastos)</small>
+                        </h3>
                     <div id="top-movements-table" style="overflow-x: auto;">
                         <!-- La tabla se generará aquí -->
                     </div>
+                    
                 </div>
                 
                 <div class="db-container">
@@ -654,10 +719,16 @@
 
         <!-- Category Summary Table -->
         <div class="db-container">
-            <h3 class="db-container-title" data-i18n="category_summary">📋 Resumen por categorías</h3>
+            <h3 class="db-container-title" data-i18n="category_summary">📋 Resumen por categorías
+                    <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                    <button id="cat-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()">✓</button>
+                    <button id="cat-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()">✕</button>
+                </div>
+            </h3>
             <div style="overflow-x: auto;">
                 <div id="category-summary-table"></div>
             </div>
+            
         </div>
 
         <!-- All Transactions -->
@@ -680,14 +751,18 @@
             <div id="pagination" class="pagination"></div>
         </div>
 
-        <div id="loading">
-            Cargando datos financieros... ⏳
-        </div>
+        <div id="loading" data-i18n="loading_data">Cargando datos financieros... ⏳</div>
         <div id="error"></div>
         
         <!-- Floating Action Button -->
-        <button id="clear-filters-fab" class="fab" title="Limpiar todos los filtros" onclick="window.clearAllFilters()">
-            ✕
+        <button id="clear-filters-fab" class="fab" title="Limpiar todos los filtros" onclick="window.clearAllFilters()" data-i18n="clear_all_title">
+            <span class="fab-icon" aria-hidden="true">
+                <!-- simple funnel icon -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+                    <path d="M3 5h18v2l-7 7v5l-4 2v-7L3 7V5z" />
+                </svg>
+            </span>
+            <span class="fab-x" aria-hidden="true">✕</span>
         </button>
     </div>
 
@@ -706,7 +781,7 @@
                     'filters': '🔍 Filtros',
                     'monthly_movements': '📈 Movimientos bancarios mensuales',
                     'click_points': '(Click en puntos para filtrar por mes)',
-                    'top_movements': '🏆 Top 5 Movimientos',
+                    'top_movements': '🏆 Top Movimientos por categoría',
                     'highest_moves': '(Mayores ingresos o gastos)',
                     'expenses_by_category': '📊 Gastos por categoría',
                     'click_to_filter': '(Click para filtrar)',
@@ -733,7 +808,7 @@
                     'type': 'Tipo',
                     'income': 'Ingreso',
                     'expense': 'Gasto',
-                    'count': 'Count',
+                    'count': 'Cantidad',
                     'expenses_sum': 'Suma Gastos',
                     'total_percent': '% del Total',
                     'total': 'TOTAL',
@@ -741,6 +816,19 @@
                     // Disclaimer
                     'important_note': 'Nota importante:',
                     'disclaimer_text': 'Los saldos bancarios no incluye las facturas pendientes (impagadas o sin registrar). El reparto de gastos \'Per Home\' es un promedio simple (total de gastos / 160) y no considera el coeficiente de participación específico de cada propietario.'
+                ,
+                'active_filters': 'Filtros activos:',
+                'clear_all': '✕ Limpiar todos',
+                'clear_all_title': 'Limpiar todos los filtros',
+                'loading_data': 'Cargando datos financieros... ⏳',
+                'no_movements': 'No hay movimientos para mostrar.',
+                'export_csv': '📊 Exportar CSV',
+                'search_by_concept': 'Buscar por concepto...',
+                'last_update': 'Última actualización:',
+                'page': 'Página',
+                'of': 'de',
+                'records': 'registros',
+                'no_data_export': 'No hay datos para exportar'
                 },
                 en: {
                     // Section titles
@@ -782,8 +870,46 @@
                     // Disclaimer
                     'important_note': 'Important note:',
                     'disclaimer_text': 'Bank balances do not include pending invoices (unpaid or unregistered). The \'Per Home\' expense distribution is a simple average (total expenses / 160) and does not consider the specific participation coefficient of each owner.'
+                ,
+                'active_filters': 'Active filters:',
+                'clear_all': '✕ Clear all',
+                'clear_all_title': 'Clear all filters',
+                'loading_data': 'Loading financial data... ⏳',
+                'no_movements': 'No movements to display.',
+                'export_csv': '📊 Export CSV',
+                'search_by_concept': 'Search by concept...',
+                'last_update': 'Last Update:',
+                'page': 'Page',
+                'of': 'of',
+                'records': 'records',
+                'no_data_export': 'No data to export'
                 }
             };
+
+            // Add KPI translation keys
+            translations.es.kpi_total_ingresos = 'Total Ingresos';
+            translations.es.kpi_total_ingresos_note = 'Suma de ingresos';
+            translations.es.kpi_total_gastos = 'Total Gastos';
+            translations.es.kpi_total_gastos_note = 'Suma de gastos';
+            translations.es.kpi_total_per_home = 'Total Per Home';
+            translations.es.kpi_total_per_home_note = 'Gastos per home';
+            translations.es.kpi_balance_actual = 'Balance Actual';
+            translations.es.kpi_balance_actual_note = 'Saldo más reciente (global)';
+            translations.es.kpi_transacciones = 'Transacciones';
+            translations.es.kpi_transacciones_note = 'Registros procesados';
+            translations.es.label_language = '🌐 Idioma:';
+
+            translations.en.kpi_total_ingresos = 'Total Income';
+            translations.en.kpi_total_ingresos_note = 'Sum of income';
+            translations.en.kpi_total_gastos = 'Total Expenses';
+            translations.en.kpi_total_gastos_note = 'Sum of expenses';
+            translations.en.kpi_total_per_home = 'Total Per Home';
+            translations.en.kpi_total_per_home_note = 'Per-home expenses';
+            translations.en.kpi_balance_actual = 'Current Balance';
+            translations.en.kpi_balance_actual_note = 'Most recent balance (global)';
+            translations.en.kpi_transacciones = 'Transactions';
+            translations.en.kpi_transacciones_note = 'Processed records';
+            translations.en.label_language = '🌐 Language:';
 
             let currentLanguage = localStorage.getItem('dashboardLanguage') || 'es';
             
@@ -791,6 +917,7 @@
             let financialData = [];
             let currentFilter = 'current_year';
             let selectedCategories = new Set();
+            let pendingSelectedCategories = new Set(); // selections staged before confirming
             let selectedMonths = new Set();
             let startDate = null;
             let endDate = null;
@@ -1053,7 +1180,8 @@
                             if (elements.length > 0) {
                                 const index = elements[0].index;
                                 const category = data[index][0];
-                                window.toggleCategory(category);
+                                // stage pending selection (user must confirm)
+                                window.selectPendingCategory(event, category);
                             }
                         },
                         plugins: {
@@ -1193,7 +1321,7 @@
                 const tableContainer = document.getElementById('top-movements-table');
                 
                 if (!data || data.length === 0) {
-                    tableContainer.innerHTML = '<p style="text-align:center; color: var(--text-secondary);">No hay movimientos para mostrar.</p>';
+                    tableContainer.innerHTML = `<p style="text-align:center; color: var(--text-secondary);">${translate('no_movements')}</p>`;
                     return;
                 }
 
@@ -1215,8 +1343,10 @@
                     const amount = item.amount;
                     const perHome = parseAmount(item['per Home'] || '0');
                     const amountClass = amount >= 0 ? 'color-ingresos' : 'color-gastos';
+                    const isPending = pendingSelectedCategories.has(item.Categoria || 'Sin categoría');
+                    const pendingClass = isPending ? 'pending-selected' : '';
                     
-                    tableHTML += `<tr>
+                    tableHTML += `<tr class="${pendingClass}" onclick="window.selectPendingCategory(event, '${(item.Categoria||'Sin categoría').replace(/'/g, "\\'")}')">
                         <td class="color-secondary">${fechaStr}</td>
                         <td class="color-secondary">${item.Categoria || 'Sin categoría'}</td>
                         <td>${item.Concepto || ''}</td>
@@ -1259,7 +1389,9 @@
                     const percentage = totalGastos > 0 ? ((stats.total / totalGastos) * 100).toFixed(1) : '0.0';
                     const isSelected = selectedCategories.has(category);
                     const rowClass = 'interactive-row' + (isSelected ? ' selected' : '');
-                    tableHTML += `<tr class="${rowClass}" onclick="window.toggleCategory('${category.replace(/'/g, "\\'")}')">
+                  const isPending = pendingSelectedCategories.has(category);
+                  const pendingClass = isPending ? 'pending-selected' : '';
+                      tableHTML += `<tr class="${rowClass} ${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">
                         <td style="font-weight: 500;">${category}</td>
                         <td class="text-center">${stats.count}</td>
                         <td class="text-right color-gastos" style="font-weight: 500;">${formatCurrency(stats.total)}</td>
@@ -1269,7 +1401,7 @@
                  });
                 tableHTML += `</tbody><tfoot>
                     <tr>
-                        <td>TOTAL</td>
+                        <td>${translate('total')}</td>
                         <td class="text-center">${totalTransactions}</td>
                         <td class="text-right">${formatCurrency(totalGastos)}</td>
                         <td class="text-right">${formatCurrency(totalPerHomeGeneral)}</td>
@@ -1356,6 +1488,78 @@
                 updatePagination(totalPages, filteredData.length);
             }
 
+            // --- Pending selection flow ---
+            window.selectPendingCategory = function(event, category) {
+                // toggle pending selection
+                if (pendingSelectedCategories.has(category)) {
+                    pendingSelectedCategories.delete(category);
+                } else {
+                    pendingSelectedCategories.add(category);
+                }
+                updatePendingSelectionUI();
+            };
+
+            // Expose applyPendingSelection so header buttons (which call window.applyPendingSelection)
+            // can trigger the action from inline onclick attributes.
+            window.applyPendingSelection = function() {
+                // apply pending to actual selected categories
+                if (pendingSelectedCategories.size === 0) return;
+                selectedCategories = new Set([...pendingSelectedCategories]);
+                pendingSelectedCategories.clear();
+                updateCharts();
+                // After applying, ensure header icons are hidden
+                updatePendingSelectionUI();
+            };
+
+            // Expose clearPendingSelection so header buttons can call it.
+            // This function will clear staged (pending) selections and also
+            // deselect any applied category filters (selectedCategories), then refresh the dashboard.
+            window.clearPendingSelection = function() {
+                pendingSelectedCategories.clear();
+                // Also clear applied category filters as user requested (deselect all filters)
+                selectedCategories.clear();
+                updateCharts();
+                updatePendingSelectionUI();
+            };
+
+            function updatePendingSelectionUI() {
+                // re-render tables so pending selections get highlighted and per-table confirm buttons appear
+                // we re-run updateCharts to regenerate tables — but avoid applying pending as filters
+                const filteredData = getFilteredData();
+                Chart.helpers.each(Chart.instances, instance => instance.destroy());
+
+                const expensesByCategory = getExpensesByCategory(filteredData);
+                if (expensesByCategory.length > 0) createBarChart('expenses-chart', expensesByCategory);
+
+                const topMovements = getTopMovements(filteredData);
+                createTopMovementsTable(topMovements);
+
+                const monthlyFlow = getMonthlyFlow(filteredData);
+                if (monthlyFlow.length > 0) createLineChart('monthly-flow-chart', monthlyFlow);
+
+                createCategorySummaryTable(filteredData);
+                currentPage = 1;
+                createAllTransactionsTable(filteredData);
+
+                // per-table confirm buttons
+                const topConfirm = document.getElementById('top-confirm-icon');
+                const catConfirm = document.getElementById('cat-confirm-icon');
+                const hasPending = pendingSelectedCategories.size > 0;
+                if (topConfirm) topConfirm.disabled = !hasPending;
+                if (catConfirm) catConfirm.disabled = !hasPending;
+
+                // Show or hide the header icon buttons depending on whether there are pending selections
+                const topCancel = document.getElementById('top-cancel-icon');
+                const catCancel = document.getElementById('cat-cancel-icon');
+                const displayStyle = hasPending ? 'inline-flex' : 'none';
+                if (topConfirm) topConfirm.style.display = displayStyle;
+                if (topCancel) topCancel.style.display = displayStyle;
+                if (catConfirm) catConfirm.style.display = displayStyle;
+                if (catCancel) catCancel.style.display = displayStyle;
+            }
+
+            // Note: FAB menu removed; FAB now calls clearAllFilters (restores previous behavior)
+
              function updatePagination(totalPages, totalItems) {
                 const paginationContainer = document.getElementById('pagination');
                 
@@ -1390,12 +1594,15 @@
                 let badgesHTML = '';
                 
                 if (currentFilter !== 'current_year' && !startDate && !endDate) {
-                    const filterNames = {
-                        'current_month': 'Mes actual', 'last_3_months': 'Últimos 3 meses', 'last_6_months': 'Últimos 6 meses',
-                        'last_12_months': 'Últimos 12 meses', 'all': 'Todos los datos'
+                    const filterMap = {
+                        'current_month': 'current_month',
+                        'last_3_months': 'last_3_months',
+                        'last_6_months': 'last_6_months',
+                        'last_12_months': 'last_12_months',
+                        'all': 'all_data'
                     };
-                    if (filterNames[currentFilter]) {
-                        badgesHTML += `<span class="filter-badge">📅 ${filterNames[currentFilter]}</span>`;
+                    if (filterMap[currentFilter]) {
+                        badgesHTML += `<span class="filter-badge">📅 ${translate(filterMap[currentFilter])}</span>`;
                     }
                 }
                 
@@ -1432,8 +1639,8 @@
                 if (financialData.length > 0) {
                     const lastUpdateDate = parseDate(financialData[0]['F. Operativa']);
                     if (lastUpdateDate) {
-                        const formattedDate = lastUpdateDate.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
-                        document.getElementById('last-update-date').textContent = `Last Update: ${formattedDate}`;
+                        const formattedDate = lastUpdateDate.toLocaleDateString(currentLanguage === 'en' ? 'en-GB' : 'es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+                        document.getElementById('last-update-date').textContent = `${translate('last_update')} ${formattedDate}`;
                     }
                 }
 
@@ -1456,6 +1663,8 @@
                 createCategorySummaryTable(filteredData);
                 currentPage = 1;
                 createAllTransactionsTable(filteredData);
+                // Keep pending selection UI in sync (show/hide header icons)
+                updatePendingSelectionUI();
             }
 
             // --- INICIALIZACIÓN ---
@@ -1497,6 +1706,28 @@
                     selectedCategories.add(category);
                 }
                 updateCharts();
+            };
+
+            // Enhanced click handler for category interactions from tables/charts.
+            // - Ctrl/Cmd (metaKey) or Ctrl: toggle add/remove without affecting other selections
+            // - Shift: select only the clicked category (clears others)
+            // - Default click: toggle (add/remove) allowing multiple selections
+            window.handleCategoryClick = function(event, category) {
+                try {
+                    // Ctrl/Cmd + click => multi-select toggle (add/remove without clearing others)
+                    if (event && (event.metaKey || event.ctrlKey)) {
+                        window.toggleCategory(category);
+                        return;
+                    }
+
+                    // Shift or plain click => select only this category (clear others)
+                    selectedCategories.clear();
+                    selectedCategories.add(category);
+                    updateCharts();
+                } catch (err) {
+                    // fallback to simple toggle
+                    window.toggleCategory(category);
+                }
             };
 
             window.toggleMonth = function(monthKey) {
@@ -1551,7 +1782,7 @@
 
             window.exportToCSV = function() {
                 const data = getFilteredData();
-                if (data.length === 0) { alert('No hay datos para exportar'); return; }
+                if (data.length === 0) { alert(translate('no_data_export')); return; }
                 const headers = ['Tipo', 'F. Operativa', 'Concepto', 'Categoria', 'Mes Año', 'Gastos', 'Ingresos', 'per Home', 'Saldo'];
                 const csvContent = [
                     headers.join(','),
@@ -1617,6 +1848,16 @@
                     element.textContent = translate(key);
                 });
 
+                // Update placeholders, titles and button labels not covered by data-i18n attributes
+                const searchInput = document.getElementById('transaction-search');
+                if (searchInput) searchInput.placeholder = translate('search_by_concept');
+
+                const fab = document.getElementById('clear-filters-fab');
+                if (fab) fab.title = translate('clear_all_title');
+
+                const exportBtn = document.querySelector('[data-i18n="export_csv"]');
+                if (exportBtn) exportBtn.textContent = translate('export_csv');
+
                 // Forzar actualización de tablas para actualizar encabezados
                 updateCharts();
             }
@@ -1627,6 +1868,9 @@
 
             // Establecer el idioma inicial
             document.getElementById('language-select').value = currentLanguage;
+
+            // Apply translations immediately
+            updateLanguage(currentLanguage);
 
             loadData();
         })();
