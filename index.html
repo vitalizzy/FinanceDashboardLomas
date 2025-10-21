@@ -1549,12 +1549,16 @@
                 pageData.forEach(item => {
                     const fecha = parseDate(item['F. Operativa']);
                     const fechaStr = fecha ? fecha.toLocaleDateString('es-ES') : 'N/A';
-                    
-                    tableHTML += '<tr>';
+                    const category = item.Categoria || '';
+                    const isPending = pendingSelectedCategories.has(category);
+                    const isSelected = selectedCategories.has(category);
+                    const rowClass = 'interactive-row' + (isSelected ? ' selected' : '') + (isPending ? ' pending-selected' : '');
+
+                    tableHTML += `<tr class="${rowClass}" onclick="window.selectPendingCategory(event, '${(category).replace(/'/g, "\\'")}')">`;
                     tableHTML += `<td>${item.Tipo || ''}</td>`;
                     tableHTML += `<td>${fechaStr}</td>`;
                     tableHTML += `<td>${item.Concepto || ''}</td>`;
-                    tableHTML += `<td>${item.Categoria || ''}</td>`;
+                    tableHTML += `<td>${category}</td>`;
                     tableHTML += `<td class="text-right color-gastos">${formatCurrency(parseAmount(item.Gastos))}</td>`;
                     tableHTML += `<td class="text-right color-ingresos">${formatCurrency(parseAmount(item.Ingresos))}</td>`;
                     tableHTML += `<td class="text-right color-per-home">${formatCurrency(parseAmount(item['per Home']))}</td>`;
