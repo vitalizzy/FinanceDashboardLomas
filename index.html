@@ -309,32 +309,42 @@
         }
 
         .icon-cancel {
-            background: white; /* white circle with red border and red X */
-            color: #dc3545;
+            /* High-contrast destructive button: solid red background with white X */
+            background: #dc3545;
+            color: #ffffff;
             border-color: rgba(220,53,69,0.95);
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 10px rgba(220,53,69,0.14);
             font-size: 14px;
-            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
         }
 
-.icon-btn:focus {
-    outline: 3px solid rgba(13,110,253,0.16);
-    outline-offset: 2px;
-}
+        .icon-btn:focus {
+            outline: 3px solid rgba(13,110,253,0.16);
+            outline-offset: 2px;
+        }
 
-.icon-confirm:hover, .icon-cancel:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-}
+        .icon-confirm:hover, .icon-cancel:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+        }
 
-        /* Hide per-table icons by default; shown only when pending selections exist */
-        #top-confirm-icon, #top-cancel-icon, #cat-confirm-icon, #cat-cancel-icon {
+        .icon-cancel:active {
+            transform: translateY(0) scale(0.99);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        /* Hide per-section icons by default; shown only when pending selections exist */
+        #top-confirm-icon, #top-cancel-icon,
+        #cat-confirm-icon, #cat-cancel-icon,
+        #monthly-confirm-icon, #monthly-cancel-icon,
+        #expenses-confirm-icon, #expenses-cancel-icon,
+        #all-confirm-icon, #all-cancel-icon {
             display: none;
         }
 
@@ -690,6 +700,12 @@
                 <h3 class="db-container-title">
                     <span data-i18n="monthly_movements">📈 Movimientos bancarios mensuales</span>
                     <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="click_points">(Click en puntos para filtrar por mes)</small>
+                    <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                        <button id="monthly-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">✓</button>
+                        <button id="monthly-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">
+                            <svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
+                        </button>
+                    </div>
                 </h3>
                 <div class="chart-wrapper">
                     <canvas id="monthly-flow-chart"></canvas>
@@ -703,7 +719,9 @@
                             <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="highest_moves">(Mayores ingresos o gastos)</small>
                             <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
                                 <button id="top-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">✓</button>
-                                <button id="top-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">✕</button>
+                                <button id="top-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
+                                </button>
                             </div>
                         </h3>
                     <div id="top-movements-table" style="overflow-x: auto;">
@@ -716,6 +734,12 @@
                     <h3 class="db-container-title">
                         <span data-i18n="expenses_by_category">📊 Gastos por categoría</span>
                         <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="click_to_filter">(Click para filtrar)</small>
+                        <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                            <button id="expenses-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">✓</button>
+                            <button id="expenses-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">
+                                <svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
+                            </button>
+                        </div>
                     </h3>
                     <div class="chart-wrapper">
                         <canvas id="expenses-chart"></canvas>
@@ -731,7 +755,9 @@
                 <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="click_to_filter">(Click para filtrar)</small>
                 <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
                     <button id="cat-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">✓</button>
-                    <button id="cat-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">✕</button>
+                    <button id="cat-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">
+                        <svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
+                    </button>
                 </div>
             </h3>
             <div style="overflow-x: auto;">
@@ -742,8 +768,16 @@
 
         <!-- All Transactions -->
         <div class="db-container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 class="db-container-title" style="margin-bottom: 0;" data-i18n="all_transactions">💳 Todas las transacciones</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="db-container-title" style="margin-bottom: 0;">
+                    <span data-i18n="all_transactions">💳 Todas las transacciones</span>
+                    <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                        <button id="all-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">✓</button>
+                        <button id="all-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">
+                            <svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
+                        </button>
+                    </div>
+                </h3>
                 <button class="action-btn" style="margin: 0;" onclick="window.exportToCSV()" data-i18n="export_csv">
                     📊 Exportar CSV
                 </button>
@@ -771,7 +805,9 @@
                     <path d="M3 5h18v2l-7 7v5l-4 2v-7L3 7V5z" />
                 </svg>
             </span>
-            <span class="fab-x" aria-hidden="true">✕</span>
+            <span class="fab-x" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
+            </span>
         </button>
     </div>
 
@@ -928,6 +964,7 @@
             let selectedCategories = new Set();
             let pendingSelectedCategories = new Set(); // selections staged before confirming
             let selectedMonths = new Set();
+            let pendingSelectedMonths = new Set(); // months staged before confirming
             let startDate = null;
             let endDate = null;
             let searchQuery = '';
@@ -1174,10 +1211,10 @@
                             label: 'Gastos (€)',
                             data: data.map(([, value]) => value),
                             backgroundColor: data.map(([label]) => 
-                                selectedCategories.has(label) ? hexToRgba(chartColors.balance, 0.8) : 'rgba(52, 73, 94, 0.8)'
+                                selectedCategories.has(label) ? hexToRgba(chartColors.balance, 0.8) : (pendingSelectedCategories.has(label) ? 'rgba(255, 193, 7, 0.9)' : 'rgba(52, 73, 94, 0.8)')
                             ),
                             borderColor: data.map(([label]) => 
-                                selectedCategories.has(label) ? chartColors.balance : 'rgba(52, 73, 94, 1)'
+                                selectedCategories.has(label) ? chartColors.balance : (pendingSelectedCategories.has(label) ? 'rgba(255, 193, 7, 1)' : 'rgba(52, 73, 94, 1)')
                             ),
                             borderWidth: 2
                         }]
@@ -1238,10 +1275,8 @@
                             backgroundColor: hexToRgba(chartColors.ingresos, 0.1),
                             tension: 0.3,
                             borderWidth: 2,
-                            pointBackgroundColor: last12MonthsData.map(([month]) => 
-                                selectedMonths.has(month) ? chartColors.balance : chartColors.ingresos
-                            ),
-                            pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : 4),
+                            pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.ingresos)),
+                            pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                         }, {
                             label: 'Gastos',
                             data: last12MonthsData.map(([, values]) => values.gastos),
@@ -1249,10 +1284,8 @@
                             backgroundColor: hexToRgba(chartColors.gastos, 0.1),
                             tension: 0.3,
                             borderWidth: 2,
-                                pointBackgroundColor: last12MonthsData.map(([month]) => 
-                                selectedMonths.has(month) ? chartColors.balance : chartColors.gastos
-                            ),
-                            pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : 4),
+                                pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.gastos)),
+                            pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                         }, {
                             label: 'per Home',
                             data: last12MonthsData.map(([, values]) => values.perHome),
@@ -1260,10 +1293,8 @@
                             backgroundColor: hexToRgba(chartColors.perHome, 0.1),
                             tension: 0.3,
                             borderWidth: 2,
-                                pointBackgroundColor: last12MonthsData.map(([month]) => 
-                                selectedMonths.has(month) ? chartColors.balance : chartColors.perHome
-                            ),
-                                pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : 4),
+                                pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.perHome)),
+                            pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                             yAxisID: 'y1'
                         }, {
                             label: 'Saldo Mínimo',
@@ -1272,10 +1303,8 @@
                             backgroundColor: hexToRgba(chartColors.saldoMinimo, 0.1),
                             tension: 0.3,
                             borderWidth: 2,
-                                pointBackgroundColor: last12MonthsData.map(([month]) => 
-                                selectedMonths.has(month) ? chartColors.balance : chartColors.saldoMinimo
-                            ),
-                            pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : 4),
+                            pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.saldoMinimo)),
+                            pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                         }]
                     },
                     options: {
@@ -1285,7 +1314,7 @@
                             if (elements.length > 0) {
                                 const index = elements[0].index;
                                 const monthKey = last12MonthsData[index][0];
-                                window.toggleMonth(monthKey);
+                                window.selectPendingMonth(event, monthKey);
                             }
                         },
                         plugins: {
@@ -1508,15 +1537,32 @@
                 updatePendingSelectionUI();
             };
 
+            // stage month selection (used by monthly chart points)
+            window.selectPendingMonth = function(event, monthKey) {
+                if (pendingSelectedMonths.has(monthKey)) {
+                    pendingSelectedMonths.delete(monthKey);
+                } else {
+                    pendingSelectedMonths.add(monthKey);
+                }
+                updatePendingSelectionUI();
+            };
+
             // Expose applyPendingSelection so header buttons (which call window.applyPendingSelection)
             // can trigger the action from inline onclick attributes.
             window.applyPendingSelection = function() {
-                // apply pending to actual selected categories
-                if (pendingSelectedCategories.size === 0) return;
-                selectedCategories = new Set([...pendingSelectedCategories]);
-                pendingSelectedCategories.clear();
-                updateCharts();
-                // After applying, ensure header icons are hidden
+                // apply pending categories and months
+                let applied = false;
+                if (pendingSelectedCategories.size > 0) {
+                    selectedCategories = new Set([...pendingSelectedCategories]);
+                    pendingSelectedCategories.clear();
+                    applied = true;
+                }
+                if (pendingSelectedMonths.size > 0) {
+                    selectedMonths = new Set([...pendingSelectedMonths]);
+                    pendingSelectedMonths.clear();
+                    applied = true;
+                }
+                if (applied) updateCharts();
                 updatePendingSelectionUI();
             };
 
@@ -1524,9 +1570,12 @@
             // This function will clear staged (pending) selections and also
             // deselect any applied category filters (selectedCategories), then refresh the dashboard.
             window.clearPendingSelection = function() {
+                // clear staged selections (pending) and also clear applied selections
                 pendingSelectedCategories.clear();
-                // Also clear applied category filters as user requested (deselect all filters)
+                pendingSelectedMonths.clear();
+                // Clear applied selections too
                 selectedCategories.clear();
+                selectedMonths.clear();
                 updateCharts();
                 updatePendingSelectionUI();
             };
@@ -1550,21 +1599,34 @@
                 currentPage = 1;
                 createAllTransactionsTable(filteredData);
 
-                // per-table confirm buttons
+                // per-section confirm buttons
                 const topConfirm = document.getElementById('top-confirm-icon');
                 const catConfirm = document.getElementById('cat-confirm-icon');
-                const hasPending = pendingSelectedCategories.size > 0;
-                if (topConfirm) topConfirm.disabled = !hasPending;
-                if (catConfirm) catConfirm.disabled = !hasPending;
+                const monthlyConfirm = document.getElementById('monthly-confirm-icon');
+                const expensesConfirm = document.getElementById('expenses-confirm-icon');
+                const allConfirm = document.getElementById('all-confirm-icon');
+
+                const hasPendingCategory = pendingSelectedCategories.size > 0;
+                const hasPendingMonth = pendingSelectedMonths.size > 0;
+                const hasAnyPending = hasPendingCategory || hasPendingMonth;
+
+                [topConfirm, catConfirm, monthlyConfirm, expensesConfirm, allConfirm].forEach(btn => {
+                    if (!btn) return;
+                    // enable confirm only if there's at least one pending (category or month)
+                    btn.disabled = !hasAnyPending;
+                });
 
                 // Show or hide the header icon buttons depending on whether there are pending selections
                 const topCancel = document.getElementById('top-cancel-icon');
                 const catCancel = document.getElementById('cat-cancel-icon');
-                const displayStyle = hasPending ? 'inline-flex' : 'none';
-                if (topConfirm) topConfirm.style.display = displayStyle;
-                if (topCancel) topCancel.style.display = displayStyle;
-                if (catConfirm) catConfirm.style.display = displayStyle;
-                if (catCancel) catCancel.style.display = displayStyle;
+                const monthlyCancel = document.getElementById('monthly-cancel-icon');
+                const expensesCancel = document.getElementById('expenses-cancel-icon');
+                const allCancel = document.getElementById('all-cancel-icon');
+                const displayStyle = hasAnyPending ? 'inline-flex' : 'none';
+                [topConfirm, topCancel, catConfirm, catCancel, monthlyConfirm, monthlyCancel, expensesConfirm, expensesCancel, allConfirm, allCancel].forEach(el => {
+                    if (!el) return;
+                    el.style.display = displayStyle;
+                });
             }
 
             // Note: FAB menu removed; FAB now calls clearAllFilters (restores previous behavior)
@@ -1618,18 +1680,18 @@
                 if (startDate || endDate) {
                     const start = startDate ? new Date(startDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'short' }) : '...';
                     const end = endDate ? new Date(endDate).toLocaleDateString('es-ES', { year: 'numeric', month: 'short' }) : '...';
-                    badgesHTML += `<span class="filter-badge">📆 ${start} - ${end} <span class="remove" onclick="window.clearDateRange()">✕</span></span>`;
+                    badgesHTML += `<span class="filter-badge">📆 ${start} - ${end} <span class="remove" onclick="window.clearDateRange()"><svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg></span></span>`;
                 }
                 
                 selectedCategories.forEach(cat => {
-                    badgesHTML += `<span class="filter-badge">🏷️ ${cat} <span class="remove" onclick="window.toggleCategory('${cat.replace(/'/g, "\\'")}')">✕</span></span>`;
+                    badgesHTML += `<span class="filter-badge">🏷️ ${cat} <span class="remove" onclick="window.toggleCategory('${cat.replace(/'/g, "\\'")}')"><svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg></span></span>`;
                 });
                 
                 selectedMonths.forEach(month => {
                     const [year, monthNum] = month.split('-');
                     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
                     const monthName = monthNames[parseInt(monthNum) - 1];
-                    badgesHTML += `<span class="filter-badge">📊 ${monthName} ${year} <span class="remove" onclick="window.toggleMonth('${month}')">✕</span></span>`;
+                    badgesHTML += `<span class="filter-badge">📊 ${monthName} ${year} <span class="remove" onclick="window.toggleMonth('${month}')"><svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg></span></span>`;
                 });
                 
                 badgesContainer.innerHTML = badgesHTML;
