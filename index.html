@@ -277,43 +277,50 @@
         .fab .fab-icon svg { width: 18px; height: 18px; fill: white; }
         .fab .fab-x { display: inline-block; font-size: 14px; line-height: 1; margin-left: 6px; }
 
-        /* Icon buttons for confirm/cancel */
+        /* Icon buttons for confirm/cancel (compact circular style) */
         .icon-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
             border: 1px solid var(--border-color);
             cursor: pointer;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
             padding: 0;
+            line-height: 1;
         }
 
         .icon-confirm {
             background: #28a745; /* green */
             color: white;
-            border-color: rgba(40,167,69,0.9);
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
+            border-color: rgba(40,167,69,0.95);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
             box-shadow: 0 4px 8px rgba(40,167,69,0.12);
-            font-size: 16px;
+            font-size: 14px;
             transition: transform 0.12s ease, box-shadow 0.12s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .icon-cancel {
-            background: #6c757d; /* gray background with white X */
-            color: white;
-            border-color: rgba(0,0,0,0.08);
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-            font-size: 16px;
+            background: white; /* white circle with red border and red X */
+            color: #dc3545;
+            border-color: rgba(220,53,69,0.95);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            font-size: 14px;
             transition: transform 0.12s ease, box-shadow 0.12s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
 .icon-btn:focus {
@@ -693,11 +700,11 @@
                 <div class="db-container">
                     <h3 class="db-container-title">
                             <span data-i18n="top_movements">🏆 Top Movimientos por categoría</span>
-                            <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-                                <button id="top-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()">✓</button>
-                                <button id="top-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()">✕</button>
-                            </div>
                             <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="highest_moves">(Mayores ingresos o gastos)</small>
+                            <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                                <button id="top-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">✓</button>
+                                <button id="top-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">✕</button>
+                            </div>
                         </h3>
                     <div id="top-movements-table" style="overflow-x: auto;">
                         <!-- La tabla se generará aquí -->
@@ -719,10 +726,12 @@
 
         <!-- Category Summary Table -->
         <div class="db-container">
-            <h3 class="db-container-title" data-i18n="category_summary">📋 Resumen por categorías
-                    <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-                    <button id="cat-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()">✓</button>
-                    <button id="cat-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()">✕</button>
+            <h3 class="db-container-title">
+                <span data-i18n="category_summary">📋 Resumen por categorías</span>
+                <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="click_to_filter">(Click para filtrar)</small>
+                <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                    <button id="cat-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">✓</button>
+                    <button id="cat-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">✕</button>
                 </div>
             </h3>
             <div style="overflow-x: auto;">
@@ -755,7 +764,7 @@
         <div id="error"></div>
         
         <!-- Floating Action Button -->
-        <button id="clear-filters-fab" class="fab" title="Limpiar todos los filtros" onclick="window.clearAllFilters()" data-i18n="clear_all_title">
+        <button id="clear-filters-fab" class="fab" title="" onclick="window.clearAllFilters()" data-i18n="clear_all_title">
             <span class="fab-icon" aria-hidden="true">
                 <!-- simple funnel icon -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
@@ -819,7 +828,7 @@
                 ,
                 'active_filters': 'Filtros activos:',
                 'clear_all': '✕ Limpiar todos',
-                'clear_all_title': 'Limpiar todos los filtros',
+                'clear_all_title': '✖️',
                 'loading_data': 'Cargando datos financieros... ⏳',
                 'no_movements': 'No hay movimientos para mostrar.',
                 'export_csv': '📊 Exportar CSV',
@@ -873,7 +882,7 @@
                 ,
                 'active_filters': 'Active filters:',
                 'clear_all': '✕ Clear all',
-                'clear_all_title': 'Clear all filters',
+                'clear_all_title': '✖️',
                 'loading_data': 'Loading financial data... ⏳',
                 'no_movements': 'No movements to display.',
                 'export_csv': '📊 Export CSV',
