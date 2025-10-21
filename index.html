@@ -447,6 +447,13 @@
             border-top: 2px solid #000;
         }
 
+        /* Compact table style for data-heavy tables (smaller rows) */
+        .db-table.compact th, .db-table.compact td {
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+        .db-table.compact tbody tr { line-height: 1.15; }
+
         /* Search and Actions Bar */
         .actions-bar {
             display: flex;
@@ -571,6 +578,11 @@
             .chart-grid-double {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* Specific styling for the All Transactions scroll area */
+        #all-transactions-table { 
+            font-family: var(--font-primary);
         }
 
         @media (max-width: 768px) {
@@ -800,9 +812,7 @@
                 </div>
             </div>
             
-            <div id="all-transactions-table" style="max-height: 600px; overflow-y: auto;"></div>
-            
-            <div id="pagination" class="pagination"></div>
+            <div id="all-transactions-table" style="max-height: 640px; overflow-y: auto;"></div>
         </div>
 
         <div id="loading" data-i18n="loading_data">Cargando datos financieros... ⏳</div>
@@ -1032,10 +1042,23 @@
                 return isNaN(result) ? 0 : result;
             }
             
+            // General number formatter (Spanish style: . for thousands, , for decimals)
+            function formatNumber(value, minimumFractionDigits = 0, maximumFractionDigits = 2) {
+                if (value === null || value === undefined || isNaN(value)) return '';
+                return new Intl.NumberFormat('es-ES', {
+                    minimumFractionDigits,
+                    maximumFractionDigits
+                }).format(value);
+            }
+
+            // Currency formatter that delegates to Intl with es-ES locale (keeps currency symbol)
             function formatCurrency(amount) {
+                if (amount === null || amount === undefined || isNaN(amount)) return '€0,00';
                 return new Intl.NumberFormat('es-ES', {
                     style: 'currency',
-                    currency: 'EUR'
+                    currency: 'EUR',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
                 }).format(amount);
             }
             
@@ -1440,27 +1463,28 @@
                 const totalPerHomeGeneral = sortedCategories.reduce((sum, [, stats]) => sum + stats.totalPerHome, 0);
 
                 let tableHTML = `<table class="db-table"><thead><tr><th data-i18n="category">Categoría</th><th class="text-center" data-i18n="count">Count</th><th class="text-right" data-i18n="expenses_sum">Suma Gastos</th><th class="text-right" data-i18n="per_home">per Home</th><th class="text-right" data-i18n="total_percent">% del Total</th></tr></thead><tbody>`;
-                 sortedCategories.forEach(([category, stats]) => {
-                    const percentage = totalGastos > 0 ? ((stats.total / totalGastos) * 100).toFixed(1) : '0.0';
-                    const isSelected = selectedCategories.has(category);
-                    const rowClass = 'interactive-row' + (isSelected ? ' selected' : '');
-                  const isPending = pendingSelectedCategories.has(category);
-                  const pendingClass = isPending ? 'pending-selected' : '';
-                      tableHTML += `<tr class="${rowClass} ${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">
-                        <td style="font-weight: 500;">${category}</td>
-                        <td class="text-center">${stats.count}</td>
-                        <td class="text-right color-gastos" style="font-weight: 500;">${formatCurrency(stats.total)}</td>
-                        <td class="text-right color-per-home" style="font-weight: 500;">${formatCurrency(stats.totalPerHome)}</td>
-                        <td class="text-right color-secondary">${percentage}%</td>
-                    </tr>`;
-                 });
+                                 sortedCategories.forEach(([category, stats]) => {
+                                        const percentageValue = totalGastos > 0 ? ((stats.total / totalGastos) * 100) : 0;
+                                        const percentage = formatNumber(percentageValue, 1, 1);
+                                        const isSelected = selectedCategories.has(category);
+                                        const rowClass = 'interactive-row' + (isSelected ? ' selected' : '');
+                                        const isPending = pendingSelectedCategories.has(category);
+                                        const pendingClass = isPending ? 'pending-selected' : '';
+                                        tableHTML += `<tr class="${rowClass} ${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">
+                                                <td style="font-weight: 500;">${category}</td>
+                                                <td class="text-center">${formatNumber(stats.count, 0, 0)}</td>
+                                                <td class="text-right color-gastos" style="font-weight: 500;">${formatCurrency(stats.total)}</td>
+                                                <td class="text-right color-per-home" style="font-weight: 500;">${formatCurrency(stats.totalPerHome)}</td>
+                                                <td class="text-right color-secondary">${percentage}%</td>
+                                        </tr>`;
+                                 });
                 tableHTML += `</tbody><tfoot>
                     <tr>
                         <td>${translate('total')}</td>
-                        <td class="text-center">${totalTransactions}</td>
+                        <td class="text-center">${formatNumber(totalTransactions, 0, 0)}</td>
                         <td class="text-right">${formatCurrency(totalGastos)}</td>
                         <td class="text-right">${formatCurrency(totalPerHomeGeneral)}</td>
-                        <td class="text-right">100.0%</td>
+                        <td class="text-right">${formatNumber(100, 1, 1)}%</td>
                     </tr>
                 </tfoot></table>`;
                 tableContainer.innerHTML = tableHTML;
@@ -1497,11 +1521,11 @@
                     });
                 }
                 
-                 const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-                 const startIndex = (currentPage - 1) * itemsPerPage;
-                 const pageData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+                // For All Transactions we show a scrollable list (no pagination).
+                // Default visible area approximates ~20 rows; the container handles scrolling.
+                const pageData = filteredData; // render all filtered rows; container will scroll
 
-                let tableHTML = '<table class="db-table"><thead><tr>';
+                let tableHTML = '<table class="db-table compact"><thead><tr>';
                 const columns = [
                     { key: 'Tipo', labelKey: 'type', sortable: true },
                     { key: 'F. Operativa', labelKey: 'date', sortable: true },
@@ -1539,8 +1563,6 @@
                 
                 tableHTML += '</tbody></table>';
                 tableContainer.innerHTML = tableHTML;
-                
-                updatePagination(totalPages, filteredData.length);
             }
 
             // --- Pending selection flow ---
@@ -1722,7 +1744,7 @@
                 document.getElementById('total-gastos').textContent = formatCurrency(summary.totalGastos);
                 document.getElementById('total-per-home').textContent = formatCurrency(summary.totalPerHome);
                 document.getElementById('saldo-final').textContent = formatCurrency(summary.saldoFinal);
-                document.getElementById('total-transacciones').textContent = summary.transacciones;
+                document.getElementById('total-transacciones').textContent = formatNumber(summary.transacciones, 0, 0);
 
                 if (financialData.length > 0) {
                     const lastUpdateDate = parseDate(financialData[0]['F. Operativa']);
