@@ -584,6 +584,33 @@
         #all-transactions-table { 
             font-family: var(--font-primary);
         }
+        
+        /* --- INICIO DE MODIFICACIÓN 1 --- */
+        /* Lógica de columnas secretas para Concepto */
+        
+        /* Por defecto (bloqueado):
+           - .col-secreta (Concepto Real) está oculta.
+           - .col-concepto-original está visible.
+        */
+        .col-secreta {
+            display: none;
+        }
+        .col-concepto-original {
+            display: table-cell;
+        }
+
+        /* Desbloqueado (cuando el contenedor tiene .show-secret-col):
+           - .col-secreta (Concepto Real) se muestra.
+           - .col-concepto-original se oculta.
+        */
+        #all-transactions-table.show-secret-col .col-secreta {
+            display: table-cell;
+        }
+        #all-transactions-table.show-secret-col .col-concepto-original {
+            display: none;
+        }
+        /* --- FIN DE MODIFICACIÓN 1 --- */
+        
 
         @media (max-width: 768px) {
             .kpi-cards {
@@ -784,6 +811,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3 class="db-container-title" style="margin-bottom: 0;">
                     <span data-i18n="all_transactions">💳 Todas las transacciones</span>
+                    <span id="toggle-secret-col" title="Mostrar/Ocultar Saldo" style="cursor: pointer; opacity: 0.6; margin-left: 10px; font-size: 16px;">🔒</span>
                     <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
                         <button id="all-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">✓</button>
                         <button id="all-cancel-icon" class="icon-btn icon-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección">
@@ -866,6 +894,7 @@
                     'expenses_sum': 'Suma Gastos',
                     'total_percent': '% del Total',
                     'total': 'TOTAL',
+                    'balance': 'Saldo',
 
                     // Disclaimer
                     'important_note': 'Nota importante:',
@@ -930,6 +959,7 @@
                     'expenses_sum': 'Expenses Sum',
                     'total_percent': 'Total %',
                     'total': 'TOTAL',
+                    'balance': 'Saldo',
 
                     // Disclaimer
                     'important_note': 'Important note:',
@@ -1504,7 +1534,8 @@
                 let filteredData = data;
                 if (searchQuery) {
                     filteredData = data.filter(item => 
-                        (item.Concepto || '').toLowerCase().includes(searchQuery.toLowerCase())
+                        (item.Concepto || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        (item['Concepto (Original)'] || '').toLowerCase().includes(searchQuery.toLowerCase()) // Buscar en ambas
                     );
                 }
 
@@ -1534,23 +1565,31 @@
                 const pageData = filteredData; // render all filtered rows; container will scroll
 
                 let tableHTML = '<table class="db-table compact"><thead><tr>';
+                
+                // --- INICIO DE MODIFICACIÓN 2 ---
                 const columns = [
-                    { key: 'Tipo', labelKey: 'type', sortable: true },
-                    { key: 'F. Operativa', labelKey: 'date', sortable: true },
-                    { key: 'Concepto', labelKey: 'concept', sortable: true },
-                    { key: 'Categoria', labelKey: 'category', sortable: true },
-                    { key: 'Gastos', labelKey: 'expense', sortable: true, align: 'right' },
-                    { key: 'Ingresos', labelKey: 'income', sortable: true, align: 'right' },
-                    { key: 'per Home', labelKey: 'per_home', sortable: true, align: 'right' }
-                ];
+                                    { key: 'Tipo', labelKey: 'type', sortable: true },
+                                    { key: 'F. Operativa', labelKey: 'date', sortable: true },
+                                    // Se reemplaza 'Concepto' por las dos versiones
+                                    { key: 'Concepto (Original)', labelKey: 'concept', sortable: true, cssClass: 'col-concepto-original' }, // Visible por defecto
+                                    { key: 'Concepto', labelKey: 'concept', sortable: true, cssClass: 'col-secreta' }, // Oculta por defecto
+                                    { key: 'Categoria', labelKey: 'category', sortable: true },
+                                    { key: 'Gastos', labelKey: 'expense', sortable: true, align: 'right' },
+                                    { key: 'Ingresos', labelKey: 'income', sortable: true, align: 'right' },
+                                    { key: 'per Home', labelKey: 'per_home', sortable: true, align: 'right' },
+                                    // Se elimina la clase 'col-secreta' de 'Saldo'
+                                    { key: 'Saldo', labelKey: 'balance', sortable: true, align: 'right' }
+                                ];
+                // --- FIN DE MODIFICACIÓN 2 ---
                 
                 columns.forEach(col => {
                     const sortClass = sortColumn === col.key ? 
                         (sortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc') : 
                         (col.sortable ? 'sortable' : '');
-                    const alignClass = col.align ? `text-${col.align}` : '';
-                    tableHTML += `<th class="${sortClass} ${alignClass}" onclick="window.sortTable('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey)}</th>`;
-                });
+                    const alignClass = col.align ? `text-${col.align}` : '';
+                    const secretClass = col.cssClass || ''; // <-- AÑADIR ESTA LÍNEA
+                    tableHTML += `<th class="${sortClass} ${alignClass} ${secretClass}" onclick="window.sortTable('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey)}</th>`; // <-- ${secretClass} AÑADIDO
+                });
                 
                 tableHTML += '</tr></thead><tbody>';
                 
@@ -1565,12 +1604,22 @@
                     tableHTML += `<tr class="${rowClass}" onclick="window.selectPendingCategory(event, '${(category).replace(/'/g, "\\'")}')">`;
                     tableHTML += `<td>${item.Tipo || ''}</td>`;
                     tableHTML += `<td>${fechaStr}</td>`;
-                    tableHTML += `<td>${item.Concepto || ''}</td>`;
+                    
+                    // --- INICIO DE MODIFICACIÓN 3A ---
+                    tableHTML += `<td class="col-concepto-original">${item['Concepto (Original)'] || ''}</td>`;
+                    tableHTML += `<td class="col-secreta">${item.Concepto || ''}</td>`;
+                    // --- FIN DE MODIFICACIÓN 3A ---
+                    
                     tableHTML += `<td>${category}</td>`;
                     tableHTML += `<td class="text-right color-gastos">${formatCurrency(parseAmount(item.Gastos))}</td>`;
                     tableHTML += `<td class="text-right color-ingresos">${formatCurrency(parseAmount(item.Ingresos))}</td>`;
                     tableHTML += `<td class="text-right color-per-home">${formatCurrency(parseAmount(item['per Home']))}</td>`;
-                    tableHTML += '</tr>';
+                    
+                    // --- INICIO DE MODIFICACIÓN 3B ---
+                    tableHTML += `<td class="text-right">${formatCurrency(parseAmount(item.Saldo))}</td>`;
+                    // --- FIN DE MODIFICACIÓN 3B ---
+                    
+                    tableHTML += '</tr>';
                 });
                 
                 tableHTML += '</tbody></table>';
@@ -1905,14 +1954,16 @@
             window.exportToCSV = function() {
                 const data = getFilteredData();
                 if (data.length === 0) { alert(translate('no_data_export')); return; }
-                const headers = ['Tipo', 'F. Operativa', 'Concepto', 'Categoria', 'Mes Año', 'Gastos', 'Ingresos', 'per Home', 'Saldo'];
+                const headers = ['Tipo', 'F. Operativa', 'Concepto (Original)', 'Concepto', 'Categoria', 'Mes Año', 'Gastos', 'Ingresos', 'per Home', 'Saldo']; // Añadido Concepto (Original)
                 const csvContent = [
                     headers.join(','),
                     ...data.map(item => {
                         const fecha = parseDate(item['F. Operativa']);
                         const fechaStr = fecha ? fecha.toLocaleDateString('es-ES') : '';
                         return [
-                            `"${item.Tipo || ''}"`, `"${fechaStr}"`, `"${(item.Concepto || '').replace(/"/g, '""')}"`,
+                            `"${item.Tipo || ''}"`, `"${fechaStr}"`, 
+                            `"${(item['Concepto (Original)'] || '').replace(/"/g, '""')}"`, // Añadido
+                            `"${(item.Concepto || '').replace(/"/g, '""')}"`,
                             `"${item.Categoria || ''}"`, `"${item['Mes Año'] || ''}"`,
                             parseAmount(item.Gastos), parseAmount(item.Ingresos), parseAmount(item['per Home']), parseAmount(item.Saldo)
                         ].join(',');
@@ -2001,6 +2052,43 @@
             updateLanguage(currentLanguage);
 
             loadData();
+// Establecer el idioma inicial
+            document.getElementById('language-select').value = currentLanguage;
+
+            // --- AÑADIR ESTE BLOQUE ---
+            // --- LÓGICA PARA COLUMNA SECRETA ---
+            const SECRET_PASSWORD = '123'; // ¡¡¡CAMBIA ESTA CONTRASEÑA!!!
+            let secretColVisible = false;
+            
+            function toggleSecretColumn() {
+                const tableContainer = document.getElementById('all-transactions-table');
+                const icon = document.getElementById('toggle-secret-col');
+
+                if (secretColVisible) {
+                    // Si ya está visible, ocultarla
+                    tableContainer.classList.remove('show-secret-col');
+                    secretColVisible = false;
+                    icon.style.opacity = '0.6';
+                } else {
+                    // Si está oculta, pedir contraseña
+                    // --- INICIO DE MODIFICACIÓN 4 ---
+                    const pass = prompt('Introduce la contraseña para ver el concepto real:');
+                    // --- FIN DE MODIFICACIÓN 4 ---
+                    if (pass === SECRET_PASSWORD) {
+                        tableContainer.classList.add('show-secret-col');
+                        secretColVisible = true;
+                        icon.style.opacity = '1';
+                    } else if (pass !== null) { // pass es null si el usuario pulsa Cancelar
+                        alert('Contraseña incorrecta.');
+                    }
+                }
+            }
+
+            document.getElementById('toggle-secret-col').addEventListener('click', toggleSecretColumn);
+            // --- FIN LÓGICA SECRETA ---
+            
+            // Apply translations immediately
+            updateLanguage(currentLanguage);
         })();
     </script>
 </body>
