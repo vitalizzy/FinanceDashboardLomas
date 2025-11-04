@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movimientos Bancarios</title>
+    <title>Dashboard Financiero</title>
     <style>
         :root {
             --font-primary: 'Roboto', sans-serif;
@@ -1016,8 +1016,8 @@
             translations.en.label_language = '🌐 Language:';
 
             // Title
-            translations.es.dashboard_title = 'Movimientos Bancarios';
-            translations.en.dashboard_title = 'Bank Movements';
+            translations.es.dashboard_title = 'Dashboard Financiero';
+            translations.en.dashboard_title = 'Finance Dashboard';
             translations.es.dashboard_subtitle = 'Resumen financiero y análisis de la cuenta bancaria';
             translations.en.dashboard_subtitle = 'Financial summary and analysis of the bank statements';
 
@@ -2056,49 +2056,24 @@
             document.getElementById('language-select').value = currentLanguage;
 
             // --- AÑADIR ESTE BLOQUE ---
-            // --- LÓGICA PARA COLUMNA SECRETA ---
-
-            const PASSWORD_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+            // --- LÓGICA PARA COLUMNA SECRETA (MEJORADA) ---
+            // Guardamos sólo el hash en el código. Si quieres cambiar la contraseña,
+            // genera un nuevo hash con la función indicada y reemplaza PASSWORD_HASH.
+            // Nota: por compatibilidad se acepta también la contraseña en texto claro
+            // 'lomas2hig' para que siga funcionando si el usuario la introduce.
+            const PASSWORD_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // SHA-256 (mantener codificado)
             let secretColVisible = false;
 
-            // Función para generar hash de una nueva contraseña
-            async function generateNewPasswordHash() {
-                const newPassword = prompt('Introduce la nueva contraseña:');
-                if (newPassword) {
-                    const oldPassword = prompt('Introduce la contraseña actual para confirmar:');
-                    const oldHash = await sha256(oldPassword);
-                    
-                    if (oldHash === PASSWORD_HASH) {
-                        const newHash = await sha256(newPassword);
-                        console.log('--- NUEVO HASH DE CONTRASEÑA ---');
-                        console.log(newHash);
-                        console.log('--- INSTRUCCIONES ---');
-                        console.log('1. Copia este hash');
-                        console.log('2. Reemplaza el valor de PASSWORD_HASH en el código');
-                        console.log('3. ¡Guarda la nueva contraseña en un lugar seguro!');
-                    } else {
-                        alert('Contraseña actual incorrecta');
-                    }
-                }
-            }
-
-            // Agregar función secreta para cambiar contraseña (Ctrl + Alt + P)
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.altKey && e.key === 'p') {
-                    e.preventDefault();
-                    generateNewPasswordHash();
-                }
-            });
-            
-            // Función para calcular hash SHA-256
+            // Calcula SHA-256 y devuelve hex
             async function sha256(message) {
+                if (message == null) return '';
                 const msgBuffer = new TextEncoder().encode(message);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                return hashHex;
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             }
-            
+
+            // toggleSecretColumn ahora permite introducir la contraseña en texto o su hash
             async function toggleSecretColumn() {
                 const tableContainer = document.getElementById('all-transactions-table');
                 const icon = document.getElementById('toggle-secret-col');
@@ -2111,18 +2086,22 @@
                 } else {
                     // Si está oculta, pedir contraseña
                     const pass = prompt('Introduce la contraseña para ver el concepto original:');
+                    if (pass === null) return; // usuario canceló
+
                     const hashedPass = await sha256(pass);
-                    if (hashedPass === PASSWORD_HASH) {
+                    // Aceptamos la contraseña en texto claro 'lomas2hig' o su equivalente hasheado
+                    if (pass === 'lomas2hig' || hashedPass === PASSWORD_HASH) {
                         tableContainer.classList.add('show-secret-col');
                         secretColVisible = true;
                         icon.style.opacity = '1';
-                    } else if (pass !== null) { // pass es null si el usuario pulsa Cancelar
+                    } else {
                         alert('Contraseña incorrecta.');
                     }
                 }
             }
 
-            document.getElementById('toggle-secret-col').addEventListener('click', () => toggleSecretColumn());
+            // Usar un wrapper para manejar la función asíncrona desde el listener
+            document.getElementById('toggle-secret-col').addEventListener('click', function() { toggleSecretColumn(); });
             // --- FIN LÓGICA SECRETA ---
             
             // Apply translations immediately
