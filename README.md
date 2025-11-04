@@ -1,103 +1,71 @@
-# FinanceDashboardLomas
-# Guía de Integración - Gráficos Financieros en Google Sites
+# Dashboard Financiero Lomas
 
 ## 📊 Descripción
-Este snippet permite visualizar datos financieros de una Google Sheet en gráficos interactivos directamente en Google Sites.
+Dashboard interactivo para visualización y análisis de movimientos bancarios. Proporciona una vista detallada de ingresos, gastos y análisis financiero con gráficos dinámicos y tablas interactivas.
 
-## 🚀 Cómo integrar en Google Sites
+## 🎯 Características Principales
 
-### Paso 1: Subir el archivo HTML
-1. Ve a [Google Sites](https://sites.google.com)
-2. Crea un nuevo sitio o edita uno existente
-3. En la página donde quieres insertar los gráficos:
-   - Haz clic en **"Insertar"** → **"Insertar con código"**
-   - Selecciona **"HTML incorporado"**
+### 📊 Visualización de Datos
+- Gráficos de tendencias mensuales
+- Análisis por categorías
+- Resumen de movimientos principales
+- Vista detallada de transacciones
+- Profile View para análisis detallado
 
-### Paso 2: Copiar el código
-Copia todo el contenido del archivo `google-sites-charts.html` y pégalo en el cuadro de código HTML.
+### 🔍 Funcionalidades
+- Filtrado múltiple de datos
+- Búsqueda en tiempo real
+- Exportación a CSV
+- Vista detallada por categoría
+- Sistema de permisos por niveles
+- Interfaz responsive
 
-### Paso 3: Configurar permisos
-Asegúrate de que tu Google Sheet tenga los siguientes permisos:
-- **Visibilidad**: "Cualquiera con el enlace puede ver"
-- **Acceso**: "Editor" o "Lector" según necesites
+### 📈 KPIs
+- Total de ingresos y gastos
+- Balance actual
+- Gastos por vivienda
+- Número total de transacciones
 
-### Paso 4: Actualizar la URL del CSV
-Si cambias la URL de tu Google Sheet, actualiza esta línea en el código:
-```javascript
-const CSV_URL = 'TU_NUEVA_URL_AQUI';
-```
+## �️ Tecnologías Utilizadas
 
-## 📋 Características del Dashboard
+- HTML5
+- CSS3 (Variables CSS para theming)
+- JavaScript (Vanilla)
+- Chart.js para visualizaciones
+- Google Sheets como backend
 
-### 📈 Gráficos Incluidos:
-1. **Resumen Financiero**: Tarjetas con totales de ingresos, gastos, saldo y transacciones
-2. **Flujo Mensual**: Gráfico de líneas mostrando ingresos vs gastos por mes
-3. **Gastos por Categoría**: Gráfico de barras con las categorías más importantes
-4. **Distribución de Gastos**: Gráfico circular (dona) con el porcentaje por categoría
+## 🚀 Uso
+1. Accede al dashboard a través del navegador
+2. Utiliza los filtros para refinar la visualización
+3. Interactúa con los gráficos para análisis detallado
+4. Exporta datos según necesidad
 
-### 🔍 Filtros Disponibles:
-- Todos los datos
-- Mes actual
-- Año actual
-- Últimos 3 meses
+## 🔒 Seguridad
+- Sistema de autenticación por niveles
+- Datos sensibles protegidos
+- Acceso controlado a información detallada
 
-### 🎨 Diseño:
-- Compatible con el estilo de Google Sites
-- Responsive (se adapta a móviles)
-- Colores consistentes con Google Material Design
+## 📱 Responsividad
 
-## ⚙️ Personalización
+El dashboard está optimizado para:
+- Escritorio (>992px)
+- Tablet (768px - 992px)
+- Móvil (<768px)
 
-### Cambiar colores:
-Modifica las variables de color en la sección CSS:
-```css
-.summary-card {
-    border-left: 4px solid #4285f4; /* Cambia este color */
-}
-```
+## 🔄 Mantenimiento
+Para actualizar los datos:
+1. Actualizar la hoja de cálculo vinculada
+2. Los cambios se reflejan automáticamente en el dashboard
 
-### Añadir más gráficos:
-Puedes añadir nuevos tipos de gráficos siguiendo el patrón:
-```javascript
-function createNewChart(canvasId, data, title) {
-    // Tu código de gráfico aquí
-}
-```
+## 👥 Contribución
+Para contribuir al proyecto:
+1. Fork del repositorio
+2. Crear branch con la nueva feature
+3. Enviar pull request con los cambios
+4. Seguir las guías de estilo del código
 
-### Modificar filtros:
-Añade nuevas opciones en el select de filtros:
-```html
-<option value="nuevo_filtro">Nuevo Filtro</option>
-```
-
-## 🔧 Solución de Problemas
-
-### Error: "No se pueden cargar los datos"
-- Verifica que la URL del CSV sea pública
-- Asegúrate de que el Google Sheet tenga permisos de lectura pública
-- Comprueba que el formato del CSV sea correcto
-
-### Los gráficos no se muestran:
-- Verifica que Chart.js se esté cargando correctamente
-- Revisa la consola del navegador para errores JavaScript
-- Asegúrate de que los datos CSV tengan el formato esperado
-
-### Problemas de rendimiento:
-- Si tienes muchos datos, considera filtrar desde el origen
-- Limita el número de elementos mostrados en cada gráfico
-- Usa la paginación para grandes conjuntos de datos
-
-## 📱 Compatibilidad
-- ✅ Google Sites
-- ✅ Navegadores modernos (Chrome, Firefox, Safari, Edge)
-- ✅ Dispositivos móviles
-- ✅ Tablets
-
-## 🔄 Actualización Automática
-Los datos se actualizan automáticamente cuando se modifica la Google Sheet, ya que el snippet siempre carga los datos más recientes desde la URL pública del CSV.
-
-## 📞 Soporte
-Si necesitas ayuda adicional o quieres personalizar más el dashboard, puedes:
+## � Licencia
+Uso interno - Todos los derechos reservados
 1. Modificar el código HTML directamente
 2. Añadir más tipos de gráficos
 3. Personalizar los filtros y la visualización
