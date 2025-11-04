@@ -2144,8 +2144,7 @@
             // Guardamos sólo el hash en el código. Si quieres cambiar la contraseña,
             // genera un nuevo hash con la función indicada y reemplaza PASSWORD_HASH.
             // Nota: por compatibilidad se acepta también la contraseña en texto claro
-            // 'lomas2hig' para que siga funcionando si el usuario la introduce.
-            const PASSWORD_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // SHA-256 (mantener codificado)
+            const PASSWORD_HASH = '0923729f81c30fa2458fe4b197621daa817153451ff1fdb4aac011c4da88b5d3'; 
             let secretColVisible = false;
 
             // Calcula SHA-256 y devuelve hex
@@ -2275,7 +2274,7 @@
                     if (pass === null) return; // usuario canceló
 
                     const hashedPass = await sha256(pass);
-                    // Validar comparando sólo el hash: la contraseña en texto plano ya no está en el código
+                    // Validar solo comparando el hash
                     if (hashedPass === PASSWORD_HASH) {
                         tableContainer.classList.add('show-secret-col');
                         secretColVisible = true;
