@@ -5,67 +5,62 @@ Dashboard interactivo para visualización y análisis de movimientos bancarios. 
 
 ## 🎯 Características Principales
 
-### 📊 Visualización de Datos
 - Gráficos de tendencias mensuales
 - Análisis por categorías
 - Resumen de movimientos principales
 - Vista detallada de transacciones
-- Profile View para análisis detallado
-
-### 🔍 Funcionalidades
-- Filtrado múltiple de datos
-- Búsqueda en tiempo real
+- Filtrado múltiple y búsqueda en tiempo real
 - Exportación a CSV
-- Vista detallada por categoría
-- Sistema de permisos por niveles
-- Interfaz responsive
 
-### 📈 KPIs
-- Total de ingresos y gastos
-- Balance actual
-- Gastos por vivienda
-- Número total de transacciones
-
-## �️ Tecnologías Utilizadas
+## 🧰 Tecnologías
 
 - HTML5
 - CSS3 (Variables CSS para theming)
 - JavaScript (Vanilla)
-- Chart.js para visualizaciones
-- Google Sheets como backend
+- Chart.js (visualizaciones)
+- Google Sheets como backend (TSV público)
 
-## 🚀 Uso
-1. Accede al dashboard a través del navegador
-2. Utiliza los filtros para refinar la visualización
-3. Interactúa con los gráficos para análisis detallado
-4. Exporta datos según necesidad
+## 🚀 Quick start (desarrollo)
 
-## 🔒 Seguridad
-- Sistema de autenticación por niveles
-- Datos sensibles protegidos
-- Acceso controlado a información detallada
+1. Abrir PowerShell y situarse en la carpeta del proyecto:
 
-## 📱 Responsividad
+```powershell
+Set-Location 'C:\Users\Jesus Vita\Documents\Proyecto Charts Web Lomas\FinanceDashboardLomas'
+python -m http.server 8000
+```
 
-El dashboard está optimizado para:
-- Escritorio (>992px)
-- Tablet (768px - 992px)
-- Móvil (<768px)
+2. Abrir en el navegador: http://localhost:8000
 
-## 🔄 Mantenimiento
-Para actualizar los datos:
-1. Actualizar la hoja de cálculo vinculada
-2. Los cambios se reflejan automáticamente en el dashboard
+Notas: servir con un servidor local es recomendable porque la petición fetch al TSV remoto puede verse afectada por políticas de CORS si abres el archivo con file://.
+
+## 🔧 Cambios recientes importantes
+
+- Migración de la lógica de gráficos a la API moderna de Chart.js (v3+/v4): el código ahora crea y destruye instancias con la API pública, y mantiene un registro local (`window._charts`) para evitar errores al reinstanciar gráficos.
+- Se reemplazaron llamadas a internals de Chart.js (p. ej. `Chart.helpers.each`/`Chart.instances`) que provocaban excepciones con versiones modernas de la librería.
+
+Si prefieres fijar una versión concreta de Chart.js (recomendado en producción), cambia la etiqueta `<script>` que carga Chart.js por una versión específica (por ejemplo `https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js`).
+
+## � Troubleshooting (problemas comunes)
+
+- Errores en consola relacionados con Chart.js:
+	- Si ves algo como `Chart.helpers is undefined` o errores de runtime, asegúrate de haber actualizado el archivo `index.html` (ya está aplicado en esta rama). Si el problema persiste, pega el error aquí y lo reviso.
+
+- Problemas con la carga de datos (fetch al TSV):
+	- Si la petición al `TSV_URL` falla por CORS o muestra 403/404, revisa la configuración de publicación de la hoja de Google o usa un TSV local para pruebas.
+
+- Exportación a CSV / funcionalidad del candado (🔒):
+	- La columna "Concepto (Original)" está protegida por contraseña (la lógica está en `index.html`). Para cambiar la contraseña hay un hash en el script; edítalo con precaución.
+
+## ✅ Cómo comprobar que todo funciona
+
+1. Levanta el servidor local y abre el dashboard.
+2. Abre las DevTools (F12) y revisa la consola: no deben aparecer errores que detengan la ejecución del script.
+3. Verifica que los gráficos (barras y líneas) se renderizan y que al interactuar con ellos (click) se muestran las opciones de selección/pending selection.
+4. Prueba filtros, búsqueda y exportar CSV.
 
 ## 👥 Contribución
-Para contribuir al proyecto:
-1. Fork del repositorio
-2. Crear branch con la nueva feature
-3. Enviar pull request con los cambios
-4. Seguir las guías de estilo del código
+Fork, crea una rama y abre un PR. Mantén estilo consistente y añade pruebas mínimas si cambias lógica.
 
-## � Licencia
+## ⚠️ Licencia
 Uso interno - Todos los derechos reservados
-1. Modificar el código HTML directamente
-2. Añadir más tipos de gráficos
-3. Personalizar los filtros y la visualización
+
