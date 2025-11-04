@@ -1231,14 +1231,18 @@
                     monthlyData[monthKey].gastos += parseAmount(item.Gastos || '0');
                     monthlyData[monthKey].ingresos += parseAmount(item.Ingresos || '0');
                     monthlyData[monthKey].perHome += parseAmount(item['per Home'] || '0');
-                    monthlyData[monthKey].balances.push(parseAmount(item['Saldo'] || '0'));
+                    // Guardamos el saldo junto con la fecha para poder elegir el saldo del día más reciente del mes
+                    monthlyData[monthKey].balances.push({ date: date.getTime(), balance: parseAmount(item['Saldo'] || '0') });
                 });
                 
                 Object.keys(monthlyData).forEach(key => {
                     if (monthlyData[key].balances.length > 0) {
-                        monthlyData[key].minBalance = Math.min(...monthlyData[key].balances);
-                        // Final balance: usar el último saldo registrado en el mes (más reciente)
-                        monthlyData[key].finalBalance = monthlyData[key].balances[monthlyData[key].balances.length - 1];
+                        const balancesArr = monthlyData[key].balances;
+                        // minBalance: mínimo entre los valores de balance
+                        monthlyData[key].minBalance = Math.min(...balancesArr.map(b => b.balance));
+                        // finalBalance: saldo correspondiente a la fecha más reciente del mes
+                        balancesArr.sort((a, b) => a.date - b.date);
+                        monthlyData[key].finalBalance = balancesArr[balancesArr.length - 1].balance;
                     } else {
                         monthlyData[key].minBalance = 0;
                         monthlyData[key].finalBalance = 0;
