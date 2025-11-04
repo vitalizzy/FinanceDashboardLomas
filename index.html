@@ -963,7 +963,8 @@
                 'chart_axis_per_home': 'per Home (€)',
                 'chart_axis_balance': 'Saldo (€)',
                 'chart_tooltip_expenses': 'Gastos:',
-                'chart_tooltip_final_balance': 'Saldo Final:'
+                'chart_tooltip_final_balance': 'Saldo Final:',
+                'enter_password_concept': 'Introduce la contraseña para ver el concepto original:'
                 },
                 en: {
                     // Section titles
@@ -1031,7 +1032,8 @@
                 'chart_tooltip_final_balance': 'Final Balance:',
                 'chart_axis_income_expenses': 'Income / Expenses (€)',
                 'chart_axis_per_home': 'per Home (€)',
-                'chart_tooltip_expenses': 'Expenses:'
+                'chart_tooltip_expenses': 'Expenses:',
+                'enter_password_concept': 'Enter the password to view the original concept:'
                 }
             };
 
@@ -2269,12 +2271,12 @@
                     if (icon) icon.style.opacity = '0.6';
                 } else {
                     // Pedir contraseña en modal (input enmascarado)
-                    const pass = await showPasswordModal('Introduce la contraseña para ver el concepto original:');
+                    const pass = await showPasswordModal(translate('enter_password_concept'));
                     if (pass === null) return; // usuario canceló
 
                     const hashedPass = await sha256(pass);
-                    // Aceptamos la contraseña en texto claro 'lomas2hig' o su equivalente hasheado
-                    if (pass === 'lomas2hig' || hashedPass === PASSWORD_HASH) {
+                    // Validar comparando sólo el hash: la contraseña en texto plano ya no está en el código
+                    if (hashedPass === PASSWORD_HASH) {
                         tableContainer.classList.add('show-secret-col');
                         secretColVisible = true;
                         if (icon) icon.style.opacity = '1';
