@@ -919,9 +919,12 @@
                 'chart_label_expenses_only': 'Gastos',
                 'chart_label_per_home': 'per Home',
                 'chart_label_min_balance': 'Saldo Mínimo',
+                'chart_label_final_balance': 'Saldo Final',
                 'chart_axis_income_expenses': 'Ingresos / Gastos (€)',
                 'chart_axis_per_home': 'per Home (€)',
-                'chart_tooltip_expenses': 'Gastos:'
+                'chart_axis_balance': 'Saldo (€)',
+                'chart_tooltip_expenses': 'Gastos:',
+                'chart_tooltip_final_balance': 'Saldo Final:'
                 },
                 en: {
                     // Section titles
@@ -984,6 +987,9 @@
                 'chart_label_expenses_only': 'Expenses',
                 'chart_label_per_home': 'per Home',
                 'chart_label_min_balance': 'Min. Balance',
+                'chart_label_final_balance': 'Final Balance',
+                'chart_axis_balance': 'Balance (€)',
+                'chart_tooltip_final_balance': 'Final Balance:',
                 'chart_axis_income_expenses': 'Income / Expenses (€)',
                 'chart_axis_per_home': 'per Home (€)',
                 'chart_tooltip_expenses': 'Expenses:'
@@ -1382,6 +1388,15 @@
                             tension: 0.3,
                             borderWidth: 2,
                             pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.saldoMinimo)),
+                        }, {
+                            label: translate('chart_label_final_balance'),
+                            data: last12MonthsData.map(([, values]) => values.finalBalance),
+                            borderColor: chartColors.balance,
+                            backgroundColor: hexToRgba(chartColors.balance, 0.1),
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.balance)),
+                            pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                             pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                         }]
                     },
