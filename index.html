@@ -2143,8 +2143,7 @@
             // --- LÓGICA PARA COLUMNA SECRETA (MEJORADA) ---
             // Guardamos sólo el hash en el código. Si quieres cambiar la contraseña,
             // genera un nuevo hash con la función indicada y reemplaza PASSWORD_HASH.
-            // Nota: por compatibilidad se acepta también la contraseña en texto claro
-            const PASSWORD_HASH = '0923729f81c30fa2458fe4b197621daa817153451ff1fdb4aac011c4da88b5d3'; 
+            const PASSWORD_HASH = 'ad13b54afdc157f7e506ced0df9a4d70f2f19b2fd8ba9d4d419e996c96d64061'; // Hash de 'lomas2hig'
             let secretColVisible = false;
 
             // Calcula SHA-256 y devuelve hex
@@ -2274,6 +2273,9 @@
                     if (pass === null) return; // usuario canceló
 
                     const hashedPass = await sha256(pass);
+                    console.log('Hash ingresado:', hashedPass);
+                    console.log('Hash esperado:', PASSWORD_HASH);
+                    console.log('Contraseña ingresada:', pass);
                     // Validar solo comparando el hash
                     if (hashedPass === PASSWORD_HASH) {
                         tableContainer.classList.add('show-secret-col');
