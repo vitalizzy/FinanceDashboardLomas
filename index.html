@@ -1237,8 +1237,11 @@
                 Object.keys(monthlyData).forEach(key => {
                     if (monthlyData[key].balances.length > 0) {
                         monthlyData[key].minBalance = Math.min(...monthlyData[key].balances);
+                        // Final balance: usar el último saldo registrado en el mes (más reciente)
+                        monthlyData[key].finalBalance = monthlyData[key].balances[monthlyData[key].balances.length - 1];
                     } else {
                         monthlyData[key].minBalance = 0;
+                        monthlyData[key].finalBalance = 0;
                     }
                     delete monthlyData[key].balances;
                 });
@@ -1395,6 +1398,7 @@
                             backgroundColor: hexToRgba(chartColors.balance, 0.1),
                             tension: 0.3,
                             borderWidth: 2,
+                            yAxisID: 'y',
                             pointBackgroundColor: last12MonthsData.map(([month]) => selectedMonths.has(month) ? chartColors.balance : (pendingSelectedMonths.has(month) ? '#ffc107' : chartColors.balance)),
                             pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
                             pointRadius: last12MonthsData.map(([month]) => selectedMonths.has(month) ? 6 : (pendingSelectedMonths.has(month) ? 5 : 4)),
