@@ -856,6 +856,45 @@
             // --- CONFIGURACIÓN ---
             const TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbRz_jPWvTjSM4jmrlUdShW9JzuNagS1LaSQ43rUupeA4e6XbdEqg-UupxL7mn5lNwGftn_8FDPikX/pub?gid=1981585980&single=true&output=tsv';
 
+            // Registry for chart instances created by this script (modern API usage)
+            window._charts = window._charts || {};
+
+            // Utility to destroy all Chart.js charts using the modern API and our registry.
+            function destroyAllCharts() {
+                if (window._charts) {
+                    Object.keys(window._charts).forEach(key => {
+                        try {
+                            const c = window._charts[key];
+                            if (c && typeof c.destroy === 'function') c.destroy();
+                        } catch (e) { /* ignore */ }
+                    });
+                    window._charts = {};
+                    return;
+                }
+
+                if (typeof Chart === 'undefined') return;
+
+                // Chart.js v3+ exposes Chart.getChart(canvas) to retrieve a chart instance by canvas
+                if (typeof Chart.getChart === 'function') {
+                    document.querySelectorAll('canvas').forEach(canvas => {
+                        try {
+                            const ch = Chart.getChart(canvas);
+                            if (ch && typeof ch.destroy === 'function') ch.destroy();
+                        } catch (e) { /* ignore */ }
+                    });
+                    return;
+                }
+
+                // Fallback for older Chart.js where Chart.instances may exist
+                try {
+                    if (Chart.instances && typeof Object.values === 'function') {
+                        Object.values(Chart.instances).forEach(inst => { if (inst && typeof inst.destroy === 'function') inst.destroy(); });
+                    }
+                } catch (e) {
+                    // nothing we can do
+                }
+            }
+
             // --- TRADUCCIONES ---
             const translations = {
                 es: {
@@ -1292,9 +1331,14 @@
 
             // --- FUNCIONES DE GRÁFICOS Y TABLAS ---
             function createBarChart(canvasId, data) {
-                const ctx = document.getElementById(canvasId).getContext('2d');
-                
-                new Chart(ctx, {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+
+                // Destroy any existing chart for this canvas (modern API)
+                try { if (window._charts && window._charts[canvasId]) window._charts[canvasId].destroy(); } catch (e) { /* ignore */ }
+
+                const ctx = canvas.getContext('2d');
+                const chart = new Chart(canvas, {
                     type: 'bar',
                     data: {
                         labels: data.map(([label]) => label.length > 15 ? label.substring(0, 15) + '...' : label),
@@ -1346,13 +1390,22 @@
                         }
                     }
                 });
+
+                // Save instance to registry
+                window._charts = window._charts || {};
+                window._charts[canvasId] = chart;
             }
 
             function createLineChart(canvasId, data) {
-                const ctx = document.getElementById(canvasId).getContext('2d');
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
                 const last12MonthsData = data.slice(-12);
-                
-                new Chart(ctx, {
+
+                // Destroy any existing chart for this canvas (modern API)
+                try { if (window._charts && window._charts[canvasId]) window._charts[canvasId].destroy(); } catch (e) { /* ignore */ }
+
+                const ctx = canvas.getContext('2d');
+                const chart = new Chart(canvas, {
                     type: 'line',
                     data: {
                         labels: last12MonthsData.map(([month]) => {
@@ -1454,6 +1507,10 @@
                         }
                     }
                 });
+
+                // Save instance to registry
+                window._charts = window._charts || {};
+                window._charts[canvasId] = chart;
             }
 
             function createTopMovementsTable(data) {
@@ -1707,7 +1764,8 @@
                 // re-render tables so pending selections get highlighted and per-table confirm buttons appear
                 // we re-run updateCharts to regenerate tables — but avoid applying pending as filters
                 const filteredData = getFilteredData();
-                Chart.helpers.each(Chart.instances, instance => instance.destroy());
+                // Destroy any existing charts in a Chart.js-version-safe way
+                destroyAllCharts();
 
                 const expensesByCategory = getExpensesByCategory(filteredData);
                 if (expensesByCategory.length > 0) createBarChart('expenses-chart', expensesByCategory);
@@ -1839,7 +1897,8 @@
                 }
 
                 updateActiveFiltersPanel();
-                Chart.helpers.each(Chart.instances, instance => instance.destroy());
+                // Destroy any existing charts in a Chart.js-version-safe way
+                destroyAllCharts();
                 
                 const expensesByCategory = getExpensesByCategory(filteredData);
                 if (expensesByCategory.length > 0) {
