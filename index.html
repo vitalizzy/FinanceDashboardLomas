@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Financiero</title>
+    <title>L2H - Dashboard Financiero</title>
+    <link rel="icon" href="logo.png" type="image/png">
     <style>
         :root {
             --font-primary: 'Roboto', sans-serif;
@@ -641,12 +642,91 @@
         }
         /* Dashboard header styles */
         .dashboard-header { display:flex; align-items:flex-start; gap:12px; margin-bottom: 16px; }
+
+        /* Dashboard header styles */
+        .dashboard-header {
+            margin-bottom: 24px;
+        }
+
+        @keyframes windowShine {
+            0% { background-position: 200% 200%; }
+            100% { background-position: -200% -200%; }
+        }
+
+        @media (max-width: 768px) {
+            .logo { gap: 16px; }
+            .icon { 
+                width: 90px;
+                height: 74px;
+                padding-left: 5px;
+            }
+            .house {
+                width: 64px;
+                height: 56px;
+                border-width: 7px;
+                padding: 10px 8px;
+                gap: 7px;
+            }
+            .window { width: 15px; height: 15px; }
+            .little-house {
+                width: 30px;
+                height: 28px;
+                border-width: 7px;
+                left: -5px;
+                bottom: -9px;
+            }
+            .roof {
+                top: -22px;
+                border-left-width: 38px;
+                border-right-width: 38px;
+                border-bottom-width: 22px;
+            }
+            .l2h { font-size: 44px; }
+            .lomas2 { font-size: 14px; }
+            .comunidad { font-size: 11px; }
+        }
+
+        @media (max-width: 520px) {
+            .logo { gap: 12px; }
+            .icon {
+                width: 72px;
+                height: 58px;
+                padding-left: 4px;
+            }
+            .house {
+                width: 52px;
+                height: 46px;
+                border-width: 6px;
+                padding: 9px;
+                gap: 6px;
+            }
+            .window { width: 12px; height: 12px; }
+            .little-house {
+                width: 26px;
+                height: 24px;
+                border-width: 6px;
+                left: -4px;
+                bottom: -8px;
+            }
+            .roof {
+                top: -18px;
+                border-left-width: 32px;
+                border-right-width: 32px;
+                border-bottom-width: 18px;
+            }
+            .l2h { font-size: 34px; }
+            .lomas2 { font-size: 13px; }
+            .comunidad { font-size: 11px; }
+        }
+
         .dashboard-title { margin:0; font-size:22px; font-weight:800; color:var(--text-primary); letter-spacing:0.2px; }
         .dashboard-subtitle { margin:6px 0 0 0; color:var(--text-secondary); font-size:13px; }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+    <!-- favicon: minimalist house icon matching the new logo design -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 45'%3E%3Cpath d='M35 20v25H0V20L17.5 0 35 20z' fill='%23E8D9C0'/%3E%3Cpath d='M20 25v20H0V25L10 12l10 13z' fill='%236E98C3'/%3E%3Crect x='5' y='28' width='8' height='8' fill='%2322303B'/%3E%3Crect x='22' y='28' width='8' height='8' fill='%2322303B'/%3E%3C/svg%3E">
 </head>
 <body>
     <div id="financial-dashboard">
@@ -658,7 +738,7 @@
             </p>
         </div>
         <div class="dashboard-header">
-            <div style="flex:1;">
+            <div>
                 <h1 id="dashboard-title" class="dashboard-title">Movimientos Bancarios</h1>
                 <p id="dashboard-subtitle" class="dashboard-subtitle">Análisis y seguimiento de transacciones bancarias</p>
             </div>
@@ -1127,25 +1207,98 @@
                 return isNaN(result) ? 0 : result;
             }
             
-            // General number formatter (Spanish style: . for thousands, , for decimals)
-            function formatNumber(value, minimumFractionDigits = 0, maximumFractionDigits = 2) {
+            // ============================================================================
+            // SISTEMA DE FORMATEO DE NÚMEROS - CONFIGURACIÓN CENTRALIZADA
+            // ============================================================================
+            // Este módulo proporciona formateo consistente de números en toda la aplicación.
+            // Para cambiar el formato, modifica solo la configuración aquí.
+            // ============================================================================
+            
+            const NUMBER_FORMAT_CONFIG = {
+                locale: 'es-ES',
+                currency: 'EUR',
+                defaults: {
+                    number: {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                        useGrouping: true
+                    },
+                    currency: {
+                        style: 'currency',
+                        currency: 'EUR',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                        useGrouping: true
+                    },
+                    percent: {
+                        style: 'percent',
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1
+                    }
+                }
+            };
+
+            // Cache de formateadores para optimizar rendimiento
+            const formatters = {
+                number: new Intl.NumberFormat(NUMBER_FORMAT_CONFIG.locale, NUMBER_FORMAT_CONFIG.defaults.number),
+                currency: new Intl.NumberFormat(NUMBER_FORMAT_CONFIG.locale, NUMBER_FORMAT_CONFIG.defaults.currency),
+                percent: new Intl.NumberFormat(NUMBER_FORMAT_CONFIG.locale, NUMBER_FORMAT_CONFIG.defaults.percent)
+            };
+
+            /**
+             * Formatea un número con el estilo español (punto para miles, coma para decimales)
+             * @param {number} value - El número a formatear
+             * @param {number|null} minimumFractionDigits - Número mínimo de decimales (null = usar default)
+             * @param {number|null} maximumFractionDigits - Número máximo de decimales (null = usar default)
+             * @returns {string} - Número formateado como string
+             * @example formatNumber(1234.56) => "1.234,56"
+             * @example formatNumber(1234.56, 0, 0) => "1.235"
+             */
+            function formatNumber(value, minimumFractionDigits = null, maximumFractionDigits = null) {
                 if (value === null || value === undefined || isNaN(value)) return '';
-                return new Intl.NumberFormat('es-ES', {
-                    minimumFractionDigits,
-                    maximumFractionDigits
-                }).format(value);
+                
+                // Si se especifican dígitos personalizados, crear un nuevo formateador
+                if (minimumFractionDigits !== null || maximumFractionDigits !== null) {
+                    const options = {
+                        ...NUMBER_FORMAT_CONFIG.defaults.number,
+                        useGrouping: true
+                    };
+                    if (minimumFractionDigits !== null) options.minimumFractionDigits = minimumFractionDigits;
+                    if (maximumFractionDigits !== null) options.maximumFractionDigits = maximumFractionDigits;
+                    return new Intl.NumberFormat(NUMBER_FORMAT_CONFIG.locale, options).format(value);
+                }
+
+                // Usar el formateador cacheado para mejor rendimiento
+                return formatters.number.format(value);
             }
 
-            // Currency formatter that delegates to Intl with es-ES locale (keeps currency symbol)
+            /**
+             * Formatea un número como moneda en euros con el formato español
+             * @param {number} amount - La cantidad a formatear
+             * @returns {string} - Cantidad formateada con símbolo de euro
+             * @example formatCurrency(1234.56) => "1.234,56 €"
+             */
             function formatCurrency(amount) {
-                if (amount === null || amount === undefined || isNaN(amount)) return '€0,00';
-                return new Intl.NumberFormat('es-ES', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }).format(amount);
+                if (amount === null || amount === undefined || isNaN(amount)) {
+                    return formatters.currency.format(0);
+                }
+                return formatters.currency.format(amount);
             }
+
+            /**
+             * Formatea un número como porcentaje
+             * @param {number} value - El valor a formatear (0.15 = 15%)
+             * @returns {string} - Valor formateado como porcentaje
+             * @example formatPercent(0.1523) => "15,2%"
+             */
+            function formatPercent(value) {
+                if (value === null || value === undefined || isNaN(value)) return '0,0%';
+                return formatters.percent.format(value);
+            }
+
+            // ============================================================================
+            // FIN DEL SISTEMA DE FORMATEO
+            // ============================================================================
             
             function parseDate(dateStr) {
                 if (!dateStr) return null;
@@ -1926,6 +2079,7 @@
             async function loadData() {
                 try {
                     document.getElementById('loading').style.display = 'block';
+                    document.getElementById('error').style.display = 'none';
                     
                     const styles = getComputedStyle(document.documentElement);
                     chartColors.ingresos = styles.getPropertyValue('--color-ingresos').trim();
@@ -1934,22 +2088,42 @@
                     chartColors.saldoMinimo = styles.getPropertyValue('--color-saldo-minimo').trim();
                     chartColors.balance = styles.getPropertyValue('--color-balance').trim();
                     
+                    console.log('Intentando cargar datos desde:', TSV_URL);
                     const response = await fetch(TSV_URL);
-                    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP ${response.status}: ${response.statusText}. 
+                            Verifica que la URL de Google Sheets sea accesible y esté configurada correctamente para acceso público.`);
+                    }
                     
                     const tsvText = await response.text();
-                    financialData = parseTSV(tsvText);
+                    console.log('Datos recibidos:', tsvText.substring(0, 100) + '...');
                     
-                    if (financialData.length === 0) throw new Error('No se encontraron datos');
+                    financialData = parseTSV(tsvText);
+                    console.log('Datos parseados:', financialData.length, 'registros');
+                    
+                    if (financialData.length === 0) {
+                        throw new Error('No se encontraron datos en el archivo TSV. Verifica el formato del archivo.');
+                    }
                     
                     document.getElementById('loading').style.display = 'none';
                     updateCharts();
+                    console.log('Datos cargados y charts actualizados correctamente');
                     
                 } catch (error) {
-                    console.error('Error:', error);
+                    console.error('Error detallado:', error);
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('error').style.display = 'block';
-                    document.getElementById('error').textContent = `Error al cargar los datos: ${error.message}`;
+                    document.getElementById('error').innerHTML = `
+                        <strong>Error al cargar los datos:</strong><br>
+                        ${error.message}<br><br>
+                        <small>Si el problema persiste, verifica:
+                        <ul>
+                            <li>La conexión a internet</li>
+                            <li>Que la URL de Google Sheets sea correcta y esté publicada como TSV</li>
+                            <li>Que no haya restricciones de CORS en el navegador</li>
+                        </ul></small>
+                    `;
                 }
             }
             

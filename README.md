@@ -64,3 +64,68 @@ Fork, crea una rama y abre un PR. Mantén estilo consistente y añade pruebas m�
 ## ⚠️ Licencia
 Uso interno - Todos los derechos reservados
 
+## 💰 Sistema de formateo de números
+
+El dashboard utiliza un **sistema centralizado y escalable** para formatear todos los números. Esto garantiza consistencia en toda la aplicación.
+
+### Funciones disponibles:
+
+1. **`formatCurrency(amount)`** - Formatea moneda en euros
+   - Input: `1234.56`
+   - Output: `"1.234,56 €"`
+   - Uso: Para todos los valores monetarios
+
+2. **`formatNumber(value, minDecimals, maxDecimals)`** - Formatea números generales
+   - Input: `1234.56`
+   - Output: `"1.234,56"` (con decimales por defecto)
+   - Input: `1234.56, 0, 0`
+   - Output: `"1.235"` (sin decimales)
+   - Uso: Para contadores, porcentajes, etc.
+
+3. **`formatPercent(value)`** - Formatea porcentajes
+   - Input: `0.1523`
+   - Output: `"15,2%"`
+   - Uso: Para valores porcentuales
+
+### Características:
+
+- ✅ **Formato español**: Punto para miles (.), coma para decimales (,)
+- ✅ **Caché de formateadores**: Optimizado para rendimiento
+- ✅ **Manejo de errores**: Gestión segura de valores nulos o inválidos
+- ✅ **Escalabilidad**: Un solo punto de configuración en `NUMBER_FORMAT_CONFIG`
+- ✅ **Documentación**: JSDoc completa en cada función
+
+### Para cambiar el formato globalmente:
+
+Modifica solo la sección `NUMBER_FORMAT_CONFIG` en el código:
+
+```javascript
+const NUMBER_FORMAT_CONFIG = {
+    locale: 'es-ES',  // Cambia aquí para otro idioma
+    currency: 'EUR',   // Cambia aquí para otra moneda
+    defaults: {
+        number: { ... },
+        currency: { ... }
+    }
+};
+```
+
+### Ubicaciones donde se usa:
+
+- **KPIs**: Todos los valores de las tarjetas superiores
+- **Gráficos**: Ejes, tooltips y leyendas
+- **Tablas**: Top Movements, Category Summary, All Transactions
+- **Exportación**: Los datos exportados mantienen el formato
+
+---
+
+## 🏠 Logo integrado
+
+El logo ahora está integrado directamente en `index.html` (HTML + CSS). Para localizarlo y editarlo:
+
+- Abre `index.html` y busca el bloque con la clase `logo` (contiene `.icon`, `.house`, `.roof`, `.little-house`, y `.brand`).
+- Las variables de color usadas por el logo están definidas en el bloque de estilos principal: `--beige`, `--blue`, `--dark`.
+- Para cambiar tamaños o espacios, edita las reglas CSS dentro del bloque `<style>` en `index.html`.
+
+Se eliminaron los archivos externos relacionados con el logo (`components/logo.html`, `components/site-logo.js`, `styles/logo.css`) porque el logo fue integrado para simplificar la gestión del proyecto. Si prefieres restaurar el componente externo en lugar de la versión integrada, avísame y lo revertimos.
+
