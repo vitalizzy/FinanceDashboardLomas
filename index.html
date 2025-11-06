@@ -97,6 +97,8 @@
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 24px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .kpi-card {
@@ -220,6 +222,8 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             margin-bottom: 24px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .active-filters.visible {
@@ -420,12 +424,16 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .chart-grid-double {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .chart-wrapper {
@@ -542,6 +550,8 @@
             margin-bottom: 16px;
             gap: 16px;
             flex-wrap: wrap;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .search-box {
@@ -549,6 +559,7 @@
             min-width: 200px;
             max-width: 400px;
             position: relative;
+            box-sizing: border-box;
         }
 
         .search-box input {
@@ -709,8 +720,10 @@
             
             /* KPI Cards - 2 columnas en tablet */
             .kpi-cards {
+                width: 100%;
                 grid-template-columns: 1fr 1fr;
                 gap: 12px;
+                box-sizing: border-box;
             }
             
             .kpi-card {
@@ -751,13 +764,16 @@
             
             /* Actions bar responsive */
             .actions-bar {
+                width: 100%;
                 flex-direction: column;
                 gap: 12px;
+                box-sizing: border-box;
             }
             
             .search-box {
                 max-width: 100%;
                 width: 100%;
+                box-sizing: border-box;
             }
         }
 
@@ -770,13 +786,17 @@
             
             .chart-grid,
             .chart-grid-double {
+                width: 100%;
                 gap: 12px;
+                box-sizing: border-box;
             }
             
             /* KPI Cards - 1 columna en móvil */
             .kpi-cards {
+                width: 100%;
                 grid-template-columns: 1fr;
                 gap: 10px;
+                box-sizing: border-box;
             }
             
             .kpi-card {
@@ -839,8 +859,10 @@
             
             /* Active filters responsive */
             .active-filters {
+                width: 100%;
                 padding: 12px;
                 gap: 8px;
+                box-sizing: border-box;
             }
             
             .filter-badge {
@@ -880,7 +902,9 @@
             
             /* Header dashboard responsive */
             .dashboard-header {
+                width: 100%;
                 margin-bottom: 16px;
+                box-sizing: border-box;
             }
             
             .dashboard-title {
@@ -923,12 +947,15 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Specific styling for the All Transactions scroll area */
-        #all-transactions-table { 
+        /* Specific styling for table containers */
+        #all-transactions-table,
+        #category-summary-table,
+        #top-movements-table { 
             font-family: var(--font-primary);
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
         }
         
 /* --- INICIO DE MODIFICACIÓN (Lógica Invertida) --- */
@@ -963,6 +990,8 @@
             align-items: flex-start; 
             gap: 12px; 
             margin-bottom: 24px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         @keyframes windowShine {
@@ -1164,7 +1193,7 @@
                                 </button>
                             </div>
                         </h3>
-                    <div id="top-movements-table" style="overflow-x: auto;">
+                    <div id="top-movements-table">
                         </div>
                     
                 </div>
@@ -1198,10 +1227,7 @@
                     </button>
                 </div>
             </h3>
-            <div style="overflow-x: auto;">
-                <div id="category-summary-table"></div>
-            </div>
-            
+            <div id="category-summary-table"></div>
         </div>
 
         <div class="db-container">
