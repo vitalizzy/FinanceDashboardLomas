@@ -532,6 +532,17 @@
             opacity: 1;
         }
 
+        /* Clases de ordenamiento alternativas */
+        .db-table th.sort-asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        .db-table th.sort-desc::after {
+            content: '↓';
+            opacity: 1;
+        }
+
         .db-table .text-right { text-align: right; }
         .db-table .text-center { text-align: center; }
         .db-table .color-ingresos { color: var(--color-ingresos); }
@@ -1706,7 +1717,13 @@
                     currentPage: 1,
                     itemsPerPage: APP_CONFIG.DEFAULT_ITEMS_PER_PAGE,
                     sortColumn: APP_CONFIG.DEFAULT_SORT_COLUMN,
-                    sortDirection: APP_CONFIG.DEFAULT_SORT_DIRECTION
+                    sortDirection: APP_CONFIG.DEFAULT_SORT_DIRECTION,
+                    // Sort state para Top Movements
+                    topMovementsSortColumn: null,
+                    topMovementsSortDirection: 'asc',
+                    // Sort state para Category Summary
+                    categorySummarySortColumn: null,
+                    categorySummarySortDirection: 'asc'
                 },
                 
                 // Colores de los gráficos (se cargan dinámicamente)
@@ -1839,6 +1856,10 @@
             let itemsPerPage = AppState.ui.itemsPerPage;
             let sortColumn = AppState.ui.sortColumn;
             let sortDirection = AppState.ui.sortDirection;
+            let topMovementsSortColumn = AppState.ui.topMovementsSortColumn;
+            let topMovementsSortDirection = AppState.ui.topMovementsSortDirection;
+            let categorySummarySortColumn = AppState.ui.categorySummarySortColumn;
+            let categorySummarySortDirection = AppState.ui.categorySummarySortDirection;
             const chartColors = AppState.chartColors;
 
             // ============================================================================
@@ -2364,19 +2385,52 @@
                     return;
                 }
 
+                // Aplicar ordenamiento si está configurado
+                let sortedData = [...data];
+                if (topMovementsSortColumn) {
+                    sortedData.sort((a, b) => {
+                        let valA, valB;
+                        
+                        if (topMovementsSortColumn === 'F. Operativa') {
+                            valA = parseDate(a[topMovementsSortColumn])?.getTime() || 0;
+                            valB = parseDate(b[topMovementsSortColumn])?.getTime() || 0;
+                        } else if (topMovementsSortColumn === 'amount' || topMovementsSortColumn === 'per Home') {
+                            valA = topMovementsSortColumn === 'amount' ? a.amount : parseAmount(a['per Home'] || '0');
+                            valB = topMovementsSortColumn === 'amount' ? b.amount : parseAmount(b['per Home'] || '0');
+                        } else {
+                            valA = (a[topMovementsSortColumn] || '').toLowerCase();
+                            valB = (b[topMovementsSortColumn] || '').toLowerCase();
+                        }
+                        
+                        if (valA < valB) return topMovementsSortDirection === 'asc' ? -1 : 1;
+                        if (valA > valB) return topMovementsSortDirection === 'asc' ? 1 : -1;
+                        return 0;
+                    });
+                }
+
+                const columns = [
+                    { key: 'F. Operativa', labelKey: 'date', class: '' },
+                    { key: 'Categoria', labelKey: 'category', class: '' },
+                    { key: 'Concepto', labelKey: 'concept', class: '' },
+                    { key: 'amount', labelKey: 'amount', class: 'text-right' },
+                    { key: 'per Home', labelKey: 'per_home', class: 'text-right' }
+                ];
+
                 let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table">
                         <thead>
-                            <tr>
-                                <th data-i18n="date">Fecha</th>
-                                <th data-i18n="category">Categoría</th>
-                                <th data-i18n="concept">Concepto</th>
-                                <th class="text-right" data-i18n="amount">Importe</th>
-                                <th class="text-right" data-i18n="per_home">per Home</th>
-                            </tr>
+                            <tr>`;
+                
+                columns.forEach(col => {
+                    const sortClass = topMovementsSortColumn === col.key ? 
+                        (topMovementsSortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : '';
+                    tableHTML += `<th class="${sortClass} ${col.class}" onclick="window.sortTopMovementsTable('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey)}</th>`;
+                });
+                
+                tableHTML += `</tr>
                         </thead>
                         <tbody>`;
                 
-                data.forEach(item => {
+                sortedData.forEach(item => {
                     const fecha = parseDate(item['F. Operativa']);
                     const fechaStr = fecha ? fecha.toLocaleDateString('es-ES') : 'N/A';
                     const amount = item.amount;
@@ -2418,27 +2472,78 @@
                     }
                 });
                 
-                const sortedCategories = Object.entries(categoryStats).sort(([, a], [, b]) => b.total - a.total);
+                let sortedCategories = Object.entries(categoryStats);
+                
+                // Aplicar ordenamiento personalizado si está configurado
+                if (categorySummarySortColumn) {
+                    sortedCategories.sort(([catA, statsA], [catB, statsB]) => {
+                        let valA, valB;
+                        
+                        if (categorySummarySortColumn === 'category') {
+                            valA = catA.toLowerCase();
+                            valB = catB.toLowerCase();
+                        } else if (categorySummarySortColumn === 'count') {
+                            valA = statsA.count;
+                            valB = statsB.count;
+                        } else if (categorySummarySortColumn === 'total') {
+                            valA = statsA.total;
+                            valB = statsB.total;
+                        } else if (categorySummarySortColumn === 'totalPerHome') {
+                            valA = statsA.totalPerHome;
+                            valB = statsB.totalPerHome;
+                        } else if (categorySummarySortColumn === 'percentage') {
+                            const totalGastos = sortedCategories.reduce((sum, [, stats]) => sum + stats.total, 0);
+                            valA = totalGastos > 0 ? ((statsA.total / totalGastos) * 100) : 0;
+                            valB = totalGastos > 0 ? ((statsB.total / totalGastos) * 100) : 0;
+                        }
+                        
+                        if (valA < valB) return categorySummarySortDirection === 'asc' ? -1 : 1;
+                        if (valA > valB) return categorySummarySortDirection === 'asc' ? 1 : -1;
+                        return 0;
+                    });
+                } else {
+                    // Ordenamiento por defecto: por total descendente
+                    sortedCategories.sort(([, a], [, b]) => b.total - a.total);
+                }
+                
                 const totalGastos = sortedCategories.reduce((sum, [, stats]) => sum + stats.total, 0);
                 const totalTransactions = sortedCategories.reduce((sum, [, stats]) => sum + stats.count, 0);
                 const totalPerHomeGeneral = sortedCategories.reduce((sum, [, stats]) => sum + stats.totalPerHome, 0);
 
-                let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table"><thead><tr><th data-i18n="category">Categoría</th><th class="text-center" data-i18n="count">Count</th><th class="text-right" data-i18n="expenses_sum">Suma Gastos</th><th class="text-right" data-i18n="per_home">per Home</th><th class="text-right" data-i18n="total_percent">% del Total</th></tr></thead><tbody>`;
-                                   sortedCategories.forEach(([category, stats]) => {
-                                        const percentageValue = totalGastos > 0 ? ((stats.total / totalGastos) * 100) : 0;
-                                        const percentage = formatNumber(percentageValue, 1, 1);
-                                        const isSelected = selectedCategories.has(category);
-                                        const rowClass = 'interactive-row' + (isSelected ? ' selected' : '');
-                                        const isPending = pendingSelectedCategories.has(category);
-                                        const pendingClass = isPending ? 'pending-selected' : '';
-                                        tableHTML += `<tr class="${rowClass} ${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">
-                                                <td style="font-weight: 500;">${category}</td>
-                                                <td class="text-center">${formatNumber(stats.count, 0, 0)}</td>
-                                                <td class="text-right color-gastos" style="font-weight: 500;">${formatCurrency(stats.total)}</td>
-                                                <td class="text-right color-per-home" style="font-weight: 500;">${formatCurrency(stats.totalPerHome)}</td>
-                                                <td class="text-right color-secondary">${percentage}%</td>
-                                        </tr>`;
-                               });
+                const columns = [
+                    { key: 'category', labelKey: 'category', class: '' },
+                    { key: 'count', labelKey: 'count', class: 'text-center' },
+                    { key: 'total', labelKey: 'expenses_sum', class: 'text-right' },
+                    { key: 'totalPerHome', labelKey: 'per_home', class: 'text-right' },
+                    { key: 'percentage', labelKey: 'total_percent', class: 'text-right' }
+                ];
+
+                let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table"><thead><tr>`;
+                
+                columns.forEach(col => {
+                    const sortClass = categorySummarySortColumn === col.key ? 
+                        (categorySummarySortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : '';
+                    tableHTML += `<th class="${sortClass} ${col.class}" onclick="window.sortCategorySummaryTable('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey)}</th>`;
+                });
+                
+                tableHTML += `</tr></thead><tbody>`;
+                
+                sortedCategories.forEach(([category, stats]) => {
+                    const percentageValue = totalGastos > 0 ? ((stats.total / totalGastos) * 100) : 0;
+                    const percentage = formatNumber(percentageValue, 1, 1);
+                    const isSelected = selectedCategories.has(category);
+                    const rowClass = 'interactive-row' + (isSelected ? ' selected' : '');
+                    const isPending = pendingSelectedCategories.has(category);
+                    const pendingClass = isPending ? 'pending-selected' : '';
+                    tableHTML += `<tr class="${rowClass} ${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">
+                            <td style="font-weight: 500;">${category}</td>
+                            <td class="text-center">${formatNumber(stats.count, 0, 0)}</td>
+                            <td class="text-right color-gastos" style="font-weight: 500;">${formatCurrency(stats.total)}</td>
+                            <td class="text-right color-per-home" style="font-weight: 500;">${formatCurrency(stats.totalPerHome)}</td>
+                            <td class="text-right color-secondary">${percentage}%</td>
+                    </tr>`;
+                });
+                
                 tableHTML += `</tbody><tfoot>
                         <tr>
                             <td>${translate('total')}</td>
@@ -2900,6 +3005,30 @@
                     sortDirection = 'asc';
                 }
                 createAllTransactionsTable(getFilteredData());
+            };
+
+            window.sortTopMovementsTable = function(column) {
+                if (topMovementsSortColumn === column) {
+                    topMovementsSortDirection = topMovementsSortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    topMovementsSortColumn = column;
+                    topMovementsSortDirection = 'asc';
+                }
+                // Re-render the table with current data
+                const filteredData = getFilteredData();
+                const topMovements = getTopMovements(filteredData);
+                createTopMovementsTable(topMovements);
+            };
+
+            window.sortCategorySummaryTable = function(column) {
+                if (categorySummarySortColumn === column) {
+                    categorySummarySortDirection = categorySummarySortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    categorySummarySortColumn = column;
+                    categorySummarySortDirection = 'asc';
+                }
+                // Re-render the table with current data
+                createCategorySummaryTable(getFilteredData());
             };
 
             window.changePage = function(page) {
