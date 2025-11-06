@@ -415,7 +415,7 @@
         /* Asegurar que la tabla use todo el ancho disponible */
         .table-scroll-wrapper .db-table {
             width: 100%;
-            min-width: 100%; /* La tabla siempre ocupa el 100% del contenedor */
+            min-width: 800px; /* Ancho mínimo para activar scroll horizontal */
         }
         
         /* Scrollbar styling for better UX */
@@ -464,38 +464,38 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
-            table-layout: fixed; /* Distribución fija para ocupar todo el ancho */
+            table-layout: auto; /* Distribución automática para mejor ajuste del contenido */
         }
 
         .db-table th, .db-table td {
             padding: 12px 8px;
             border-bottom: 1px solid var(--border-color);
             text-align: left;
+            white-space: nowrap; /* Evitar que el texto se envuelva */
             overflow: hidden;
             text-overflow: ellipsis;
-            word-wrap: break-word;
         }
         
-        /* Columnas específicas con anchos optimizados */
+        /* Columnas específicas con anchos mínimos */
         .db-table th:first-child,
         .db-table td:first-child {
-            width: 10%; /* Fecha o Tipo */
+            min-width: 90px; /* Fecha o Tipo */
         }
         
         .db-table .text-right {
             text-align: right;
-            width: 12%; /* Valores numéricos */
+            min-width: 100px; /* Valores numéricos */
         }
         
-        /* Columnas de categoría y concepto toman más espacio */
+        /* Columnas de categoría y concepto con anchos mínimos */
         .db-table th:nth-child(2),
         .db-table td:nth-child(2) {
-            width: 15%; /* Categoría */
+            min-width: 120px; /* Categoría */
         }
         
         .db-table th:nth-child(3),
         .db-table td:nth-child(3) {
-            width: 25%; /* Concepto - más espacio */
+            min-width: 200px; /* Concepto - más espacio para descripción */
         }
 
         .db-table thead tr {
@@ -724,15 +724,7 @@
             }
             
             .table-scroll-wrapper .db-table {
-                min-width: 100%; /* Tablets también usan 100% */
-            }
-            
-            .db-table thead,
-            .db-table tbody,
-            .db-table tr {
-                display: table;
-                width: 100%;
-                table-layout: fixed;
+                min-width: 700px; /* Activar scroll en tablets */
             }
         }
 
@@ -878,7 +870,6 @@
             /* Tablas ultra-compactas en móvil */
             .db-table {
                 font-size: 11px;
-                table-layout: fixed; /* Mantener distribución fija en móvil */
             }
             
             .db-table th,
@@ -887,7 +878,7 @@
             }
             
             .table-scroll-wrapper .db-table {
-                min-width: 100%; /* En móvil también usa 100% para ocupar todo el espacio */
+                min-width: 600px; /* Activar scroll horizontal en móvil */
             }
             
             .db-table.compact th,
