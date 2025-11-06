@@ -4,7 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>L2H - Dashboard Financiero</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Dashboard financiero para análisis de movimientos bancarios de Lomas 2 Comunidad de Vecinos">
+    <meta name="theme-color" content="#22303B">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="L2H Dashboard">
+    
+    <!-- Icons -->
     <link rel="icon" href="logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkZpbmFuY2UgRGFzaGJvYXJkIExvbWFzIDIiLAogICJzaG9ydF9uYW1lIjogIkwySCBEYXNoYm9hcmQiLAogICJkZXNjcmlwdGlvbiI6ICJBBMOF1aXNpcyB5IHNlZ3VpbWllbnRvIGRlIHRyYW5zYWNjaW9uZXMgYmFuY2FyaWFzIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGY5ZmEiLAogICJ0aGVtZV9jb2xvciI6ICIjMjIzMDNCIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAibG9nby5wbmciLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAibG9nby5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0KICBdCn0=">
+    
     <style>
         :root {
             --font-primary: 'Roboto', sans-serif;
@@ -933,11 +948,122 @@
         (function() {
             'use strict';
             
-            // --- CONFIGURACIÓN ---
-            const TSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbRz_jPWvTjSM4jmrlUdShW9JzuNagS1LaSQ43rUupeA4e6XbdEqg-UupxL7mn5lNwGftn_8FDPikX/pub?gid=1981585980&single=true&output=tsv';
+            // ============================================================================
+            // CONFIGURACIÓN GLOBAL DE LA APLICACIÓN
+            // ============================================================================
+            
+            /**
+             * Configuración centralizada de la aplicación
+             * Todos los valores configurables están aquí para fácil mantenimiento
+             */
+            const APP_CONFIG = {
+                // Data source
+                DATA_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbRz_jPWvTjSM4jmrlUdShW9JzuNagS1LaSQ43rUupeA4e6XbdEqg-UupxL7mn5lNwGftn_8FDPikX/pub?gid=1981585980&single=true&output=tsv',
+                
+                // Business constants
+                TOTAL_HOMES: 160,
+                
+                // UI constants
+                DEFAULT_ITEMS_PER_PAGE: 50,
+                DEFAULT_SORT_COLUMN: 'F. Operativa',
+                DEFAULT_SORT_DIRECTION: 'desc',
+                DEFAULT_FILTER: 'current_year',
+                
+                // Performance
+                SEARCH_DEBOUNCE_DELAY: 300,
+                
+                // Chart colors
+                CHART_COLORS: {
+                    INCOME: '--color-ingresos',
+                    EXPENSES: '--color-gastos',
+                    PER_HOME: '--color-per-home',
+                    BALANCE: '--color-balance',
+                    SALDO_MINIMO: '--color-saldo-minimo'
+                },
+                
+                // Date formats
+                DATE_FORMAT_LOCALE: 'es-ES',
+                DATE_FORMAT_OPTIONS: { day: '2-digit', month: 'long', year: 'numeric' },
+                
+                // Storage keys
+                STORAGE_KEYS: {
+                    LANGUAGE: 'dashboardLanguage'
+                },
+                
+                // Error messages
+                ERROR_MESSAGES: {
+                    LOAD_FAILED: 'Error al cargar los datos',
+                    NO_DATA: 'No se encontraron datos en el archivo TSV',
+                    NETWORK_ERROR: 'Error de conexión. Verifica tu conexión a internet',
+                    PARSE_ERROR: 'Error al procesar los datos'
+                }
+            };
 
             // Registry for chart instances created by this script (modern API usage)
             window._charts = window._charts || {};
+
+            // ============================================================================
+            // UTILIDADES GENERALES
+            // ============================================================================
+
+            /**
+             * Implementación de debounce para optimizar eventos repetitivos
+             * @param {Function} fn - Función a ejecutar
+             * @param {number} delay - Delay en milisegundos
+             * @returns {Function} Función debounced
+             */
+            function debounce(fn, delay) {
+                let timeoutId;
+                return function(...args) {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(() => fn.apply(this, args), delay);
+                };
+            }
+
+            /**
+             * Clase para manejo centralizado de errores
+             */
+            class AppError extends Error {
+                constructor(message, type = 'GENERAL', details = null) {
+                    super(message);
+                    this.name = 'AppError';
+                    this.type = type;
+                    this.details = details;
+                    this.timestamp = new Date().toISOString();
+                }
+            }
+
+            const ErrorHandler = {
+                log(error) {
+                    const errorInfo = {
+                        type: error.type || 'UNKNOWN',
+                        message: error.message,
+                        details: error.details,
+                        timestamp: error.timestamp || new Date().toISOString(),
+                        stack: error.stack
+                    };
+                    console.error('[AppError]', errorInfo);
+                    // Aquí podrías enviar a un servicio de logging como Sentry
+                },
+                
+                showToUser(error, elementId = 'error') {
+                    const errorDiv = document.getElementById(elementId);
+                    if (errorDiv) {
+                        errorDiv.innerHTML = `
+                            <strong>Error:</strong> ${error.message}
+                            ${error.details ? `<br><small>${error.details}</small>` : ''}
+                        `;
+                        errorDiv.style.display = 'block';
+                    }
+                },
+                
+                handle(error, showUser = true) {
+                    this.log(error);
+                    if (showUser) {
+                        this.showToUser(error);
+                    }
+                }
+            };
 
             // Utility to destroy all Chart.js charts using the modern API and our registry.
             function destroyAllCharts() {
@@ -1148,24 +1274,188 @@
             translations.es.dashboard_subtitle = 'Análisis y seguimiento de transacciones bancarias';
             translations.en.dashboard_subtitle = 'Bank transaction analysis and tracking';
 
-            let currentLanguage = localStorage.getItem('dashboardLanguage') || 'es';
+            // ============================================================================
+            // GESTIÓN DE ESTADO CENTRALIZADA
+            // ============================================================================
             
-            // --- ESTADO DE LA APLICACIÓN ---
-            let financialData = [];
-            let currentFilter = 'current_year';
-            let selectedCategories = new Set();
-            let pendingSelectedCategories = new Set(); // selections staged before confirming
-            let selectedMonths = new Set();
-            let pendingSelectedMonths = new Set(); // months staged before confirming
-            let startDate = null;
-            let endDate = null;
-            let searchQuery = '';
-            let currentPage = 1;
-            let itemsPerPage = 50;
-            let sortColumn = 'F. Operativa';
-            let sortDirection = 'desc';
+            /**
+             * Estado centralizado de la aplicación
+             * Toda la información del estado está en un único objeto para mejor mantenimiento
+             */
+            const AppState = {
+                // Datos
+                data: {
+                    financial: [],
+                    filtered: []
+                },
+                
+                // Idioma
+                language: localStorage.getItem(APP_CONFIG.STORAGE_KEYS.LANGUAGE) || 'es',
+                
+                // Filtros
+                filters: {
+                    current: APP_CONFIG.DEFAULT_FILTER,
+                    categories: new Set(),
+                    pendingCategories: new Set(),
+                    months: new Set(),
+                    pendingMonths: new Set(),
+                    dateRange: {
+                        start: null,
+                        end: null
+                    },
+                    searchQuery: ''
+                },
+                
+                // UI State
+                ui: {
+                    currentPage: 1,
+                    itemsPerPage: APP_CONFIG.DEFAULT_ITEMS_PER_PAGE,
+                    sortColumn: APP_CONFIG.DEFAULT_SORT_COLUMN,
+                    sortDirection: APP_CONFIG.DEFAULT_SORT_DIRECTION
+                },
+                
+                // Colores de los gráficos (se cargan dinámicamente)
+                chartColors: {},
+                
+                // Métodos para actualizar el estado
+                setFinancialData(data) {
+                    this.data.financial = data;
+                },
+                
+                setLanguage(lang) {
+                    this.language = lang;
+                    localStorage.setItem(APP_CONFIG.STORAGE_KEYS.LANGUAGE, lang);
+                },
+                
+                updateFilter(filterType, value) {
+                    this.filters.current = value;
+                },
+                
+                addCategory(category, isPending = false) {
+                    const targetSet = isPending ? this.filters.pendingCategories : this.filters.categories;
+                    targetSet.add(category);
+                },
+                
+                removeCategory(category, isPending = false) {
+                    const targetSet = isPending ? this.filters.pendingCategories : this.filters.categories;
+                    targetSet.delete(category);
+                },
+                
+                toggleCategory(category, isPending = false) {
+                    const targetSet = isPending ? this.filters.pendingCategories : this.filters.categories;
+                    if (targetSet.has(category)) {
+                        targetSet.delete(category);
+                    } else {
+                        targetSet.add(category);
+                    }
+                },
+                
+                clearCategories(isPending = false) {
+                    const targetSet = isPending ? this.filters.pendingCategories : this.filters.categories;
+                    targetSet.clear();
+                },
+                
+                confirmPendingCategories() {
+                    this.filters.categories = new Set(this.filters.pendingCategories);
+                    this.filters.pendingCategories.clear();
+                },
+                
+                addMonth(month, isPending = false) {
+                    const targetSet = isPending ? this.filters.pendingMonths : this.filters.months;
+                    targetSet.add(month);
+                },
+                
+                toggleMonth(month, isPending = false) {
+                    const targetSet = isPending ? this.filters.pendingMonths : this.filters.months;
+                    if (targetSet.has(month)) {
+                        targetSet.delete(month);
+                    } else {
+                        targetSet.add(month);
+                    }
+                },
+                
+                clearMonths(isPending = false) {
+                    const targetSet = isPending ? this.filters.pendingMonths : this.filters.months;
+                    targetSet.clear();
+                },
+                
+                confirmPendingMonths() {
+                    this.filters.months = new Set(this.filters.pendingMonths);
+                    this.filters.pendingMonths.clear();
+                },
+                
+                setDateRange(start, end) {
+                    this.filters.dateRange.start = start;
+                    this.filters.dateRange.end = end;
+                },
+                
+                setSearchQuery(query) {
+                    this.filters.searchQuery = query;
+                },
+                
+                resetAllFilters() {
+                    this.filters.current = APP_CONFIG.DEFAULT_FILTER;
+                    this.filters.categories.clear();
+                    this.filters.pendingCategories.clear();
+                    this.filters.months.clear();
+                    this.filters.pendingMonths.clear();
+                    this.filters.dateRange.start = null;
+                    this.filters.dateRange.end = null;
+                    this.filters.searchQuery = '';
+                    this.ui.currentPage = 1;
+                },
+                
+                setSortColumn(column, direction = null) {
+                    if (this.ui.sortColumn === column && direction === null) {
+                        // Toggle direction
+                        this.ui.sortDirection = this.ui.sortDirection === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        this.ui.sortColumn = column;
+                        this.ui.sortDirection = direction || 'asc';
+                    }
+                },
+                
+                setPage(page) {
+                    this.ui.currentPage = page;
+                },
+                
+                loadChartColors() {
+                    const styles = getComputedStyle(document.documentElement);
+                    this.chartColors.ingresos = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.INCOME).trim();
+                    this.chartColors.gastos = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.EXPENSES).trim();
+                    this.chartColors.perHome = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.PER_HOME).trim();
+                    this.chartColors.saldoMinimo = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.SALDO_MINIMO).trim();
+                    this.chartColors.balance = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.BALANCE).trim();
+                }
+            };
+            
+            // Aliases para compatibilidad con código existente (se irán eliminando gradualmente)
+            let currentLanguage = AppState.language;
+            let financialData = AppState.data.financial;
+            let currentFilter = AppState.filters.current;
+            let selectedCategories = AppState.filters.categories;
+            let pendingSelectedCategories = AppState.filters.pendingCategories;
+            let selectedMonths = AppState.filters.months;
+            let pendingSelectedMonths = AppState.filters.pendingMonths;
+            let startDate = AppState.filters.dateRange.start;
+            let endDate = AppState.filters.dateRange.end;
+            let searchQuery = AppState.filters.searchQuery;
+            let currentPage = AppState.ui.currentPage;
+            let itemsPerPage = AppState.ui.itemsPerPage;
+            let sortColumn = AppState.ui.sortColumn;
+            let sortDirection = AppState.ui.sortDirection;
+            const chartColors = AppState.chartColors;
 
-            // --- FUNCIONES AUXILIARES Y DE PARSEO ---
+            // ============================================================================
+            // FUNCIONES AUXILIARES Y DE PARSEO
+            // ============================================================================
+            
+            /**
+             * Convierte un color hexadecimal a formato RGBA
+             * @param {string} hex - Color en formato hexadecimal (#RRGGBB)
+             * @param {number} alpha - Valor de transparencia (0-1)
+             * @returns {string} Color en formato rgba()
+             */
             function hexToRgba(hex, alpha = 1) {
                 const bigint = parseInt(hex.slice(1), 16);
                 const r = (bigint >> 16) & 255;
@@ -1174,8 +1464,11 @@
                 return `rgba(${r}, ${g}, ${b}, ${alpha})`;
             }
 
-            const chartColors = {};
-
+            /**
+             * Parsea texto en formato TSV y lo convierte en array de objetos
+             * @param {string} tsvText - Texto en formato TSV
+             * @returns {Array<Object>} Array de objetos con los datos
+             */
             function parseTSV(tsvText) {
                 const lines = tsvText.split('\n');
                 const headers = lines[0].split('\t');
@@ -2076,54 +2369,66 @@
             }
 
             // --- INICIALIZACIÓN ---
+            /**
+             * Carga los datos financieros desde Google Sheets
+             * @async
+             * @throws {AppError} Si hay error al cargar o parsear los datos
+             */
             async function loadData() {
                 try {
                     document.getElementById('loading').style.display = 'block';
                     document.getElementById('error').style.display = 'none';
                     
-                    const styles = getComputedStyle(document.documentElement);
-                    chartColors.ingresos = styles.getPropertyValue('--color-ingresos').trim();
-                    chartColors.gastos = styles.getPropertyValue('--color-gastos').trim();
-                    chartColors.perHome = styles.getPropertyValue('--color-per-home').trim();
-                    chartColors.saldoMinimo = styles.getPropertyValue('--color-saldo-minimo').trim();
-                    chartColors.balance = styles.getPropertyValue('--color-balance').trim();
+                    // Cargar colores de los gráficos desde CSS
+                    AppState.loadChartColors();
                     
-                    console.log('Intentando cargar datos desde:', TSV_URL);
-                    const response = await fetch(TSV_URL);
+                    console.log('Intentando cargar datos desde:', APP_CONFIG.DATA_URL);
+                    const response = await fetch(APP_CONFIG.DATA_URL);
                     
                     if (!response.ok) {
-                        throw new Error(`Error HTTP ${response.status}: ${response.statusText}. 
-                            Verifica que la URL de Google Sheets sea accesible y esté configurada correctamente para acceso público.`);
+                        throw new AppError(
+                            `${APP_CONFIG.ERROR_MESSAGES.NETWORK_ERROR}: HTTP ${response.status}`,
+                            'NETWORK_ERROR',
+                            'Verifica que la URL de Google Sheets sea accesible y esté configurada para acceso público.'
+                        );
                     }
                     
                     const tsvText = await response.text();
                     console.log('Datos recibidos:', tsvText.substring(0, 100) + '...');
                     
-                    financialData = parseTSV(tsvText);
-                    console.log('Datos parseados:', financialData.length, 'registros');
+                    const parsedData = parseTSV(tsvText);
+                    console.log('Datos parseados:', parsedData.length, 'registros');
                     
-                    if (financialData.length === 0) {
-                        throw new Error('No se encontraron datos en el archivo TSV. Verifica el formato del archivo.');
+                    if (parsedData.length === 0) {
+                        throw new AppError(
+                            APP_CONFIG.ERROR_MESSAGES.NO_DATA,
+                            'NO_DATA',
+                            'Verifica el formato del archivo TSV.'
+                        );
                     }
+                    
+                    AppState.setFinancialData(parsedData);
+                    financialData = parsedData; // Mantener alias para compatibilidad
                     
                     document.getElementById('loading').style.display = 'none';
                     updateCharts();
-                    console.log('Datos cargados y charts actualizados correctamente');
+                    console.log('✅ Datos cargados y charts actualizados correctamente');
                     
                 } catch (error) {
-                    console.error('Error detallado:', error);
                     document.getElementById('loading').style.display = 'none';
-                    document.getElementById('error').style.display = 'block';
-                    document.getElementById('error').innerHTML = `
-                        <strong>Error al cargar los datos:</strong><br>
-                        ${error.message}<br><br>
-                        <small>Si el problema persiste, verifica:
-                        <ul>
-                            <li>La conexión a internet</li>
-                            <li>Que la URL de Google Sheets sea correcta y esté publicada como TSV</li>
-                            <li>Que no haya restricciones de CORS en el navegador</li>
-                        </ul></small>
-                    `;
+                    
+                    // Si es un AppError, usar el manejador centralizado
+                    if (error instanceof AppError) {
+                        ErrorHandler.handle(error);
+                    } else {
+                        // Error desconocido
+                        const appError = new AppError(
+                            APP_CONFIG.ERROR_MESSAGES.LOAD_FAILED,
+                            'UNKNOWN',
+                            error.message
+                        );
+                        ErrorHandler.handle(appError);
+                    }
                 }
             }
             
@@ -2259,12 +2564,25 @@
                 updateCharts();
             });
 
-            document.getElementById('transaction-search').addEventListener('input', function() {
-                searchQuery = this.value;
+            // Búsqueda con debounce para optimizar rendimiento
+            const handleSearch = debounce(function(value) {
+                searchQuery = value;
+                AppState.setSearchQuery(value);
                 currentPage = 1;
+                AppState.setPage(1);
                 createAllTransactionsTable(getFilteredData());
+                console.log('🔍 Búsqueda aplicada:', value);
+            }, APP_CONFIG.SEARCH_DEBOUNCE_DELAY);
+
+            document.getElementById('transaction-search').addEventListener('input', function(e) {
+                handleSearch(e.target.value);
             });
 
+            /**
+             * Traduce una clave al idioma actual
+             * @param {string} key - Clave de traducción
+             * @returns {string} Texto traducido o la clave si no existe traducción
+             */
             function translate(key) {
                 return translations[currentLanguage][key] || key;
             }

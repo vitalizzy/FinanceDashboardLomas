@@ -64,7 +64,129 @@ Fork, crea una rama y abre un PR. Mantén estilo consistente y añade pruebas m�
 ## ⚠️ Licencia
 Uso interno - Todos los derechos reservados
 
-## 💰 Sistema de formateo de números
+## � Mejoras implementadas en el código
+
+### ✅ Mejoras aplicadas:
+
+#### 1. **📦 Configuración centralizada (APP_CONFIG)**
+- Todos los valores configurables en un solo lugar
+- Constantes para URLs, colores, timeouts, mensajes de error
+- Fácil mantenimiento y modificación
+
+```javascript
+const APP_CONFIG = {
+    DATA_URL: '...',
+    TOTAL_HOMES: 160,
+    SEARCH_DEBOUNCE_DELAY: 300,
+    CHART_COLORS: { ... },
+    ERROR_MESSAGES: { ... }
+};
+```
+
+#### 2. **🎯 Gestión de estado centralizada (AppState)**
+- Objeto único que contiene todo el estado de la aplicación
+- Métodos para actualizar estado de forma consistente
+- Evita variables globales dispersas
+- Mejor debugging y mantenimiento
+
+```javascript
+const AppState = {
+    data: { financial: [], filtered: [] },
+    filters: { ... },
+    ui: { ... },
+    methods: { ... }
+};
+```
+
+#### 3. **⚡ Optimización de rendimiento**
+- **Debouncing** en búsqueda (300ms) para evitar llamadas excesivas
+- Caché de formateadores `Intl.NumberFormat`
+- Reducción de re-renderizados innecesarios
+
+#### 4. **🛡️ Manejo robusto de errores**
+- Clase `AppError` para errores tipados
+- `ErrorHandler` centralizado para logging y UI
+- Mensajes de error informativos
+- Preparado para integración con servicios de logging (Sentry, LogRocket)
+
+```javascript
+class AppError extends Error {
+    constructor(message, type, details) { ... }
+}
+
+const ErrorHandler = {
+    log(error) { ... },
+    showToUser(error) { ... },
+    handle(error) { ... }
+};
+```
+
+#### 5. **📱 PWA Capabilities**
+- Meta tags para Progressive Web App
+- Manifest embebido en base64
+- Soporte para instalar como app nativa
+- Funciona offline (con service worker futuro)
+- Tema personalizado para móviles
+
+#### 6. **📝 Documentación completa**
+- JSDoc en todas las funciones principales
+- Comentarios explicativos en secciones complejas
+- Ejemplos de uso en las funciones
+- Separación clara de módulos con encabezados
+
+#### 7. **🎨 Código más limpio y mantenible**
+- Funciones mejor organizadas por responsabilidad
+- Nombres descriptivos de variables y funciones
+- Constantes en lugar de "magic numbers"
+- Estructura modular dentro del archivo único
+
+### 📊 Métricas de mejora:
+
+| Aspecto | Antes | Después |
+|---------|-------|---------|
+| Variables globales | 15+ dispersas | 1 objeto centralizado |
+| Configuración | Hardcoded | Centralizada |
+| Error handling | Try-catch básico | Sistema robusto tipado |
+| Búsqueda | Sin optimizar | Debounced (300ms) |
+| Documentación | Parcial | JSDoc completo |
+| PWA | No | Sí (manifest + metas) |
+
+### 🔧 Para desarrolladores:
+
+#### Cambiar configuración global:
+```javascript
+// Modificar solo APP_CONFIG
+APP_CONFIG.TOTAL_HOMES = 200;  // Cambiar total de hogares
+APP_CONFIG.SEARCH_DEBOUNCE_DELAY = 500;  // Más delay en búsqueda
+```
+
+#### Acceder al estado:
+```javascript
+// Leer estado
+console.log(AppState.filters.current);
+
+// Modificar estado
+AppState.setSearchQuery('nuevo valor');
+AppState.toggleCategory('Mantenimiento');
+```
+
+#### Manejar errores:
+```javascript
+try {
+    // código que puede fallar
+} catch (error) {
+    const appError = new AppError(
+        'Mensaje usuario',
+        'TIPO_ERROR',
+        'Detalles técnicos'
+    );
+    ErrorHandler.handle(appError);
+}
+```
+
+---
+
+## �💰 Sistema de formateo de números
 
 El dashboard utiliza un **sistema centralizado y escalable** para formatear todos los números. Esto garantiza consistencia en toda la aplicación.
 
