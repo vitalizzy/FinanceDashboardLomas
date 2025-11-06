@@ -89,6 +89,17 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Asegurar que los títulos con botones se distribuyan correctamente */
+        .db-container-title > span:first-child {
+            flex: 0 1 auto;
+        }
+        
+        .db-container-title small {
+            flex: 0 1 auto;
         }
 
         /* KPI Cards */
@@ -124,6 +135,11 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .kpi-card .value {
@@ -732,6 +748,8 @@
             
             .kpi-card h3 {
                 font-size: 11px;
+                padding-bottom: 6px;
+                margin-bottom: 10px;
             }
             
             .kpi-card .value {
@@ -803,6 +821,12 @@
                 padding: 14px;
             }
             
+            .kpi-card h3 {
+                font-size: 11px;
+                padding-bottom: 6px;
+                margin-bottom: 10px;
+            }
+            
             .kpi-card .value {
                 font-size: 24px;
             }
@@ -820,6 +844,12 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 8px;
+                padding-bottom: 8px;
+                margin-bottom: 16px;
+            }
+            
+            .db-container-title small {
+                font-size: 10px;
             }
             
             /* Gráficos más pequeños en móvil */
@@ -909,10 +939,12 @@
             
             .dashboard-title {
                 font-size: 18px;
+                padding-bottom: 6px;
             }
             
             .dashboard-subtitle {
                 font-size: 12px;
+                margin-top: 6px;
             }
         }
         
@@ -1065,8 +1097,25 @@
             .comunidad { font-size: 11px; }
         }
 
-        .dashboard-title { margin:0; font-size:22px; font-weight:800; color:var(--text-primary); letter-spacing:0.2px; }
-        .dashboard-subtitle { margin:6px 0 0 0; color:var(--text-secondary); font-size:13px; }
+        .dashboard-title { 
+            margin: 0 0 6px 0; 
+            font-size: 22px; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            letter-spacing: 0.2px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dashboard-subtitle { 
+            margin: 8px 0 0 0; 
+            color: var(--text-secondary); 
+            font-size: 13px;
+            font-weight: 400;
+        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
