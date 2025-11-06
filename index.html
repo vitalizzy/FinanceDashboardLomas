@@ -590,15 +590,254 @@
         }
 
         /* Responsive */
+        /* ============================================================================
+           RESPONSIVE DESIGN - MOBILE OPTIMIZATIONS
+           ============================================================================ */
+        
+        /* Tablets y pantallas medianas */
         @media (max-width: 992px) {
             .chart-grid-double {
                 grid-template-columns: 1fr;
             }
+            
+            /* Asegurar que los contenedores usen todo el ancho */
+            .db-container {
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+            
+            /* Tablas con scroll horizontal */
+            .db-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .db-table thead,
+            .db-table tbody,
+            .db-table tr {
+                display: table;
+                width: 100%;
+                table-layout: fixed;
+            }
+        }
+
+        /* Tablets pequeños y móviles grandes */
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            
+            #financial-dashboard {
+                max-width: 100%;
+            }
+            
+            /* KPI Cards - 2 columnas en tablet */
+            .kpi-cards {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            
+            .kpi-card {
+                padding: 16px;
+            }
+            
+            .kpi-card h3 {
+                font-size: 11px;
+            }
+            
+            .kpi-card .value {
+                font-size: 22px;
+            }
+            
+            /* Filtros - Una columna */
+            .filters-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            /* Gráficos - altura consistente */
+            .chart-wrapper {
+                height: 300px;
+            }
+            
+            /* Tablas responsive con scroll */
+            #all-transactions-table {
+                max-height: 500px;
+                overflow-y: auto;
+                overflow-x: auto;
+            }
+            
+            .db-table.compact th,
+            .db-table.compact td {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+            
+            /* Actions bar responsive */
+            .actions-bar {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .search-box {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+
+        /* Móviles */
+        @media (max-width: 576px) {
+            body {
+                padding: 8px;
+                padding-bottom: 80px; /* Espacio para FAB */
+            }
+            
+            /* KPI Cards - 1 columna en móvil */
+            .kpi-cards {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .kpi-card {
+                padding: 14px;
+            }
+            
+            .kpi-card .value {
+                font-size: 24px;
+            }
+            
+            /* Contenedores más compactos */
+            .db-container {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .db-container-title {
+                font-size: 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            /* Gráficos más pequeños en móvil */
+            .chart-wrapper {
+                height: 250px;
+            }
+            
+            /* Tablas ultra-compactas en móvil */
+            .db-table {
+                font-size: 11px;
+            }
+            
+            .db-table th,
+            .db-table td {
+                padding: 8px 6px;
+            }
+            
+            .db-table.compact th,
+            .db-table.compact td {
+                padding: 6px 4px;
+                font-size: 10px;
+            }
+            
+            /* FAB más pequeño */
+            .fab {
+                width: 50px;
+                height: 50px;
+                right: 16px;
+                bottom: 16px;
+                font-size: 12px;
+            }
+            
+            /* Active filters responsive */
+            .active-filters {
+                padding: 12px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-badge {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
+            
+            /* Paginación responsive */
+            .pagination {
+                padding: 12px 8px;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+            
+            .pagination button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .pagination .page-info {
+                font-size: 12px;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 8px;
+            }
+            
+            /* Disclaimer más compacto */
+            .db-container p {
+                font-size: 12px !important;
+            }
+            
+            /* Header dashboard responsive */
+            .dashboard-header {
+                margin-bottom: 16px;
+            }
+            
+            .dashboard-title {
+                font-size: 18px;
+            }
+            
+            .dashboard-subtitle {
+                font-size: 12px;
+            }
+        }
+        
+        /* Móviles muy pequeños */
+        @media (max-width: 400px) {
+            body {
+                padding: 6px;
+            }
+            
+            .kpi-card .value {
+                font-size: 20px;
+            }
+            
+            .chart-wrapper {
+                height: 220px;
+            }
+            
+            .db-table {
+                font-size: 10px;
+            }
+            
+            .action-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+        
+        /* Asegurar scroll horizontal suave en todas las tablas */
+        .db-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Specific styling for the All Transactions scroll area */
         #all-transactions-table { 
             font-family: var(--font-primary);
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
 /* --- INICIO DE MODIFICACIÓN (Lógica Invertida) --- */
@@ -626,40 +865,12 @@
             display: table-cell; /* <-- CAMBIADO */
         }
         /* --- FIN DE MODIFICACIÓN --- */
-        
-
-        @media (max-width: 768px) {
-            .kpi-cards {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .filters-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 576px) {
-            body {
-                padding: 10px;
-                padding-bottom: 20px;
-            }
-            
-            .kpi-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .fab {
-                width: 50px;
-                height: 50px;
-                right: 20px;
-                bottom: 20px;
-            }
-        }
-        /* Dashboard header styles */
-        .dashboard-header { display:flex; align-items:flex-start; gap:12px; margin-bottom: 16px; }
 
         /* Dashboard header styles */
-        .dashboard-header {
+        .dashboard-header { 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 12px; 
             margin-bottom: 24px;
         }
 
