@@ -76,6 +76,7 @@
             margin-bottom: 24px;
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow);
+            box-sizing: border-box;
         }
 
         .db-container-title {
@@ -661,12 +662,19 @@
         @media (max-width: 992px) {
             .chart-grid-double {
                 grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .chart-grid {
+                gap: 16px;
             }
             
             /* Asegurar que los contenedores usen todo el ancho */
             .db-container {
+                width: 100%;
                 padding: 16px;
                 margin-bottom: 16px;
+                box-sizing: border-box;
             }
             
             /* Optimizar tablas para tablets */
@@ -760,6 +768,11 @@
                 padding-bottom: 80px; /* Espacio para FAB */
             }
             
+            .chart-grid,
+            .chart-grid-double {
+                gap: 12px;
+            }
+            
             /* KPI Cards - 1 columna en móvil */
             .kpi-cards {
                 grid-template-columns: 1fr;
@@ -776,8 +789,10 @@
             
             /* Contenedores más compactos */
             .db-container {
+                width: 100%;
                 padding: 12px;
                 margin-bottom: 12px;
+                box-sizing: border-box;
             }
             
             .db-container-title {
