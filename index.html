@@ -60,8 +60,12 @@
             padding: 0;
         }
 
-        /* Asegurar que todos los contenedores tengan el mismo ancho */
-        #financial-dashboard > * {
+        /* Asegurar ancho completo para contenedores principales */
+        .dashboard-header,
+        .active-filters,
+        .db-container,
+        .kpi-cards,
+        .chart-grid {
             width: 100%;
         }
 
@@ -258,6 +262,9 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            white-space: nowrap; /* Evitar que el botón se divida en varias líneas */
+            flex-shrink: 0; /* No permitir que se encoja */
+            width: auto; /* Ancho automático basado en contenido */
         }
 
         .clear-all-btn:hover {
@@ -380,6 +387,12 @@
             overflow-y: visible;
             -webkit-overflow-scrolling: touch;
             margin-bottom: 16px;
+            position: relative;
+        }
+        
+        /* Asegurar que la tabla tenga un ancho mínimo dentro del scroll */
+        .table-scroll-wrapper .db-table {
+            min-width: 800px; /* Ancho mínimo para activar scroll horizontal */
         }
         
         /* Scrollbar styling for better UX */
@@ -424,14 +437,28 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
-            min-width: 600px; /* Ancho mínimo para evitar compresión */
+            table-layout: auto; /* Mejor distribución de columnas */
         }
 
         .db-table th, .db-table td {
-            padding: 12px;
+            padding: 12px 8px; /* Reducir padding horizontal */
             border-bottom: 1px solid var(--border-color);
             text-align: left;
             white-space: nowrap; /* Evitar que el texto se envuelva */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Mostrar ... si el texto es muy largo */
+            max-width: 200px; /* Ancho máximo por celda */
+        }
+        
+        /* Columnas específicas con anchos optimizados */
+        .db-table th:first-child,
+        .db-table td:first-child {
+            min-width: 80px; /* Fecha o Tipo */
+        }
+        
+        .db-table .text-right {
+            text-align: right;
+            min-width: 100px; /* Valores numéricos */
         }
 
         .db-table thead tr {
@@ -642,12 +669,15 @@
                 margin-bottom: 16px;
             }
             
-            /* Tablas con scroll horizontal */
-            .db-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                -webkit-overflow-scrolling: touch;
+            /* Optimizar tablas para tablets */
+            .db-table th,
+            .db-table td {
+                padding: 10px 6px;
+                font-size: 12px;
+            }
+            
+            .table-scroll-wrapper .db-table {
+                min-width: 700px; /* Reducir ancho mínimo en tablets */
             }
             
             .db-table thead,
@@ -769,7 +799,12 @@
             
             .db-table th,
             .db-table td {
-                padding: 8px 6px;
+                padding: 8px 4px;
+                max-width: 150px; /* Reducir ancho máximo en móvil */
+            }
+            
+            .table-scroll-wrapper .db-table {
+                min-width: 600px; /* Ancho mínimo reducido para móvil */
             }
             
             .db-table.compact th,
@@ -790,13 +825,18 @@
             /* Active filters responsive */
             .active-filters {
                 padding: 12px;
-                flex-direction: column;
-                align-items: stretch;
+                gap: 8px;
             }
             
             .filter-badge {
                 font-size: 12px;
                 padding: 4px 10px;
+            }
+            
+            .clear-all-btn {
+                width: 100%; /* En móvil, botón de ancho completo */
+                justify-content: center;
+                margin-top: 4px;
             }
             
             /* Paginación responsive */
