@@ -367,6 +367,34 @@
         /* Pending selection visual */
         .pending-selected { background-color: rgba(13,110,253,0.08); }
         
+        /* Table containers with horizontal scroll */
+        .table-scroll-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 16px;
+        }
+        
+        /* Scrollbar styling for better UX */
+        .table-scroll-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
         /* Charts */
         .chart-grid {
             display: grid;
@@ -390,12 +418,14 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            min-width: 600px; /* Ancho mínimo para evitar compresión */
         }
 
         .db-table th, .db-table td {
             padding: 12px;
             border-bottom: 1px solid var(--border-color);
             text-align: left;
+            white-space: nowrap; /* Evitar que el texto se envuelva */
         }
 
         .db-table thead tr {
@@ -2180,7 +2210,7 @@
                     return;
                 }
 
-                let tableHTML = `<table class="db-table">
+                let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table">
                         <thead>
                             <tr>
                                 <th data-i18n="date">Fecha</th>
@@ -2210,7 +2240,7 @@
                     </tr>`;
                 });
                 
-                tableHTML += '</tbody></table>';
+                tableHTML += '</tbody></table></div>';
                 tableContainer.innerHTML = tableHTML;
             }
 
@@ -2239,7 +2269,7 @@
                 const totalTransactions = sortedCategories.reduce((sum, [, stats]) => sum + stats.count, 0);
                 const totalPerHomeGeneral = sortedCategories.reduce((sum, [, stats]) => sum + stats.totalPerHome, 0);
 
-                let tableHTML = `<table class="db-table"><thead><tr><th data-i18n="category">Categoría</th><th class="text-center" data-i18n="count">Count</th><th class="text-right" data-i18n="expenses_sum">Suma Gastos</th><th class="text-right" data-i18n="per_home">per Home</th><th class="text-right" data-i18n="total_percent">% del Total</th></tr></thead><tbody>`;
+                let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table"><thead><tr><th data-i18n="category">Categoría</th><th class="text-center" data-i18n="count">Count</th><th class="text-right" data-i18n="expenses_sum">Suma Gastos</th><th class="text-right" data-i18n="per_home">per Home</th><th class="text-right" data-i18n="total_percent">% del Total</th></tr></thead><tbody>`;
                                    sortedCategories.forEach(([category, stats]) => {
                                         const percentageValue = totalGastos > 0 ? ((stats.total / totalGastos) * 100) : 0;
                                         const percentage = formatNumber(percentageValue, 1, 1);
@@ -2263,7 +2293,7 @@
                             <td class="text-right">${formatCurrency(totalPerHomeGeneral)}</td>
                             <td class="text-right">${formatNumber(100, 1, 1)}%</td>
                         </tr>
-                </tfoot></table>`;
+                </tfoot></table></div>`;
                 tableContainer.innerHTML = tableHTML;
             }
 
@@ -2303,7 +2333,7 @@
                 // Default visible area approximates ~20 rows; the container handles scrolling.
                 const pageData = filteredData; // render all filtered rows; container will scroll
 
-                let tableHTML = '<table class="db-table compact"><thead><tr>';
+                let tableHTML = '<div class="table-scroll-wrapper"><table class="db-table compact"><thead><tr>';
                 
                 // --- INICIO DE MODIFICACIÓN 2 ---
                 const columns = [
@@ -2358,14 +2388,12 @@
                     tableHTML += `<td class="text-right">${formatCurrency(parseAmount(item.Saldo))}</td>`;
                     // --- FIN DE MODIFICACIÓN 3B ---
                     
-                    tableHTML += '</tr>';
+                    tableHTML += '</tr>';
                 });
                 
-                tableHTML += '</tbody></table>';
+                tableHTML += '</tbody></table></div>';
                 tableContainer.innerHTML = tableHTML;
-            }
-
-            // --- Pending selection flow ---
+            }            // --- Pending selection flow ---
             window.selectPendingCategory = function(event, category) {
                 // toggle pending selection
                 if (pendingSelectedCategories.has(category)) {
