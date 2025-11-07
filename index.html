@@ -566,6 +566,7 @@
 
         .db-table .text-right { text-align: right; }
         .db-table .text-center { text-align: center; }
+        .db-table .weight-medium { font-weight: 500; }
         .db-table .color-ingresos { color: var(--color-ingresos); }
         .db-table .color-gastos { color: var(--color-gastos); }
         .db-table .color-per-home { color: var(--color-per-home); }
@@ -2453,13 +2454,13 @@
                     { key: 'per Home', labelKey: 'per_home', class: 'text-right' }
                 ];
 
-                let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table">
+                let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table compact">
                         <thead>
                             <tr>`;
                 
                 columns.forEach(col => {
                     const sortClass = topMovementsSortColumn === col.key ? 
-                        (topMovementsSortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : '';
+                        (topMovementsSortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 'sortable';
                     tableHTML += `<th class="${sortClass} ${col.class}" onclick="window.sortTopMovementsTable('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey)}</th>`;
                 });
                 
@@ -2480,8 +2481,8 @@
                         <td class="color-secondary">${fechaStr}</td>
                         <td class="color-secondary">${item.Categoria || 'Sin categoría'}</td>
                         <td>${item.Concepto || ''}</td>
-                        <td class="text-right ${amountClass}" style="font-weight: 500;">${formatCurrency(amount)}</td>
-                        <td class="text-right color-per-home" style="font-weight: 500;">${formatCurrency(perHome)}</td>
+                        <td class="text-right ${amountClass} weight-medium">${formatCurrency(amount)}</td>
+                        <td class="text-right color-per-home weight-medium">${formatCurrency(perHome)}</td>
                     </tr>`;
                 });
                 
