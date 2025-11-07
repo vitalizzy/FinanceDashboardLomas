@@ -92,14 +92,24 @@ export class BaseTable {
             
             html += `<th class="${allClasses}" ${styleAttr} data-i18n="${col.labelKey}">`;
             html += `<div class="th-content">`;
-            
+
             // Label del header (hereda estilos del th)
             html += `<span class="th-label" ${isSortable ? `onclick="window.sortTable_${this.safeId}('${col.key}')"` : ''}>${translate(col.labelKey, AppState.language)}</span>`;
-            
-            // Icono de lupa si es searchable
+
+            const metaParts = [];
+
+            if (isSortable) {
+                const isActiveSort = this.sortColumn === col.key;
+                const sortState = isActiveSort ? this.sortDirection : null;
+                const sortSymbol = sortState === 'asc' ? '↑' : sortState === 'desc' ? '↓' : '⇅';
+                const sortClasses = ['th-sort-icon'];
+                if (sortState) sortClasses.push(`sorted-${sortState}`);
+                metaParts.push(`<span class="${sortClasses.join(' ')}" onclick="window.sortTable_${this.safeId}('${col.key}')">${sortSymbol}</span>`);
+            }
+
             if (isSearchable) {
-                html += `<span class="th-search-icon" onclick="window.toggleColumnFilter_${this.safeId}('${col.key}', event)">🔍</span>`;
-                html += `<div class="column-filter-dropdown" id="filter_${this.safeId}_${col.key}" style="display:none;">
+                metaParts.push(`<span class="th-search-icon" onclick="window.toggleColumnFilter_${this.safeId}('${col.key}', event)">🔍</span>`);
+                metaParts.push(`<div class="column-filter-dropdown" id="filter_${this.safeId}_${col.key}" style="display:none;">
                     <input 
                         type="text" 
                         class="column-search-input" 
@@ -109,9 +119,13 @@ export class BaseTable {
                         onclick="event.stopPropagation()"
                     />
                     <button class="clear-filter-btn" onclick="window.clearColumnFilter_${this.safeId}('${col.key}', event)">✕</button>
-                </div>`;
+                </div>`);
             }
-            
+
+            if (metaParts.length) {
+                html += `<span class="th-meta">${metaParts.join('')}</span>`;
+            }
+
             html += `</div>`;
             html += `</th>`;
         });
