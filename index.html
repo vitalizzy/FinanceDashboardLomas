@@ -2563,10 +2563,18 @@
                 
                 let filteredData = data;
                 if (searchQuery) {
-                    filteredData = data.filter(item => 
-                        (item.Concepto || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        (item['Concepto (Original)'] || '').toLowerCase().includes(searchQuery.toLowerCase()) // Buscar en ambas
-                    );
+                    // Buscar solo en la columna visible según el estado del toggle
+                    // secretColVisible = true -> buscar en "Concepto (Original)"
+                    // secretColVisible = false -> buscar en "Concepto"
+                    filteredData = data.filter(item => {
+                        if (secretColVisible) {
+                            // Si la columna secreta está visible, buscar solo en "Concepto (Original)"
+                            return (item['Concepto (Original)'] || '').toLowerCase().includes(searchQuery.toLowerCase());
+                        } else {
+                            // Si la columna secreta está oculta, buscar solo en "Concepto"
+                            return (item.Concepto || '').toLowerCase().includes(searchQuery.toLowerCase());
+                        }
+                    });
                 }
 
                 if (sortColumn) {
@@ -3042,21 +3050,39 @@
             window.exportToCSV = function() {
                 const data = getFilteredData();
                 if (data.length === 0) { alert(translate('no_data_export')); return; }
-                const headers = ['Tipo', 'F. Operativa', 'Concepto (Original)', 'Concepto', 'Categoria', 'Mes Año', 'Gastos', 'Ingresos', 'per Home', 'Saldo']; // Añadido Concepto (Original)
-                const csvContent = [
-                    headers.join(','),
-                    ...data.map(item => {
+                
+                // Solo exportar la columna que está visible según el estado del toggle
+                let headers, csvRows;
+                
+                if (secretColVisible) {
+                    // Si la columna secreta está visible, exportar "Concepto (Original)"
+                    headers = ['Tipo', 'F. Operativa', 'Concepto (Original)', 'Categoria', 'Mes Año', 'Gastos', 'Ingresos', 'per Home', 'Saldo'];
+                    csvRows = data.map(item => {
                         const fecha = parseDate(item['F. Operativa']);
                         const fechaStr = fecha ? fecha.toLocaleDateString('es-ES') : '';
                         return [
                             `"${item.Tipo || ''}"`, `"${fechaStr}"`, 
-                            `"${(item['Concepto (Original)'] || '').replace(/"/g, '""')}"`, // Añadido
+                            `"${(item['Concepto (Original)'] || '').replace(/"/g, '""')}"`,
+                            `"${item.Categoria || ''}"`, `"${item['Mes Año'] || ''}"`,
+                            parseAmount(item.Gastos), parseAmount(item.Ingresos), parseAmount(item['per Home']), parseAmount(item.Saldo)
+                        ].join(',');
+                    });
+                } else {
+                    // Si la columna secreta está oculta, exportar "Concepto"
+                    headers = ['Tipo', 'F. Operativa', 'Concepto', 'Categoria', 'Mes Año', 'Gastos', 'Ingresos', 'per Home', 'Saldo'];
+                    csvRows = data.map(item => {
+                        const fecha = parseDate(item['F. Operativa']);
+                        const fechaStr = fecha ? fecha.toLocaleDateString('es-ES') : '';
+                        return [
+                            `"${item.Tipo || ''}"`, `"${fechaStr}"`, 
                             `"${(item.Concepto || '').replace(/"/g, '""')}"`,
                             `"${item.Categoria || ''}"`, `"${item['Mes Año'] || ''}"`,
                             parseAmount(item.Gastos), parseAmount(item.Ingresos), parseAmount(item['per Home']), parseAmount(item.Saldo)
                         ].join(',');
-                    })
-                ].join('\n');
+                    });
+                }
+                
+                const csvContent = [headers.join(','), ...csvRows].join('\n');
                 
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
