@@ -10,6 +10,7 @@ import { translate } from '../../core/i18n.js';
 import { parseDate, parseAmount } from '../../core/utils.js';
 import { formatCurrency } from '../../core/formatters.js';
 
+// Tabla concreta que hereda las capacidades comunes de paginado/scroll de BaseTable.
 export class AllTransactionsTable extends BaseTable {
     constructor() {
         super('all-transactions-table', {
@@ -149,16 +150,17 @@ window.sortTable_all_transactions_table = (col) => {
     allTransactionsTable.render(AppState.data.filtered);
 };
 
-window.filterColumn_all_transactions_table = (col, value) => {
-    allTransactionsTable.filterColumn(col, value);
-    allTransactionsTable.render(AppState.data.filtered);
-};
-
 window.toggleColumnFilter_all_transactions_table = (col, event) => {
     allTransactionsTable.toggleColumnFilter(col, event);
 };
 
-window.clearColumnFilter_all_transactions_table = (col, event) => {
-    allTransactionsTable.clearColumnFilter(col, event);
+window.applyColumnFilter_all_transactions_table = (col, event) => {
+    if (event) event.stopPropagation();
+    allTransactionsTable.applyColumnFilterFromDropdown(col);
     allTransactionsTable.render(AppState.data.filtered);
+};
+
+window.cancelColumnFilter_all_transactions_table = (col, event) => {
+    if (event) event.stopPropagation();
+    allTransactionsTable.cancelColumnFilter(col);
 };

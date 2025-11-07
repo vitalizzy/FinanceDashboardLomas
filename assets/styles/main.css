@@ -189,53 +189,76 @@ body {
     gap: 6px;
 }
 
-.filter-group label {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--text-primary);
-}
-
-.filter-select, .filter-input {
-    padding: 10px 12px;
+.column-filter-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--card-bg-color);
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    font-size: 14px;
-    background: var(--card-bg-color);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: var(--font-primary);
+    box-shadow: var(--shadow);
+    padding: 10px;
+    z-index: 1000;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
 }
 
-.filter-select:focus, .filter-input:focus {
+.column-filter-dropdown input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 13px;
+    transition: border 0.2s ease, background 0.2s ease;
+    background-color: #f8f9fa;
+}
+
+.column-filter-dropdown input:focus {
     outline: none;
     border-color: var(--color-balance);
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    background-color: white;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.12);
 }
 
-/* Active Filters Panel */
-.active-filters {
-    display: none;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: center;
-    padding: 16px 24px;
-    background: var(--card-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 24px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.active-filters.visible {
+.column-filter-actions {
     display: flex;
+    justify-content: flex-end;
+    gap: 6px;
 }
 
-.filter-badge {
-    display: inline-flex;
-    align-items: center;
+.filter-action-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: background 0.2s ease, color 0.2s ease, border 0.2s ease;
+    min-width: 32px;
+}
+
+.filter-action-btn.apply {
+    border-color: rgba(32, 201, 151, 0.6);
+    color: var(--color-ingresos);
+}
+
+.filter-action-btn.apply:hover {
+    background: rgba(32, 201, 151, 0.12);
+}
+
+.filter-action-btn.cancel {
+    border-color: rgba(220, 53, 69, 0.5);
+    color: var(--color-gastos);
+}
+
+.filter-action-btn.cancel:hover {
+    background: rgba(220, 53, 69, 0.1);
+}
     gap: 6px;
     padding: 6px 12px;
     background: #f1f3f5;
@@ -606,12 +629,13 @@ body {
     z-index: 1000;
     min-width: 220px;
     display: flex;
-    gap: 6px;
+    flex-direction: column;
+    gap: 8px;
     margin-top: 6px;
 }
 
 .column-filter-dropdown input {
-    flex: 1;
+    width: 100%;
     padding: 8px 10px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
@@ -627,21 +651,41 @@ body {
     box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.12);
 }
 
-.clear-filter-btn {
+.column-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.filter-action-btn {
     background: transparent;
-    color: var(--text-secondary);
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    padding: 8px 12px;
+    padding: 6px 10px;
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
-    transition: background 0.2s ease, color 0.2s ease;
+    color: var(--text-secondary);
+    transition: background 0.2s ease, color 0.2s ease, border 0.2s ease;
+    min-width: 32px;
 }
 
-.clear-filter-btn:hover {
-    background: #f1f3f5;
-    color: var(--text-primary);
+.filter-action-btn.apply {
+    border-color: rgba(32, 201, 151, 0.6);
+    color: var(--color-ingresos);
+}
+
+.filter-action-btn.apply:hover {
+    background: rgba(32, 201, 151, 0.12);
+}
+
+.filter-action-btn.cancel {
+    border-color: rgba(220, 53, 69, 0.5);
+    color: var(--color-gastos);
+}
+
+.filter-action-btn.cancel:hover {
+    background: rgba(220, 53, 69, 0.1);
 }
 
 .db-table th:hover {

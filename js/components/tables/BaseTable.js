@@ -9,17 +9,27 @@ import { translate } from '../../core/i18n.js';
 import { formatCurrency, formatPercent, formatNumber } from '../../core/formatters.js';
 import { parseDate, parseAmount } from '../../core/utils.js';
 
+// Valores reutilizables para todas las tablas que heredan de BaseTable.
+const BASE_TABLE_DEFAULTS = Object.freeze({
+    compact: false,
+    initialRows: 20,
+    rowsIncrement: 20,
+    sortColumn: null,
+    sortDirection: 'asc'
+});
+
 export class BaseTable {
     constructor(containerId, options = {}) {
         this.containerId = containerId;
         this.container = document.getElementById(containerId);
         // Crear un ID seguro para funciones JavaScript (reemplazar guiones con guiones bajos)
         this.safeId = containerId.replace(/-/g, '_');
-        this.sortColumn = options.sortColumn || null;
-        this.sortDirection = options.sortDirection || 'asc';
-        this.isCompact = options.compact || false;
-        this.initialRows = options.initialRows || 20;
-        this.rowsIncrement = options.rowsIncrement || this.initialRows;
+        const mergedOptions = { ...BASE_TABLE_DEFAULTS, ...options };
+        this.sortColumn = mergedOptions.sortColumn;
+        this.sortDirection = mergedOptions.sortDirection;
+        this.isCompact = mergedOptions.compact;
+        this.initialRows = mergedOptions.initialRows;
+    this.rowsIncrement = mergedOptions.rowsIncrement ?? mergedOptions.initialRows;
         this.visibleRows = this.initialRows;
         this.columnFilters = {}; // Filtros por columna
         this.lastColumns = [];
@@ -134,10 +144,13 @@ export class BaseTable {
                         class="column-search-input" 
                         placeholder="Buscar..."
                         value="${this.columnFilters[col.key] || ''}"
-                        oninput="window.filterColumn_${this.safeId}('${col.key}', this.value)"
+                        data-column="${col.key}"
                         onclick="event.stopPropagation()"
                     />
-                    <button class="clear-filter-btn" onclick="window.clearColumnFilter_${this.safeId}('${col.key}', event)">✕</button>
+                    <div class="column-filter-actions">
+                        <button class="filter-action-btn apply" onclick="window.applyColumnFilter_${this.safeId}('${col.key}', event)">✓</button>
+                        <button class="filter-action-btn cancel" onclick="window.cancelColumnFilter_${this.safeId}('${col.key}', event)">✕</button>
+                    </div>
                 </div>`);
             }
 
@@ -326,6 +339,30 @@ export class BaseTable {
             delete this.columnFilters[columnKey];
         }
         this.resetVisibleRows();
+    }
+
+    applyColumnFilterFromDropdown(columnKey) {
+        const dropdownId = `filter_${this.safeId}_${columnKey}`;
+        const dropdown = document.getElementById(dropdownId);
+        if (!dropdown) return;
+
+        const input = dropdown.querySelector('input');
+        const value = input ? input.value : '';
+
+        this.filterColumn(columnKey, value);
+        dropdown.style.display = 'none';
+    }
+
+    cancelColumnFilter(columnKey) {
+        const dropdownId = `filter_${this.safeId}_${columnKey}`;
+        const dropdown = document.getElementById(dropdownId);
+        if (!dropdown) return;
+
+        const input = dropdown.querySelector('input');
+        if (input) {
+            input.value = this.columnFilters[columnKey] || '';
+        }
+        dropdown.style.display = 'none';
     }
 
     /**

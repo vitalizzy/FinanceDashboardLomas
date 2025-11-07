@@ -10,6 +10,7 @@ import { translate } from '../../core/i18n.js';
 import { parseAmount } from '../../core/utils.js';
 import { formatCurrency } from '../../core/formatters.js';
 
+// Implementación especializada basada en BaseTable para listar movimientos relevantes.
 export class TopMovementsTable extends BaseTable {
     constructor() {
         super('top-movements-table', {
@@ -128,20 +129,19 @@ window.sortTable_top_movements_table = (col) => {
     }
 };
 
-window.filterColumn_top_movements_table = (col, value) => {
-    topMovementsTable.filterColumn(col, value);
-    if (typeof window.updateDashboard === 'function') {
-        window.updateDashboard();
-    }
-};
-
 window.toggleColumnFilter_top_movements_table = (col, event) => {
     topMovementsTable.toggleColumnFilter(col, event);
 };
 
-window.clearColumnFilter_top_movements_table = (col, event) => {
-    topMovementsTable.clearColumnFilter(col, event);
+window.applyColumnFilter_top_movements_table = (col, event) => {
+    if (event) event.stopPropagation();
+    topMovementsTable.applyColumnFilterFromDropdown(col);
     if (typeof window.updateDashboard === 'function') {
         window.updateDashboard();
     }
+};
+
+window.cancelColumnFilter_top_movements_table = (col, event) => {
+    if (event) event.stopPropagation();
+    topMovementsTable.cancelColumnFilter(col);
 };

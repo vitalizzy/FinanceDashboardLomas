@@ -6,6 +6,7 @@ import { AppState } from '../../core/state.js';
 import { translate } from '../../core/i18n.js';
 import { hexToRgba } from '../../core/utils.js';
 import { formatCurrency } from '../../core/formatters.js';
+import { BASE_CHART_OPTIONS, destroyChartInstance } from './ChartRegistry.js';
 
 export function createLineChart(canvasId, data) {
     const canvas = document.getElementById(canvasId);
@@ -13,13 +14,54 @@ export function createLineChart(canvasId, data) {
 
     const last12MonthsData = data.slice(-12);
 
-    try {
-        if (window._charts && window._charts[canvasId]) {
-            window._charts[canvasId].destroy();
+    // Reutiliza la limpieza centralizada definida en ChartRegistry.
+    destroyChartInstance(canvasId);
+
+    const options = {
+        ...BASE_CHART_OPTIONS,
+        onClick: (event, elements) => {
+            if (elements.length > 0) {
+                const index = elements[0].index;
+                const monthKey = last12MonthsData[index][0];
+                if (typeof window.selectPendingMonth === 'function') {
+                    window.selectPendingMonth(null, monthKey);
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: { color: '#2c3e50', font: { size: 12 } }
+            },
+            tooltip: {
+                callbacks: {
+                    label: context => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: { color: 'rgba(127, 140, 141, 0.2)' },
+                ticks: { color: '#7f8c8d' }
+            },
+            y: buildAxisOptions('chart_axis_income_expenses', '#7f8c8d'),
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                beginAtZero: true,
+                grid: { drawOnChartArea: false },
+                ticks: {
+                    color: AppState.chartColors.perHome,
+                    callback: value => formatCurrency(value)
+                },
+                title: {
+                    display: true,
+                    text: translate('chart_axis_per_home', AppState.language),
+                    color: AppState.chartColors.perHome
+                }
+            }
         }
-    } catch (error) {
-        /* ignore */
-    }
+    };
 
     const chart = new Chart(canvas, {
         type: 'line',
@@ -36,52 +78,7 @@ export function createLineChart(canvasId, data) {
                 buildDataset(last12MonthsData, 'chart_label_final_balance', AppState.chartColors.balance, values => values.finalBalance)
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            onClick: (event, elements) => {
-                if (elements.length > 0) {
-                    const index = elements[0].index;
-                    const monthKey = last12MonthsData[index][0];
-                    if (typeof window.selectPendingMonth === 'function') {
-                        window.selectPendingMonth(null, monthKey);
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: { color: '#2c3e50', font: { size: 12 } }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: context => `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(127, 140, 141, 0.2)' },
-                    ticks: { color: '#7f8c8d' }
-                },
-                y: buildAxisOptions('chart_axis_income_expenses', '#7f8c8d'),
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    beginAtZero: true,
-                    grid: { drawOnChartArea: false },
-                    ticks: {
-                        color: AppState.chartColors.perHome,
-                        callback: value => formatCurrency(value)
-                    },
-                    title: {
-                        display: true,
-                        text: translate('chart_axis_per_home', AppState.language),
-                        color: AppState.chartColors.perHome
-                    }
-                }
-            }
-        }
+        options
     });
 
     window._charts = window._charts || {};

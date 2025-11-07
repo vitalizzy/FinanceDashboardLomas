@@ -9,6 +9,7 @@ import { AppState } from '../../core/state.js';
 import { translate } from '../../core/i18n.js';
 import { formatCurrency } from '../../core/formatters.js';
 
+// Vista de resumen que continúa la funcionalidad común de BaseTable para renderizar filas.
 export class CategorySummaryTable extends BaseTable {
     constructor() {
         super('category-summary-table', {
@@ -123,20 +124,19 @@ window.sortTable_category_summary_table = (col) => {
     }
 };
 
-window.filterColumn_category_summary_table = (col, value) => {
-    categorySummaryTable.filterColumn(col, value);
-    if (typeof window.updateDashboard === 'function') {
-        window.updateDashboard();
-    }
-};
-
 window.toggleColumnFilter_category_summary_table = (col, event) => {
     categorySummaryTable.toggleColumnFilter(col, event);
 };
 
-window.clearColumnFilter_category_summary_table = (col, event) => {
-    categorySummaryTable.clearColumnFilter(col, event);
+window.applyColumnFilter_category_summary_table = (col, event) => {
+    if (event) event.stopPropagation();
+    categorySummaryTable.applyColumnFilterFromDropdown(col);
     if (typeof window.updateDashboard === 'function') {
         window.updateDashboard();
     }
+};
+
+window.cancelColumnFilter_category_summary_table = (col, event) => {
+    if (event) event.stopPropagation();
+    categorySummaryTable.cancelColumnFilter(col);
 };
