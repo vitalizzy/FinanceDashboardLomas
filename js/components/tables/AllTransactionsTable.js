@@ -48,7 +48,7 @@ export class AllTransactionsTable extends BaseTable {
                 searchable: true
             },
             { 
-                key: 'Concepto Publico', 
+                key: 'Concepto', 
                 labelKey: 'concept', 
                 minWidth: '200px',
                 cssClass: 'col-secreta', 

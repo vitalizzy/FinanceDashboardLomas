@@ -38,7 +38,7 @@ export class TopMovementsTable extends BaseTable {
                 searchable: true
             },
             { 
-                key: 'Concepto Publico', 
+                key: 'Concepto', 
                 labelKey: 'concept', 
                 minWidth: '200px',
                 sortable: true,

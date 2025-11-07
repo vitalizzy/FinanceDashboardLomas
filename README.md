@@ -13,12 +13,19 @@
 	- `ChartManager`: destruye gráficos existentes y renderiza cada descriptor registrado (bar/line/combined) usando `destroyAllCharts`, `createBarChart`, `createLineChart`.
 	- `TableManager`: renderiza las tablas registradas reutilizando `BaseTable` y las instancias `allTransactionsTable`, `topMovementsTable`, `categorySummaryTable`.
 	- `KpiManager`: calcula totales (ingresos, gastos, per home, saldo final, nº transacciones) aplicando el formateo centralizado de `formatCurrency`.
-- **Componentes UI reutilizables**:
+- **Componentes UI reutilizables (`js/components/`)**:
 	- `FilterPanel`: badges activos + botones de confirmación/cancelación para selecciones pendientes.
 	- `Dropdown`, `DateRangePicker`, `SearchBox`: encapsulan interacción de filtros, rangos y búsqueda con `debounce` configurable.
 	- `LoadingOverlay`, `LastUpdateBanner`: gestionan feedback visual (carga inicial, fecha de última actualización traducida).
-- **Núcleo existente**: `APP_CONFIG`, `AppState`, `formatters`, `utils`, `i18n`, `errors`, tablas específicas y `charts.js` continúan intactos y ahora se consumen a través de los gestores anteriores.
+	- Tablas especializadas (`components/tables/*.js`) y renderers de gráficos (`components/charts/*.js`) para mantener el DOM desacoplado de la lógica.
+- **Núcleo existente**: `APP_CONFIG`, `AppState`, `formatters`, `utils`, `i18n`, `errors` y componentes de tablas/gráficos continúan intactos y ahora se consumen a través de los gestores anteriores.
 - **Acciones globales (`js/app/globalActions.js`)**: expone las funciones requeridas por `index.html` (`clearAllFilters`, `updateDashboard`, `selectPendingCategory`, etc.), preservando la compatibilidad sin duplicar lógica.
+
+## Estructura de Carpetas
+- `js/components/tables`: `BaseTable` y las implementaciones `AllTransactionsTable`, `TopMovementsTable`, `CategorySummaryTable`.
+- `js/components/charts`: registro central (`ChartRegistry`), renderers (`BarChart`, `LineChart`) y transformadores de datos.
+- `js/managers`: orquestadores de tablas, gráficos, filtros y KPIs que consumen los componentes anteriores.
+- `js/services`, `js/app`, `js/lib`: módulos core (estado, traducciones, utils, errores) sin cambios estructurales.
 
 ## Artefactos Reutilizables
 - **Tablas**: `BaseTable` + especializaciones. Añadir una tabla nueva solo requiere crear la definición y registrarla en `TableManager`.
@@ -48,7 +55,7 @@ python -m http.server 8000
 	- Arrancar servidor local y confirmar ausencia de errores en consola.
 	- Probar filtros (periodo, rango personalizado, categorías desde tablas/gráficos, meses desde gráficos) y revisar que los botones de confirmación aparezcan.
 	- Validar resaltado amarillo en selecciones pendientes y azul en confirmadas.
-	- Revisar ordenamiento, paginación y búsquedas en tablas.
+	- Revisar ordenamiento, scroll infinito y búsquedas en tablas.
 	- Probar doble idioma desde el selector.
 
 ## Mantenimiento

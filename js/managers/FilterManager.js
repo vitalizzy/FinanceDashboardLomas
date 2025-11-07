@@ -146,7 +146,7 @@ export class FilterManager {
         }
 
         return data.filter(item => {
-            const concepto = (item['Concepto Publico'] || '').toLowerCase();
+            const concepto = (item['Concepto Publico'] || item['Concepto Público'] || item.Concepto || '').toLowerCase();
             return concepto.includes(this.state.filters.searchQuery);
         });
     }
