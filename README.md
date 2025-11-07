@@ -4,22 +4,23 @@
 - Panel web para analizar ingresos, gastos y saldos históricos a partir de un TSV público de Google Sheets.
 - Front-end 100 % Vanilla JS con arquitectura modular ES6, sin bundlers.
 - Incluye tablas con filtrado/ordenación, KPIs en vivo y gráficos Chart.js (barras, líneas, combinados extendibles).
+- Filtros globales con confirmación pendiente, búsqueda unificada y ordenamiento multi-columna persistente por tabla.
 
 ## Arquitectura
-- **Core (`js/core/`)**: capa fundacional con configuración (`config`), estado global (`state`), internacionalización (`i18n`), formateadores numéricos, utilidades comunes, manejo de errores, helpers de seguridad y las configuraciones base de componentes (`base_table`, `base_chart`, `base_bar_chart`, `base_line_chart`). Todo el front consume estos módulos con rutas `../core/...`.
+- **Core (`js/core/`)**: capa fundacional con configuración (`config`), estado global (`state`), internacionalización (`i18n`), formateadores numéricos, utilidades comunes, manejo de errores, helpers de seguridad y las configuraciones base de componentes (`base_table`, `base_chart`, `base_bar_chart`, `base_line_chart`). El estado centraliza filtros confirmados/pedientes, buscador y ordenamientos multi-columna por tabla. Todo el front consume estos módulos con rutas `../core/...`.
 - **Aplicación (`js/app/`)**:
 	- `DashboardApp`: orquestador que inicializa servicios, coordina managers y ejecuta `updateDashboard()`.
 	- `globalActions`: expone la superficie pública utilizada por los handlers inline de `index.html` (clear/apply filters, export, etc.).
 - **Servicios (`js/services/`)**: `DataService` obtiene y normaliza el TSV (deriva `Importe`, `Tipo`) apoyándose en utilidades del core.
 - **Gestores (`js/managers/`)**: capas de dominio que reutilizan componentes para pintar la UI.
-	- `FilterManager`: aplica periodos, meses, categorías, búsqueda y rangos.
+	- `FilterManager`: aplica periodos, meses, categorías, búsqueda, filtros por columna y gestiona selecciones pendientes/confirmadas.
 	- `ChartManager`: destruye y re-renderiza cada descriptor (`destroyAllCharts`, `createBarChart`, `createLineChart`).
-	- `TableManager`: monta tablas registradas (`allTransactionsTable`, `topMovementsTable`, `categorySummaryTable`).
+	- `TableManager`: monta tablas registradas (`allTransactionsTable`, `topMovementsTable`, `categorySummaryTable`) y restablece estados de ordenamiento multi-columna.
 	- `KpiManager`: agrega ingresos/gastos/per home/saldo final reutilizando `formatCurrency`.
 - **Componentes (`js/components/`)**: UI desacoplada por ámbito.
 	- `filters/`: `FilterPanel`, `Dropdown`, `DateRangePicker`, `SearchBox` coordinan interacción de filtros con `FilterManager`.
 	- `feedback/`: `LoadingOverlay`, `LastUpdateBanner` muestran estado de carga y fecha de actualización.
-	- `tables/`: especializaciones por vista que extienden `BaseTable` (definido en `js/core/base_table.js`).
+	- `tables/`: especializaciones por vista que extienden `BaseTable` (definido en `js/core/base_table.js`) y configuran columnas con filtros locales y ordenamiento multi-columna.
 	- `charts/`: renderers (`BarChart`, `LineChart`) y transformadores de datos (`dataTransforms`) apoyados en `js/core/base_chart.js` y los cimientos tipados `BaseBarChart`/`BaseLineChart`.
 
 ## Estructura de Carpetas
@@ -29,23 +30,23 @@
 - `js/core`: configuración global, estado, utilidades comunes, internacionalización, formateo, errores, seguridad y bases `base_table`, `base_chart`, `base_bar_chart`, `base_line_chart`.
 - `js/components/filters`: controladores de UI para filtros rápidos, rangos de fechas y búsqueda.
 - `js/components/feedback`: componentes de overlay y banner contextual.
-- `js/components/tables`: implementaciones `AllTransactionsTable`, `TopMovementsTable`, `CategorySummaryTable` que heredan de `BaseTable` (`js/core/base_table.js`).
+- `js/components/tables`: implementaciones `AllTransactionsTable`, `TopMovementsTable`, `CategorySummaryTable` que heredan de `BaseTable` (`js/core/base_table.js`) y exponen filtros por columna alineados con el panel global.
 - `js/components/charts`: renderers (`BarChart`, `LineChart`) y transformadores de datos que consumen `js/core/base_chart.js`.
 - `js/managers`: orquestadores de tablas, gráficos, filtros y KPIs que consumen los componentes anteriores.
 - `js/services`: integraciones externas y normalización de datos (TSV).
 - `js/app`: inicialización, wiring general y acciones globales.
 
 ## Artefactos Reutilizables
-- **Tablas**: `BaseTable` (`js/core/base_table.js`) + especializaciones. Añadir una tabla nueva solo requiere crear la definición y registrarla en `TableManager`.
+- **Tablas**: `BaseTable` (`js/core/base_table.js`) + especializaciones con scroll infinito, filtros por columna integrados con el panel global y ordenamiento multi-columna persistente. Añadir una tabla nueva solo requiere crear la definición y registrarla en `TableManager`.
 - **Gráficos**: `BaseBarChart`/`BaseLineChart` eliminan la repetición de boilerplate y `ChartManager.registerChart({...})` permite integrar bar, line, mixed o cualquier renderer adicional.
 - **Dropdowns / Date pickers / Search**: componentes configurables que emiten callbacks y se integran con `FilterManager`.
 - **KPI List**: `KpiManager` actualiza cualquier tarjeta KPI declarando los `id` en el constructor.
-- **Panel de filtros**: badges interactivos y botones flotantes se controlan desde `FilterPanel.togglePendingControls`/`hidePendingControls`.
+- **Panel de filtros**: badges interactivos (categorías, meses y filtros de columna) y botones flotantes se controlan desde `FilterPanel.togglePendingControls`/`hidePendingControls`.
 
 ## Flujo de Datos
 1. `main.js` instancia `DashboardApp`, registra acciones globales y espera `DOMContentLoaded`.
 2. `DashboardApp.init()` muestra el overlay, carga datos, sincroniza idioma, registra interacciones y realiza el primer `updateDashboard()`.
-3. Cada evento de UI delega en `FilterManager`, que calcula `AppState.data.filtered`. Los gestores de tablas, KPIs y gráficos consumen ese array filtrado.
+3. Cada evento de UI delega en `FilterManager`, que calcula `AppState.data.filtered` combinando filtros confirmados y seleccionados de forma pendiente en `AppState`. Los gestores de tablas, KPIs y gráficos consumen ese array filtrado.
 4. Selecciones pendientes se manejan en `AppState` y el `FilterPanel` muestra controles de confirmación globales.
 
 ## Puesta en Marcha
@@ -62,8 +63,9 @@ python -m http.server 8000
 - Para verificación manual:
 	- Arrancar servidor local y confirmar ausencia de errores en consola.
 	- Probar filtros (periodo, rango personalizado, categorías desde tablas/gráficos, meses desde gráficos) y revisar que los botones de confirmación aparezcan.
+	- Confirmar que aplicar/cancelar filtros por columna refleja badges globales y respeta el flujo de pendientes.
 	- Validar resaltado amarillo en selecciones pendientes y azul en confirmadas.
-	- Revisar ordenamiento, scroll infinito y búsquedas en tablas.
+	- Revisar ordenamiento multi-columna, scroll infinito y búsquedas en tablas (guardar estado tras volver a la vista).
 	- Probar doble idioma desde el selector.
 
 ## Mantenimiento
