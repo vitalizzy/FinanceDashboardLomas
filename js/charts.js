@@ -86,7 +86,8 @@ export function createBarChart(canvasId, data) {
                     const category = data[index][0];
                     console.log('[Chart onClick] Category selected:', category, 'at index:', index);
                     if (typeof window.selectPendingCategory === 'function') {
-                        window.selectPendingCategory(event, category);
+                        // Pasar null porque Chart.js event no es un DOM event estándar
+                        window.selectPendingCategory(null, category);
                     } else {
                         console.error('[Chart onClick] window.selectPendingCategory is not defined!');
                     }
@@ -240,7 +241,8 @@ export function createLineChart(canvasId, data) {
                     const monthKey = last12MonthsData[index][0];
                     console.log('[Chart onClick] Month selected:', monthKey, 'at index:', index);
                     if (typeof window.selectPendingMonth === 'function') {
-                        window.selectPendingMonth(event, monthKey);
+                        // Pasar null porque Chart.js event no es un DOM event estándar
+                        window.selectPendingMonth(null, monthKey);
                     } else {
                         console.error('[Chart onClick] window.selectPendingMonth is not defined!');
                     }

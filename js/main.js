@@ -53,7 +53,9 @@ window.clearAllFilters = () => {
 // Seleccionar categoría pendiente (desde gráfico o tabla)
 window.selectPendingCategory = (event, category) => {
     console.log('[selectPendingCategory] Category clicked:', category);
-    event.stopPropagation();
+    if (event && event.stopPropagation) {
+        event.stopPropagation();
+    }
     AppState.toggleCategory(category, true);
     console.log('[selectPendingCategory] Pending categories:', Array.from(AppState.filters.pendingCategories));
     
@@ -66,7 +68,9 @@ window.selectPendingCategory = (event, category) => {
 // Seleccionar mes pendiente (desde gráfico)
 window.selectPendingMonth = (event, monthKey) => {
     console.log('[selectPendingMonth] Month clicked:', monthKey);
-    event.stopPropagation();
+    if (event && event.stopPropagation) {
+        event.stopPropagation();
+    }
     AppState.toggleMonth(monthKey, true);
     console.log('[selectPendingMonth] Pending months:', Array.from(AppState.filters.pendingMonths));
     
