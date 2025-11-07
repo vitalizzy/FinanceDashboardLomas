@@ -36,6 +36,7 @@ export class FilterPanel {
         const panel = document.getElementById(this.config.panelId);
         const badgesContainer = document.getElementById(this.config.badgesId);
         const clearFiltersFab = document.getElementById(this.config.clearFabId);
+        const clearAllButton = panel ? panel.querySelector('.clear-all-btn') : null;
 
         if (!panel || !badgesContainer) return;
 
@@ -78,7 +79,13 @@ export class FilterPanel {
             badgesContainer.appendChild(badge);
         });
 
+        panel.hidden = !hasActiveFilters;
         panel.classList.toggle('visible', hasActiveFilters);
+
+        if (clearAllButton) {
+            clearAllButton.style.display = hasActiveFilters ? 'inline-flex' : 'none';
+            clearAllButton.disabled = !hasActiveFilters;
+        }
 
         if (clearFiltersFab) {
             clearFiltersFab.style.display = hasActiveFilters ? 'flex' : 'none';
