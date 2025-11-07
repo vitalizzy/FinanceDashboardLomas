@@ -508,15 +508,19 @@ window.clearAllFilters = () => {
 };
 
 window.selectPendingCategory = (event, category) => {
+    console.log('[selectPendingCategory] Category clicked:', category);
     event.stopPropagation();
     AppState.toggleCategory(category, true);
+    console.log('[selectPendingCategory] Pending categories:', Array.from(AppState.filters.pendingCategories));
     updateDashboard();
     showConfirmCancelButtons();
 };
 
 window.selectPendingMonth = (event, monthKey) => {
+    console.log('[selectPendingMonth] Month clicked:', monthKey);
     event.stopPropagation();
     AppState.toggleMonth(monthKey, true);
+    console.log('[selectPendingMonth] Pending months:', Array.from(AppState.filters.pendingMonths));
     updateDashboard();
     showConfirmCancelButtons();
 };
@@ -536,11 +540,63 @@ window.clearPendingSelection = () => {
 };
 
 function showConfirmCancelButtons() {
-    document.getElementById('fab-confirm').style.display = 'flex';
-    document.getElementById('fab-cancel').style.display = 'flex';
+    const hasPendingCategory = AppState.filters.pendingCategories.size > 0;
+    const hasPendingMonth = AppState.filters.pendingMonths.size > 0;
+    const hasAnyPending = hasPendingCategory || hasPendingMonth;
+    
+    console.log('[showConfirmCancelButtons] hasPendingCategory:', hasPendingCategory, 'hasPendingMonth:', hasPendingMonth);
+
+    // Per-section confirm/cancel buttons
+    const topConfirm = document.getElementById('top-confirm-icon');
+    const topCancel = document.getElementById('top-cancel-icon');
+    const catConfirm = document.getElementById('cat-confirm-icon');
+    const catCancel = document.getElementById('cat-cancel-icon');
+    const monthlyConfirm = document.getElementById('monthly-confirm-icon');
+    const monthlyCancel = document.getElementById('monthly-cancel-icon');
+    const expensesConfirm = document.getElementById('expenses-confirm-icon');
+    const expensesCancel = document.getElementById('expenses-cancel-icon');
+    const allConfirm = document.getElementById('all-confirm-icon');
+    const allCancel = document.getElementById('all-cancel-icon');
+
+    const displayStyle = hasAnyPending ? 'inline-flex' : 'none';
+    [topConfirm, topCancel, catConfirm, catCancel, monthlyConfirm, monthlyCancel, expensesConfirm, expensesCancel, allConfirm, allCancel].forEach(el => {
+        if (!el) return;
+        el.style.display = displayStyle;
+    });
+
+    // Enable/disable confirm buttons
+    [topConfirm, catConfirm, monthlyConfirm, expensesConfirm, allConfirm].forEach(btn => {
+        if (!btn) return;
+        btn.disabled = !hasAnyPending;
+    });
+
+    // Floating FAB buttons
+    const fabConfirm = document.getElementById('fab-confirm');
+    const fabCancel = document.getElementById('fab-cancel');
+    const fabDisplayStyle = hasAnyPending ? 'flex' : 'none';
+    if (fabConfirm) fabConfirm.style.display = fabDisplayStyle;
+    if (fabCancel) fabCancel.style.display = fabDisplayStyle;
 }
 
 function hideConfirmCancelButtons() {
+    // Per-section buttons
+    const topConfirm = document.getElementById('top-confirm-icon');
+    const topCancel = document.getElementById('top-cancel-icon');
+    const catConfirm = document.getElementById('cat-confirm-icon');
+    const catCancel = document.getElementById('cat-cancel-icon');
+    const monthlyConfirm = document.getElementById('monthly-confirm-icon');
+    const monthlyCancel = document.getElementById('monthly-cancel-icon');
+    const expensesConfirm = document.getElementById('expenses-confirm-icon');
+    const expensesCancel = document.getElementById('expenses-cancel-icon');
+    const allConfirm = document.getElementById('all-confirm-icon');
+    const allCancel = document.getElementById('all-cancel-icon');
+
+    [topConfirm, topCancel, catConfirm, catCancel, monthlyConfirm, monthlyCancel, expensesConfirm, expensesCancel, allConfirm, allCancel].forEach(el => {
+        if (!el) return;
+        el.style.display = 'none';
+    });
+
+    // Floating FAB buttons
     document.getElementById('fab-confirm').style.display = 'none';
     document.getElementById('fab-cancel').style.display = 'none';
 }
