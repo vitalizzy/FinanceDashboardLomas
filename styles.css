@@ -24,6 +24,23 @@
     --color-total-bg: #343a40;
     --color-selected: #0d6efd;
     --color-selected-bg: #e7f3ff;
+    
+    /* Table Header Variables - Sistema Modular */
+    --table-header-bg-start: #f8f9fa;
+    --table-header-bg-end: #f1f3f5;
+    --table-header-text-color: #495057;
+    --table-header-font-weight: 600;
+    --table-header-font-size: 13px;
+    --table-header-padding: 14px 12px;
+    --table-header-border-color: #dee2e6;
+    --table-header-hover-bg-start: #e9ecef;
+    --table-header-hover-bg-end: #dee2e6;
+    
+    /* Table Search Icon Variables */
+    --table-search-icon-color: #6c757d;
+    --table-search-icon-bg: rgba(108, 117, 125, 0.1);
+    --table-search-icon-hover-bg: rgba(108, 117, 125, 0.2);
+    --table-search-icon-hover-color: #495057;
 }
 
 /* Base Styles */
@@ -498,23 +515,23 @@ body {
 }
 
 .db-table thead tr {
-    background: linear-gradient(to bottom, #f8f9fa, #f1f3f5);
-    border-bottom: 2px solid #dee2e6;
+    background: linear-gradient(to bottom, var(--table-header-bg-start), var(--table-header-bg-end));
+    border-bottom: 2px solid var(--table-header-border-color);
 }
 
 .db-table th {
-    font-weight: 600;
-    color: #495057;
-    border-bottom: 2px solid #dee2e6;
+    font-weight: var(--table-header-font-weight);
+    color: var(--table-header-text-color);
+    border-bottom: 2px solid var(--table-header-border-color);
     user-select: none;
     position: sticky;
     top: 0;
     z-index: 10;
-    background: linear-gradient(to bottom, #f8f9fa, #f1f3f5);
+    background: linear-gradient(to bottom, var(--table-header-bg-start), var(--table-header-bg-end));
     white-space: normal;
     word-wrap: break-word;
-    padding: 14px 12px;
-    font-size: 13px;
+    padding: var(--table-header-padding);
+    font-size: var(--table-header-font-size);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -550,10 +567,12 @@ body {
     cursor: pointer;
     transition: color 0.2s;
     min-width: 0; /* Permite que el texto se ajuste correctamente */
+    color: inherit; /* Hereda el color del th */
+    font-weight: inherit; /* Hereda el peso del th */
 }
 
 .th-label:hover {
-    color: #212529;
+    color: var(--text-primary);
 }
 
 .th-search-icon {
@@ -564,14 +583,14 @@ body {
     transition: all 0.2s ease;
     user-select: none;
     border-radius: 4px;
-    background-color: rgba(108, 117, 125, 0.1);
-    color: #6c757d;
+    background-color: var(--table-search-icon-bg);
+    color: var(--table-search-icon-color);
 }
 
 .th-search-icon:hover {
     opacity: 1;
-    background-color: rgba(108, 117, 125, 0.2);
-    color: #495057;
+    background-color: var(--table-search-icon-hover-bg);
+    color: var(--table-search-icon-hover-color);
     transform: scale(1.1);
 }
 
@@ -634,7 +653,7 @@ body {
 }
 
 .db-table th:hover {
-    background: linear-gradient(to bottom, #e9ecef, #dee2e6);
+    background: linear-gradient(to bottom, var(--table-header-hover-bg-start), var(--table-header-hover-bg-end));
 }
 
 .db-table th.sortable::after {
@@ -642,21 +661,21 @@ body {
     position: absolute;
     right: 8px;
     opacity: 0.25;
-    color: #6c757d;
+    color: var(--table-search-icon-color);
 }
 
 .db-table th.sorted-asc::after,
 .db-table th.sort-asc::after {
     content: '↑';
     opacity: 1;
-    color: #495057;
+    color: var(--table-header-text-color);
 }
 
 .db-table th.sorted-desc::after,
 .db-table th.sort-desc::after {
     content: '↓';
     opacity: 1;
-    color: #495057;
+    color: var(--table-header-text-color);
 }
 
 .db-table .text-right { text-align: right; }

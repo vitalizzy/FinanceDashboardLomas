@@ -1,8 +1,13 @@
-# Configuración de Columnas de Tabla
+# Configuración de Columnas de Tabla - Sistema Modular
+
+## Filosofía del Sistema
+
+**TODAS las tablas heredan automáticamente los mismos estilos profesionales desde CSS.**  
+No necesitas configurar colores, fuentes o estilos en cada columna - todo es consistente por defecto.
 
 ## Propiedades Disponibles por Columna
 
-### 🔑 **Propiedades Básicas**
+### 🔑 **Propiedades Obligatorias**
 
 ```javascript
 {
@@ -11,27 +16,7 @@
 }
 ```
 
-### 🎨 **Apariencia del Header**
-
-```javascript
-{
-    // Color
-    headerColor: '#495057',              // Color del texto del header
-    headerBgColor: '#f8f9fa',            // Color de fondo del header
-    
-    // Tipografía
-    headerFontSize: '13px',              // Tamaño de fuente del header
-    headerFontWeight: '600',             // Peso de fuente (normal, 600, bold, etc.)
-    
-    // Espaciado
-    headerPadding: '14px 12px',          // Padding del header
-    
-    // Clases CSS
-    headerClass: 'custom-header-class',  // Clase CSS adicional para el header
-}
-```
-
-### 📐 **Dimensiones**
+### 📐 **Dimensiones (Únicas configurables a nivel de columna)**
 
 ```javascript
 {
@@ -50,9 +35,6 @@
     
     // Alineamiento específico del header (sobrescribe 'align' solo para header)
     headerAlign: 'text-center',  // Opciones: 'text-left', 'text-center', 'text-right'
-    
-    // Alineamiento del texto dentro del header
-    headerTextAlign: 'center',   // Opciones: 'left', 'center', 'right'
 }
 ```
 
@@ -65,11 +47,12 @@
 }
 ```
 
-### 🎭 **Clases CSS Adicionales**
+### 🎭 **Clases CSS para Células de Datos**
 
 ```javascript
 {
-    cssClass: 'weight-medium color-ingresos',  // Clases CSS para las células de datos
+    cssClass: 'weight-medium color-ingresos',  // Clases CSS SOLO para las células de datos
+    headerClass: 'custom-header',               // Clases CSS adicionales SOLO para el header
 }
 ```
 
@@ -84,124 +67,105 @@
 }
 ```
 
-## 📋 Ejemplo Completo
+## ❌ Propiedades ELIMINADAS (Ahora en CSS Global)
+
+Estas propiedades ya NO son necesarias porque TODAS las tablas usan los mismos estilos:
+
+- ~~`headerColor`~~ → Ahora: `--table-header-text-color` en CSS
+- ~~`headerBgColor`~~ → Ahora: `--table-header-bg-start/end` en CSS
+- ~~`headerFontSize`~~ → Ahora: `--table-header-font-size` en CSS
+- ~~`headerFontWeight`~~ → Ahora: `--table-header-font-weight` en CSS
+- ~~`headerPadding`~~ → Ahora: `--table-header-padding` en CSS
+- ~~`headerTextAlign`~~ → Usa `headerAlign` o `align`
+
+## 🎨 Variables CSS Globales (para personalización del sistema)
+
+Si necesitas cambiar el look de TODAS las tablas a la vez, modifica estas variables en `styles.css`:
+
+```css
+:root {
+    /* Encabezados de Tabla */
+    --table-header-bg-start: #f8f9fa;
+    --table-header-bg-end: #f1f3f5;
+    --table-header-text-color: #495057;
+    --table-header-font-weight: 600;
+    --table-header-font-size: 13px;
+    --table-header-padding: 14px 12px;
+    --table-header-border-color: #dee2e6;
+    --table-header-hover-bg-start: #e9ecef;
+    --table-header-hover-bg-end: #dee2e6;
+    
+    /* Icono de Búsqueda */
+    --table-search-icon-color: #6c757d;
+    --table-search-icon-bg: rgba(108, 117, 125, 0.1);
+    --table-search-icon-hover-bg: rgba(108, 117, 125, 0.2);
+    --table-search-icon-hover-color: #495057;
+}
+```
+
+## 📋 Ejemplo Correcto (Sistema Modular)
 
 ```javascript
 const columns = [
     {
         key: 'F. Operativa',
         labelKey: 'date',
-        width: '120px',
+        width: '110px',
         align: 'text-center',
-        headerAlign: 'text-center',
         sortable: true,
-        searchable: true,
-        headerFontWeight: '700',
+        searchable: true
     },
     {
         key: 'Concepto Publico',
         labelKey: 'concept',
         minWidth: '200px',
-        maxWidth: '400px',
         sortable: true,
-        searchable: true,
+        searchable: true
     },
     {
         key: 'Ingresos',
         labelKey: 'income',
         width: '120px',
         align: 'text-right',
-        headerAlign: 'text-right',
-        cssClass: 'weight-medium color-ingresos',
+        cssClass: 'weight-medium color-ingresos', // Solo para células
         sortable: true,
         searchable: false,
-        formatter: (value) => formatCurrency(value),
+        formatter: (value) => formatCurrency(value)
     },
     {
         key: 'Gastos',
         labelKey: 'expenses',
         width: '120px',
         align: 'text-right',
-        headerAlign: 'text-right',
-        headerColor: '#dc3545',
-        cssClass: 'weight-medium color-gastos',
+        cssClass: 'weight-medium color-gastos', // Solo para células
         sortable: true,
         searchable: false,
-        formatter: (value) => formatCurrency(value),
-    },
-    {
-        key: 'Categoria',
-        labelKey: 'category',
-        width: '150px',
-        sortable: true,
-        searchable: true,
-        headerBgColor: '#e9ecef',
+        formatter: (value) => formatCurrency(value)
     }
 ];
 ```
 
-## 🎯 Jerarquía de Prioridades
+## ✅ **Buenas Prácticas**
 
-1. **Estilos inline** (width, headerColor, etc.) > Clases CSS
-2. **headerAlign** > **align** (para el header)
-3. **headerClass** se añade a las clases calculadas automáticamente
-4. **cssClass** se aplica solo a las células de datos, no al header
+1. **NO configures estilos visuales por columna** - Usa las variables CSS globales
+2. **USA `align`** para alineamiento consistente en header y células
+3. **USA `width` fija** para columnas de cantidades (Ingresos, Gastos)
+4. **USA `minWidth/maxWidth`** para columnas de texto largo
+5. **DESHABILITA `searchable: false`** en columnas numéricas o de moneda
+6. **USA `formatter`** para transformar valores (fechas, monedas, porcentajes)
+7. **USA `cssClass`** para estilos de células (color-ingresos, weight-medium, etc.)
 
-## 💡 Consejos de Uso
+## ⚠️ **Evitar**
 
-### ✅ **Buenas Prácticas**
+- ❌ NO mezcles `width` con `minWidth/maxWidth` en la misma columna
+- ❌ NO uses propiedades eliminadas (headerColor, headerBgColor, etc.)
+- ❌ NO pongas `searchable: true` en columnas calculadas o formateadas
+- ❌ NO intentes sobrescribir estilos de header con inline styles
 
-- Usa `align` para alineamiento consistente en header y células
-- Usa `headerAlign` solo cuando necesites alineamiento diferente en el header
-- Usa `width` fija para columnas de cantidades (Ingresos, Gastos)
-- Usa `minWidth` y `maxWidth` para columnas de texto largo
-- Deshabilita `searchable: false` en columnas numéricas o de moneda
-- Usa `formatter` para transformar valores (fechas, monedas, porcentajes)
+## 🎯 Ventajas del Sistema Modular
 
-### ⚠️ **Evitar**
-
-- No mezcles `width` con `minWidth/maxWidth` en la misma columna
-- No uses `headerTextAlign` y `headerAlign` juntos (pueden conflictuar)
-- No pongas `searchable: true` en columnas calculadas o formateadas
-
-## 🔍 Clases CSS Predefinidas Disponibles
-
-### Alineamiento
-- `text-left` - Alinear a la izquierda
-- `text-center` - Centrar
-- `text-right` - Alinear a la derecha
-
-### Estilos de Texto
-- `weight-medium` - Peso de fuente medio (500)
-- `color-ingresos` - Color verde para ingresos
-- `color-gastos` - Color rojo para gastos
-- `color-per-home` - Color azul para por vivienda
-- `color-secondary` - Color gris secundario
-
-### Columnas Especiales
-- `col-secreta` - Columna de contenido secreto
-- `col-concepto-original` - Columna de concepto original
-
-## 🚀 Uso con ConfigurableTable
-
-```javascript
-import { createConfigurableTable } from './ConfigurableTable.js';
-
-const myTable = createConfigurableTable('my-container', {
-    columns: [
-        { key: 'fecha', labelKey: 'date', width: '100px', align: 'text-center' },
-        { key: 'concepto', labelKey: 'concept', minWidth: '200px' },
-        { key: 'monto', labelKey: 'amount', width: '120px', align: 'text-right', 
-          formatter: (v) => formatCurrency(v) }
-    ],
-    options: {
-        compact: false,
-        pagination: true,
-        itemsPerPage: 50,
-        sortColumn: 'fecha',
-        sortDirection: 'desc'
-    }
-});
-
-myTable.renderWithData(data);
-```
+1. **Consistencia Total**: Todas las tablas se ven idénticas
+2. **Fácil Mantenimiento**: Cambia UNA variable CSS y afecta a TODAS las tablas
+3. **Escalable**: Nuevas tablas heredan automáticamente el look profesional
+4. **Menos Código**: No necesitas configurar estilos en cada columna
+5. **Profesional**: Diseño unificado en todo el dashboard
