@@ -4,8 +4,8 @@
 
 /* CSS Variables */
 :root {
-    --font-primary: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-    --font-monospace: 'Roboto Mono', 'SFMono-Regular', ui-monospace, monospace;
+    --font-primary: 'Roboto', sans-serif;
+    --font-monospace: 'Roboto Mono', monospace;
     --bg-color: #f5f6f8;
     --card-bg-color: #ffffff;
     --text-primary: #1f2933;
