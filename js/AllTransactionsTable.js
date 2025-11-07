@@ -21,14 +21,14 @@ export class AllTransactionsTable extends BaseTable {
         });
         
         this.columns = [
-            { key: 'F. Operativa', labelKey: 'date', type: 'date', align: '' },
-            { key: 'Categoria', labelKey: 'category', align: '' },
-            { key: 'Concepto (Original)', labelKey: 'concept', align: '', cssClass: 'col-concepto-original' },
-            { key: 'Concepto Publico', labelKey: 'concept', align: '', cssClass: 'col-secreta' },
-            { key: 'Importe', labelKey: 'amount', type: 'currency', align: 'text-right', cellClass: (item) => this.getAmountClass(item) },
-            { key: 'per Home', labelKey: 'per_home', type: 'currency', align: 'text-right', cellClass: 'color-per-home' },
-            { key: 'Tipo', labelKey: 'type', align: 'text-center', cellClass: (item) => this.getTypeClass(item) },
-            { key: 'Saldo', labelKey: 'balance', type: 'currency', align: 'text-right', cellClass: 'color-secondary' }
+            { key: 'F. Operativa', labelKey: 'date', type: 'date', align: '', sortable: true },
+            { key: 'Categoria', labelKey: 'category', align: '', sortable: true },
+            { key: 'Concepto (Original)', labelKey: 'concept', align: '', cssClass: 'col-concepto-original', sortable: true },
+            { key: 'Concepto Publico', labelKey: 'concept', align: '', cssClass: 'col-secreta', sortable: true },
+            { key: 'Importe', labelKey: 'amount', type: 'currency', align: 'text-right', cellClass: (item) => this.getAmountClass(item), sortable: true },
+            { key: 'per Home', labelKey: 'per_home', type: 'currency', align: 'text-right', cellClass: 'color-per-home', sortable: true },
+            { key: 'Tipo', labelKey: 'type', align: 'text-center', cellClass: (item) => this.getTypeClass(item), sortable: true },
+            { key: 'Saldo', labelKey: 'balance', type: 'currency', align: 'text-right', cellClass: 'color-secondary', sortable: true }
         ];
     }
 

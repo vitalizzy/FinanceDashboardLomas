@@ -17,10 +17,10 @@ export class CategorySummaryTable extends BaseTable {
         });
         
         this.columns = [
-            { key: 'category', labelKey: 'category', align: 'weight-medium' },
-            { key: 'count', labelKey: 'count', type: 'number', align: 'text-right' },
-            { key: 'total', labelKey: 'expenses_sum', type: 'currency', align: 'text-right color-gastos weight-medium' },
-            { key: 'percentage', labelKey: 'total_percent', type: 'percent', align: 'text-right color-secondary' }
+            { key: 'category', labelKey: 'category', align: 'weight-medium', sortable: true },
+            { key: 'count', labelKey: 'count', type: 'number', align: 'text-right', sortable: true },
+            { key: 'total', labelKey: 'expenses_sum', type: 'currency', align: 'text-right color-gastos weight-medium', sortable: true },
+            { key: 'percentage', labelKey: 'total_percent', type: 'percent', align: 'text-right color-secondary', sortable: true }
         ];
     }
 

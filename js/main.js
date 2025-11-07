@@ -36,15 +36,18 @@ window.clearAllFilters = () => {
     AppState.setSearchQuery('');
     AppState.filters.current = APP_CONFIG.DEFAULT_FILTER;
     
-    document.getElementById('start-date-select').value = '';
-    document.getElementById('end-date-select').value = '';
-    document.getElementById('transaction-search').value = '';
-    document.getElementById('filter-select').value = APP_CONFIG.DEFAULT_FILTER;
+    const startDateEl = document.getElementById('start-date-select');
+    const endDateEl = document.getElementById('end-date-select');
+    const searchEl = document.getElementById('transaction-search');
+    const filterEl = document.getElementById('filter-select');
     
-    // Llamar updateDashboard cuando esté definida
-    if (typeof updateDashboard === 'function') {
-        updateDashboard();
-    }
+    if (startDateEl) startDateEl.value = '';
+    if (endDateEl) endDateEl.value = '';
+    if (searchEl) searchEl.value = '';
+    if (filterEl) filterEl.value = APP_CONFIG.DEFAULT_FILTER;
+    
+    // updateDashboard se define después pero se ejecutará cuando se llame
+    setTimeout(() => updateDashboard(), 0);
 };
 
 // Seleccionar categoría pendiente (desde gráfico o tabla)
@@ -54,13 +57,10 @@ window.selectPendingCategory = (event, category) => {
     AppState.toggleCategory(category, true);
     console.log('[selectPendingCategory] Pending categories:', Array.from(AppState.filters.pendingCategories));
     
-    // Llamar updateDashboard cuando esté definida
-    if (typeof updateDashboard === 'function') {
+    setTimeout(() => {
         updateDashboard();
-    }
-    if (typeof showConfirmCancelButtons === 'function') {
         showConfirmCancelButtons();
-    }
+    }, 0);
 };
 
 // Seleccionar mes pendiente (desde gráfico)
@@ -70,13 +70,10 @@ window.selectPendingMonth = (event, monthKey) => {
     AppState.toggleMonth(monthKey, true);
     console.log('[selectPendingMonth] Pending months:', Array.from(AppState.filters.pendingMonths));
     
-    // Llamar updateDashboard cuando esté definida
-    if (typeof updateDashboard === 'function') {
+    setTimeout(() => {
         updateDashboard();
-    }
-    if (typeof showConfirmCancelButtons === 'function') {
         showConfirmCancelButtons();
-    }
+    }, 0);
 };
 
 // Aplicar selecciones pendientes
@@ -92,12 +89,10 @@ window.applyPendingSelection = () => {
     console.log('[applyPendingSelection] After - categories:', Array.from(AppState.filters.categories));
     console.log('[applyPendingSelection] After - months:', Array.from(AppState.filters.months));
     
-    if (typeof hideConfirmCancelButtons === 'function') {
+    setTimeout(() => {
         hideConfirmCancelButtons();
-    }
-    if (typeof updateDashboard === 'function') {
         updateDashboard();
-    }
+    }, 0);
 };
 
 // Cancelar selecciones pendientes
@@ -108,12 +103,10 @@ window.clearPendingSelection = () => {
     AppState.clearMonths(true);      // Clear pending
     AppState.clearMonths(false);     // Clear applied
     
-    if (typeof hideConfirmCancelButtons === 'function') {
+    setTimeout(() => {
         hideConfirmCancelButtons();
-    }
-    if (typeof updateDashboard === 'function') {
         updateDashboard();
-    }
+    }, 0);
 };
 
 // Exportar a CSV

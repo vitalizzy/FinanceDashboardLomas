@@ -18,11 +18,11 @@ export class TopMovementsTable extends BaseTable {
         });
         
         this.columns = [
-            { key: 'F. Operativa', labelKey: 'date', type: 'date', align: '' },
-            { key: 'Categoria', labelKey: 'category', align: '' },
-            { key: 'Concepto', labelKey: 'concept', align: '' },
-            { key: 'amount', labelKey: 'amount', type: 'custom', align: 'text-right', cellClass: (item) => this.getAmountClass(item) },
-            { key: 'per Home', labelKey: 'per_home', type: 'currency', align: 'text-right' }
+            { key: 'F. Operativa', labelKey: 'date', type: 'date', align: '', sortable: true },
+            { key: 'Categoria', labelKey: 'category', align: '', sortable: true },
+            { key: 'Concepto Publico', labelKey: 'concept', align: '', sortable: true },
+            { key: 'amount', labelKey: 'amount', type: 'custom', align: 'text-right', cellClass: (item) => this.getAmountClass(item), sortable: true },
+            { key: 'per Home', labelKey: 'per_home', type: 'currency', align: 'text-right', sortable: true }
         ];
     }
 

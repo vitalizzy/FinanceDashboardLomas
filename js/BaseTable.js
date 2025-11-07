@@ -61,12 +61,15 @@ export class BaseTable {
         let html = '<thead><tr>';
         
         columns.forEach(col => {
-            const sortClass = this.sortColumn === col.key ? 
-                (this.sortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 'sortable';
+            const isSortable = col.sortable !== false; // Por defecto true, a menos que sea explícitamente false
+            const sortClass = isSortable && this.sortColumn === col.key ? 
+                (this.sortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 
+                (isSortable ? 'sortable' : '');
             const alignClass = col.align || '';
             const cssClass = col.cssClass || '';
             const allClasses = [sortClass, alignClass, cssClass].filter(c => c).join(' ');
-            html += `<th class="${allClasses}" onclick="window.sortTable_${this.safeId}('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey, AppState.language)}</th>`;
+            const onclick = isSortable ? `onclick="window.sortTable_${this.safeId}('${col.key}')"` : '';
+            html += `<th class="${allClasses}" ${onclick} data-i18n="${col.labelKey}">${translate(col.labelKey, AppState.language)}</th>`;
         });
         
         html += '</tr></thead>';
