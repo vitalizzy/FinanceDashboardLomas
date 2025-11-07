@@ -51,10 +51,16 @@ export function createBarChart(canvasId, data) {
             responsive: true,
             maintainAspectRatio: false,
             onClick: (event, elements) => {
+                console.log('[Chart onClick] Bar chart clicked, elements:', elements);
                 if (elements.length > 0) {
                     const index = elements[0].index;
                     const category = data[index][0];
-                    window.selectPendingCategory(event, category);
+                    console.log('[Chart onClick] Category selected:', category, 'at index:', index);
+                    if (typeof window.selectPendingCategory === 'function') {
+                        window.selectPendingCategory(event, category);
+                    } else {
+                        console.error('[Chart onClick] window.selectPendingCategory is not defined!');
+                    }
                 }
             },
             plugins: {
@@ -199,10 +205,16 @@ export function createLineChart(canvasId, data) {
             responsive: true,
             maintainAspectRatio: false,
             onClick: (event, elements) => {
+                console.log('[Chart onClick] Line chart clicked, elements:', elements);
                 if (elements.length > 0) {
                     const index = elements[0].index;
                     const monthKey = last12MonthsData[index][0];
-                    window.selectPendingMonth(event, monthKey);
+                    console.log('[Chart onClick] Month selected:', monthKey, 'at index:', index);
+                    if (typeof window.selectPendingMonth === 'function') {
+                        window.selectPendingMonth(event, monthKey);
+                    } else {
+                        console.error('[Chart onClick] window.selectPendingMonth is not defined!');
+                    }
                 }
             },
             plugins: {

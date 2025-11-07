@@ -21,6 +21,124 @@ window._charts = window._charts || {};
 
 /**
  * ============================================================================
+ * FUNCIONES GLOBALES (expuestas para onclick y gráficos)
+ * ============================================================================
+ */
+
+// Limpiar todos los filtros
+window.clearAllFilters = () => {
+    console.log('[clearAllFilters] Clearing all filters');
+    AppState.clearCategories(false);
+    AppState.clearCategories(true);
+    AppState.clearMonths(false);
+    AppState.clearMonths(true);
+    AppState.setDateRange(null, null);
+    AppState.setSearchQuery('');
+    AppState.filters.current = APP_CONFIG.DEFAULT_FILTER;
+    
+    document.getElementById('start-date-select').value = '';
+    document.getElementById('end-date-select').value = '';
+    document.getElementById('transaction-search').value = '';
+    document.getElementById('filter-select').value = APP_CONFIG.DEFAULT_FILTER;
+    
+    // Llamar updateDashboard cuando esté definida
+    if (typeof updateDashboard === 'function') {
+        updateDashboard();
+    }
+};
+
+// Seleccionar categoría pendiente (desde gráfico o tabla)
+window.selectPendingCategory = (event, category) => {
+    console.log('[selectPendingCategory] Category clicked:', category);
+    event.stopPropagation();
+    AppState.toggleCategory(category, true);
+    console.log('[selectPendingCategory] Pending categories:', Array.from(AppState.filters.pendingCategories));
+    
+    // Llamar updateDashboard cuando esté definida
+    if (typeof updateDashboard === 'function') {
+        updateDashboard();
+    }
+    if (typeof showConfirmCancelButtons === 'function') {
+        showConfirmCancelButtons();
+    }
+};
+
+// Seleccionar mes pendiente (desde gráfico)
+window.selectPendingMonth = (event, monthKey) => {
+    console.log('[selectPendingMonth] Month clicked:', monthKey);
+    event.stopPropagation();
+    AppState.toggleMonth(monthKey, true);
+    console.log('[selectPendingMonth] Pending months:', Array.from(AppState.filters.pendingMonths));
+    
+    // Llamar updateDashboard cuando esté definida
+    if (typeof updateDashboard === 'function') {
+        updateDashboard();
+    }
+    if (typeof showConfirmCancelButtons === 'function') {
+        showConfirmCancelButtons();
+    }
+};
+
+// Aplicar selecciones pendientes
+window.applyPendingSelection = () => {
+    console.log('[applyPendingSelection] Before - pendingCategories:', Array.from(AppState.filters.pendingCategories));
+    console.log('[applyPendingSelection] Before - pendingMonths:', Array.from(AppState.filters.pendingMonths));
+    console.log('[applyPendingSelection] Before - categories:', Array.from(AppState.filters.categories));
+    console.log('[applyPendingSelection] Before - months:', Array.from(AppState.filters.months));
+    
+    AppState.confirmPendingCategories();
+    AppState.confirmPendingMonths();
+    
+    console.log('[applyPendingSelection] After - categories:', Array.from(AppState.filters.categories));
+    console.log('[applyPendingSelection] After - months:', Array.from(AppState.filters.months));
+    
+    if (typeof hideConfirmCancelButtons === 'function') {
+        hideConfirmCancelButtons();
+    }
+    if (typeof updateDashboard === 'function') {
+        updateDashboard();
+    }
+};
+
+// Cancelar selecciones pendientes
+window.clearPendingSelection = () => {
+    console.log('[clearPendingSelection] Clearing all pending and applied selections');
+    AppState.clearCategories(true);  // Clear pending
+    AppState.clearCategories(false); // Clear applied
+    AppState.clearMonths(true);      // Clear pending
+    AppState.clearMonths(false);     // Clear applied
+    
+    if (typeof hideConfirmCancelButtons === 'function') {
+        hideConfirmCancelButtons();
+    }
+    if (typeof updateDashboard === 'function') {
+        updateDashboard();
+    }
+};
+
+// Exportar a CSV
+window.exportToCSV = () => {
+    const data = AppState.data.filtered;
+    if (!data || data.length === 0) {
+        alert(translate('no_data_export', AppState.language));
+        return;
+    }
+    
+    // Implementación de exportación CSV
+    console.log('CSV export pending implementation');
+};
+
+console.log('✅ Global functions defined:', {
+    clearAllFilters: typeof window.clearAllFilters,
+    selectPendingCategory: typeof window.selectPendingCategory,
+    selectPendingMonth: typeof window.selectPendingMonth,
+    applyPendingSelection: typeof window.applyPendingSelection,
+    clearPendingSelection: typeof window.clearPendingSelection,
+    exportToCSV: typeof window.exportToCSV
+});
+
+/**
+ * ============================================================================
  * INICIALIZACIÓN
  * ============================================================================
  */
@@ -506,62 +624,9 @@ function updateLanguage() {
 
 /**
  * ============================================================================
- * FUNCIONES GLOBALES (para onclick handlers)
+ * BOTONES DE CONFIRMACIÓN/CANCELACIÓN
  * ============================================================================
  */
-window.clearAllFilters = () => {
-    AppState.resetAllFilters();
-    document.getElementById('start-date-select').value = '';
-    document.getElementById('end-date-select').value = '';
-    document.getElementById('transaction-search').value = '';
-    document.getElementById('filter-select').value = APP_CONFIG.DEFAULT_FILTER;
-    updateDashboard();
-};
-
-window.selectPendingCategory = (event, category) => {
-    console.log('[selectPendingCategory] Category clicked:', category);
-    event.stopPropagation();
-    AppState.toggleCategory(category, true);
-    console.log('[selectPendingCategory] Pending categories:', Array.from(AppState.filters.pendingCategories));
-    updateDashboard();
-    showConfirmCancelButtons();
-};
-
-window.selectPendingMonth = (event, monthKey) => {
-    console.log('[selectPendingMonth] Month clicked:', monthKey);
-    event.stopPropagation();
-    AppState.toggleMonth(monthKey, true);
-    console.log('[selectPendingMonth] Pending months:', Array.from(AppState.filters.pendingMonths));
-    updateDashboard();
-    showConfirmCancelButtons();
-};
-
-window.applyPendingSelection = () => {
-    console.log('[applyPendingSelection] Before - pendingCategories:', Array.from(AppState.filters.pendingCategories));
-    console.log('[applyPendingSelection] Before - pendingMonths:', Array.from(AppState.filters.pendingMonths));
-    console.log('[applyPendingSelection] Before - categories:', Array.from(AppState.filters.categories));
-    console.log('[applyPendingSelection] Before - months:', Array.from(AppState.filters.months));
-    
-    AppState.confirmPendingCategories();
-    AppState.confirmPendingMonths();
-    
-    console.log('[applyPendingSelection] After - categories:', Array.from(AppState.filters.categories));
-    console.log('[applyPendingSelection] After - months:', Array.from(AppState.filters.months));
-    
-    hideConfirmCancelButtons();
-    updateDashboard();
-};
-
-window.clearPendingSelection = () => {
-    console.log('[clearPendingSelection] Clearing all pending and applied selections');
-    AppState.clearCategories(true);  // Clear pending
-    AppState.clearCategories(false); // Clear applied
-    AppState.clearMonths(true);      // Clear pending
-    AppState.clearMonths(false);     // Clear applied
-    hideConfirmCancelButtons();
-    updateDashboard();
-};
-
 function showConfirmCancelButtons() {
     const hasPendingCategory = AppState.filters.pendingCategories.size > 0;
     const hasPendingMonth = AppState.filters.pendingMonths.size > 0;
@@ -623,17 +688,6 @@ function hideConfirmCancelButtons() {
     document.getElementById('fab-confirm').style.display = 'none';
     document.getElementById('fab-cancel').style.display = 'none';
 }
-
-window.exportToCSV = () => {
-    const data = AppState.data.filtered;
-    if (!data || data.length === 0) {
-        alert(translate('no_data_export', AppState.language));
-        return;
-    }
-    
-    // Implementación de exportación CSV
-    console.log('CSV export pending implementation');
-};
 
 /**
  * ============================================================================
