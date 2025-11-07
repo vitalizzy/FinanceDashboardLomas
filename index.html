@@ -324,11 +324,6 @@
             transform: scale(1.05);
         }
 
-        /* FAB icon layout: show funnel and small X */
-        .fab .fab-icon { display: inline-flex; align-items: center; justify-content: center; }
-        .fab .fab-icon svg { width: 12px; height: 12px; fill: white; }
-        .fab .fab-x { display: inline-block; font-size: 12px; line-height: 1; margin-left: 6px; }
-
         /* FAB Confirm - Verde */
         .fab-confirm {
             background-color: #28a745;
@@ -1375,14 +1370,9 @@
         
         <!-- Botones flotantes (FAB) -->
         <button id="clear-filters-fab" class="fab" title="" onclick="window.clearAllFilters()" data-i18n="clear_all_title">
-            <span class="fab-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
-                    <path d="M3 5h18v2l-7 7v5l-4 2v-7L3 7V5z" />
-                </svg>
-            </span>
-            <span class="fab-x" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
-            </span>
+            <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/>
+            </svg>
         </button>
         
         <!-- FAB Confirmar selección -->
