@@ -13,6 +13,7 @@ import { formatCurrency } from './formatters.js';
 import { allTransactionsTable } from './AllTransactionsTable.js';
 import { topMovementsTable } from './TopMovementsTable.js';
 import { categorySummaryTable } from './CategorySummaryTable.js';
+import { createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow } from './charts.js';
 
 // Registry for chart instances
 window._charts = window._charts || {};
@@ -371,9 +372,23 @@ function getTopMovements(data) {
 }
 
 function updateCharts(data) {
-    // Aquí irían las funciones de actualización de gráficos
-    // Por brevedad, lo dejo como referencia
-    console.log('Charts update pending implementation');
+    try {
+        console.log('📈 Updating charts with', data.length, 'records');
+        
+        // Gráfico de gastos por categoría (barras)
+        const expensesByCategory = getExpensesByCategory(data);
+        createBarChart('expenses-chart', expensesByCategory);
+        console.log('✅ Expenses chart updated');
+        
+        // Gráfico de flujo mensual (líneas)
+        const monthlyFlow = getMonthlyFlow(data);
+        createLineChart('monthly-flow-chart', monthlyFlow);
+        console.log('✅ Monthly flow chart updated');
+        
+    } catch (error) {
+        console.error('❌ Error updating charts:', error);
+        // No lanzar el error para no bloquear las tablas
+    }
 }
 
 /**
@@ -495,6 +510,13 @@ window.clearAllFilters = () => {
 window.selectPendingCategory = (event, category) => {
     event.stopPropagation();
     AppState.toggleCategory(category, true);
+    updateDashboard();
+    showConfirmCancelButtons();
+};
+
+window.selectPendingMonth = (event, monthKey) => {
+    event.stopPropagation();
+    AppState.toggleMonth(monthKey, true);
     updateDashboard();
     showConfirmCancelButtons();
 };
