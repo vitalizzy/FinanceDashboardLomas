@@ -83,7 +83,6 @@ window.sortTable_category_summary_table = (col) => {
     categorySummaryTable.sort(col);
     AppState.ui.categorySummarySortColumn = categorySummaryTable.sortColumn;
     AppState.ui.categorySummarySortDirection = categorySummaryTable.sortDirection;
-    // Re-renderizar actualizando el dashboard completo
     if (typeof window.updateDashboard === 'function') {
         window.updateDashboard();
     }
@@ -91,7 +90,17 @@ window.sortTable_category_summary_table = (col) => {
 
 window.filterColumn_category_summary_table = (col, value) => {
     categorySummaryTable.filterColumn(col, value);
-    // Re-renderizar actualizando el dashboard completo
+    if (typeof window.updateDashboard === 'function') {
+        window.updateDashboard();
+    }
+};
+
+window.toggleColumnFilter_category_summary_table = (col, event) => {
+    categorySummaryTable.toggleColumnFilter(col, event);
+};
+
+window.clearColumnFilter_category_summary_table = (col, event) => {
+    categorySummaryTable.clearColumnFilter(col, event);
     if (typeof window.updateDashboard === 'function') {
         window.updateDashboard();
     }

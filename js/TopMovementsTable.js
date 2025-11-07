@@ -81,7 +81,6 @@ window.sortTable_top_movements_table = (col) => {
     topMovementsTable.sort(col);
     AppState.ui.topMovementsSortColumn = topMovementsTable.sortColumn;
     AppState.ui.topMovementsSortDirection = topMovementsTable.sortDirection;
-    // Re-renderizar actualizando el dashboard completo
     if (typeof window.updateDashboard === 'function') {
         window.updateDashboard();
     }
@@ -89,7 +88,17 @@ window.sortTable_top_movements_table = (col) => {
 
 window.filterColumn_top_movements_table = (col, value) => {
     topMovementsTable.filterColumn(col, value);
-    // Re-renderizar actualizando el dashboard completo
+    if (typeof window.updateDashboard === 'function') {
+        window.updateDashboard();
+    }
+};
+
+window.toggleColumnFilter_top_movements_table = (col, event) => {
+    topMovementsTable.toggleColumnFilter(col, event);
+};
+
+window.clearColumnFilter_top_movements_table = (col, event) => {
+    topMovementsTable.clearColumnFilter(col, event);
     if (typeof window.updateDashboard === 'function') {
         window.updateDashboard();
     }

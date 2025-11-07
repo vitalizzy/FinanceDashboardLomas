@@ -85,6 +85,15 @@ window.filterColumn_all_transactions_table = (col, value) => {
     allTransactionsTable.render(AppState.data.filtered);
 };
 
+window.toggleColumnFilter_all_transactions_table = (col, event) => {
+    allTransactionsTable.toggleColumnFilter(col, event);
+};
+
+window.clearColumnFilter_all_transactions_table = (col, event) => {
+    allTransactionsTable.clearColumnFilter(col, event);
+    allTransactionsTable.render(AppState.data.filtered);
+};
+
 window.nextPage_all_transactions_table = () => {
     allTransactionsTable.nextPage();
     allTransactionsTable.render(AppState.data.filtered);

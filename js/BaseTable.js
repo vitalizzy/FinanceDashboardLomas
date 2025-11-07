@@ -63,40 +63,40 @@ export class BaseTable {
     renderHeader(columns) {
         let html = '<thead>';
         
-        // Primera fila: títulos y ordenamiento
+        // Una sola fila con títulos, ordenamiento y lupa
         html += '<tr>';
         columns.forEach(col => {
-            const isSortable = col.sortable !== false; // Por defecto true, a menos que sea explícitamente false
+            const isSortable = col.sortable !== false;
+            const isSearchable = col.searchable !== false;
             const sortClass = isSortable && this.sortColumn === col.key ? 
                 (this.sortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 
                 (isSortable ? 'sortable' : '');
             const alignClass = col.align || '';
             const cssClass = col.cssClass || '';
             const allClasses = [sortClass, alignClass, cssClass].filter(c => c).join(' ');
-            const onclick = isSortable ? `onclick="window.sortTable_${this.safeId}('${col.key}')"` : '';
-            html += `<th class="${allClasses}" ${onclick} data-i18n="${col.labelKey}">${translate(col.labelKey, AppState.language)}</th>`;
-        });
-        html += '</tr>';
-        
-        // Segunda fila: filtros por columna
-        html += '<tr class="filter-row">';
-        columns.forEach((col, index) => {
-            const isSearchable = col.searchable !== false; // Por defecto true, a menos que sea explícitamente false
+            
+            html += `<th class="${allClasses}" data-i18n="${col.labelKey}">`;
+            html += `<div class="th-content">`;
+            html += `<span class="th-label" ${isSortable ? `onclick="window.sortTable_${this.safeId}('${col.key}')"` : ''}>${translate(col.labelKey, AppState.language)}</span>`;
+            
+            // Icono de lupa si es searchable
             if (isSearchable) {
-                html += `<th class="filter-cell">
-                    <div class="column-filter">
-                        <input 
-                            type="text" 
-                            class="column-search-input" 
-                            placeholder="🔍"
-                            oninput="window.filterColumn_${this.safeId}('${col.key}', this.value)"
-                            onclick="event.stopPropagation()"
-                        />
-                    </div>
-                </th>`;
-            } else {
-                html += '<th class="filter-cell"></th>';
+                html += `<span class="th-search-icon" onclick="window.toggleColumnFilter_${this.safeId}('${col.key}', event)">🔍</span>`;
+                html += `<div class="column-filter-dropdown" id="filter_${this.safeId}_${col.key}" style="display:none;">
+                    <input 
+                        type="text" 
+                        class="column-search-input" 
+                        placeholder="Buscar..."
+                        value="${this.columnFilters[col.key] || ''}"
+                        oninput="window.filterColumn_${this.safeId}('${col.key}', this.value)"
+                        onclick="event.stopPropagation()"
+                    />
+                    <button class="clear-filter-btn" onclick="window.clearColumnFilter_${this.safeId}('${col.key}', event)">✕</button>
+                </div>`;
             }
+            
+            html += `</div>`;
+            html += `</th>`;
         });
         html += '</tr>';
         
@@ -273,5 +273,47 @@ export class BaseTable {
             delete this.columnFilters[columnKey];
         }
         this.currentPage = 1; // Reset a primera página al filtrar
+    }
+
+    /**
+     * Toggle del dropdown de filtro
+     */
+    toggleColumnFilter(columnKey, event) {
+        if (event) event.stopPropagation();
+        
+        const dropdownId = `filter_${this.safeId}_${columnKey}`;
+        const dropdown = document.getElementById(dropdownId);
+        
+        if (!dropdown) return;
+        
+        // Cerrar todos los otros dropdowns
+        document.querySelectorAll('.column-filter-dropdown').forEach(d => {
+            if (d.id !== dropdownId) d.style.display = 'none';
+        });
+        
+        // Toggle este dropdown
+        if (dropdown.style.display === 'none') {
+            dropdown.style.display = 'block';
+            const input = dropdown.querySelector('input');
+            if (input) setTimeout(() => input.focus(), 100);
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    /**
+     * Limpiar filtro de una columna específica
+     */
+    clearColumnFilter(columnKey, event) {
+        if (event) event.stopPropagation();
+        delete this.columnFilters[columnKey];
+        const dropdownId = `filter_${this.safeId}_${columnKey}`;
+        const dropdown = document.getElementById(dropdownId);
+        if (dropdown) {
+            const input = dropdown.querySelector('input');
+            if (input) input.value = '';
+            dropdown.style.display = 'none';
+        }
+        this.currentPage = 1;
     }
 }

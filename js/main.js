@@ -710,3 +710,13 @@ function hideConfirmCancelButtons() {
  * ============================================================================
  */
 document.addEventListener('DOMContentLoaded', init);
+
+// Cerrar dropdowns de filtro al hacer clic fuera
+document.addEventListener('click', (event) => {
+    // Si el clic no es en un dropdown o en un icono de lupa, cerrar todos los dropdowns
+    if (!event.target.closest('.column-filter-dropdown') && !event.target.closest('.th-search-icon')) {
+        document.querySelectorAll('.column-filter-dropdown').forEach(dropdown => {
+            dropdown.style.display = 'none';
+        });
+    }
+});
