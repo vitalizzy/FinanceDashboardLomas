@@ -4,10 +4,10 @@
  * ============================================================================
  */
 
-import { AppState } from '../../core/state.js';
-import { translate } from '../../core/i18n.js';
-import { formatCurrency, formatPercent, formatNumber } from '../../core/formatters.js';
-import { parseDate, parseAmount } from '../../core/utils.js';
+import { AppState } from './state.js';
+import { translate } from './i18n.js';
+import { formatCurrency, formatPercent, formatNumber } from './formatters.js';
+import { parseDate, parseAmount } from './utils.js';
 
 // Valores reutilizables para todas las tablas que heredan de BaseTable.
 const BASE_TABLE_DEFAULTS = Object.freeze({
@@ -29,7 +29,7 @@ export class BaseTable {
         this.sortDirection = mergedOptions.sortDirection;
         this.isCompact = mergedOptions.compact;
         this.initialRows = mergedOptions.initialRows;
-    this.rowsIncrement = mergedOptions.rowsIncrement ?? mergedOptions.initialRows;
+        this.rowsIncrement = mergedOptions.rowsIncrement ?? mergedOptions.initialRows;
         this.visibleRows = this.initialRows;
         this.columnFilters = {}; // Filtros por columna
         this.lastColumns = [];
@@ -407,7 +407,11 @@ export class BaseTable {
         this.resetVisibleRows();
     }
 
+    /**
+     * Restablecer el número de filas visibles y re-renderizar
+     */
     resetVisibleRows() {
         this.visibleRows = this.initialRows;
+        this.render(this.lastData, this.lastColumns);
     }
 }

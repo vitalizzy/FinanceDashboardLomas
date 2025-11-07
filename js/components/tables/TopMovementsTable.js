@@ -4,7 +4,7 @@
  * ============================================================================
  */
 
-import { BaseTable } from './BaseTable.js';
+import { BaseTable } from '../../core/base_table.js';
 import { AppState } from '../../core/state.js';
 import { translate } from '../../core/i18n.js';
 import { parseAmount } from '../../core/utils.js';

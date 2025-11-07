@@ -6,7 +6,7 @@
 - Incluye tablas con filtrado/ordenación, KPIs en vivo y gráficos Chart.js (barras, líneas, combinados extendibles).
 
 ## Arquitectura
-- **Core (`js/core/`)**: capa fundacional con configuración (`config`), estado global (`state`), internacionalización (`i18n`), formateadores numéricos, utilidades comunes, manejo de errores y helpers de seguridad. Todo el front consume estos módulos con rutas `../core/...`.
+- **Core (`js/core/`)**: capa fundacional con configuración (`config`), estado global (`state`), internacionalización (`i18n`), formateadores numéricos, utilidades comunes, manejo de errores, helpers de seguridad y las configuraciones base de componentes (`base_table`, `base_chart`, `base_bar_chart`, `base_line_chart`). Todo el front consume estos módulos con rutas `../core/...`.
 - **Aplicación (`js/app/`)**:
 	- `DashboardApp`: orquestador que inicializa servicios, coordina managers y ejecuta `updateDashboard()`.
 	- `globalActions`: expone la superficie pública utilizada por los handlers inline de `index.html` (clear/apply filters, export, etc.).
@@ -19,25 +19,25 @@
 - **Componentes (`js/components/`)**: UI desacoplada por ámbito.
 	- `filters/`: `FilterPanel`, `Dropdown`, `DateRangePicker`, `SearchBox` coordinan interacción de filtros con `FilterManager`.
 	- `feedback/`: `LoadingOverlay`, `LastUpdateBanner` muestran estado de carga y fecha de actualización.
-	- `tables/`: `BaseTable` (scroll infinito + ordenamiento) y especializaciones por vista.
-	- `charts/`: registro central (`ChartRegistry`), renderers (`BarChart`, `LineChart`) y transformadores de datos (`dataTransforms`).
+	- `tables/`: especializaciones por vista que extienden `BaseTable` (definido en `js/core/base_table.js`).
+	- `charts/`: renderers (`BarChart`, `LineChart`) y transformadores de datos (`dataTransforms`) apoyados en `js/core/base_chart.js` y los cimientos tipados `BaseBarChart`/`BaseLineChart`.
 
 ## Estructura de Carpetas
 - `assets/images`: iconos y logotipos servidos por el PWA.
 - `assets/styles`: hoja de estilos principal (`main.css`).
 - `assets/manifest.webmanifest`: manifest PWA legible y versionable.
-- `js/core`: configuración global, estado, utilidades comunes, internacionalización, formateo, errores y seguridad.
+- `js/core`: configuración global, estado, utilidades comunes, internacionalización, formateo, errores, seguridad y bases `base_table`, `base_chart`, `base_bar_chart`, `base_line_chart`.
 - `js/components/filters`: controladores de UI para filtros rápidos, rangos de fechas y búsqueda.
 - `js/components/feedback`: componentes de overlay y banner contextual.
-- `js/components/tables`: `BaseTable` y las implementaciones `AllTransactionsTable`, `TopMovementsTable`, `CategorySummaryTable`.
-- `js/components/charts`: registro central (`ChartRegistry`), renderers (`BarChart`, `LineChart`) y transformadores de datos.
+- `js/components/tables`: implementaciones `AllTransactionsTable`, `TopMovementsTable`, `CategorySummaryTable` que heredan de `BaseTable` (`js/core/base_table.js`).
+- `js/components/charts`: renderers (`BarChart`, `LineChart`) y transformadores de datos que consumen `js/core/base_chart.js`.
 - `js/managers`: orquestadores de tablas, gráficos, filtros y KPIs que consumen los componentes anteriores.
 - `js/services`: integraciones externas y normalización de datos (TSV).
 - `js/app`: inicialización, wiring general y acciones globales.
 
 ## Artefactos Reutilizables
-- **Tablas**: `BaseTable` + especializaciones. Añadir una tabla nueva solo requiere crear la definición y registrarla en `TableManager`.
-- **Gráficos**: `ChartManager.registerChart({...})` permite integrar bar, line, mixed o cualquier renderer adicional.
+- **Tablas**: `BaseTable` (`js/core/base_table.js`) + especializaciones. Añadir una tabla nueva solo requiere crear la definición y registrarla en `TableManager`.
+- **Gráficos**: `BaseBarChart`/`BaseLineChart` eliminan la repetición de boilerplate y `ChartManager.registerChart({...})` permite integrar bar, line, mixed o cualquier renderer adicional.
 - **Dropdowns / Date pickers / Search**: componentes configurables que emiten callbacks y se integran con `FilterManager`.
 - **KPI List**: `KpiManager` actualiza cualquier tarjeta KPI declarando los `id` en el constructor.
 - **Panel de filtros**: badges interactivos y botones flotantes se controlan desde `FilterPanel.togglePendingControls`/`hidePendingControls`.
@@ -67,8 +67,8 @@ python -m http.server 8000
 	- Probar doble idioma desde el selector.
 
 ## Mantenimiento
-- **Añadir gráfico**: `chartManager.registerChart({ id: 'nuevo-canvas', type: 'line', prepare: data => [...], render: createLineChart })`.
-- **Añadir tabla**: crear nueva clase basada en `BaseTable` y extender `DEFAULT_TABLES` en `TableManager` o pasar configuración propia al construir `DashboardApp`.
+- **Añadir gráfico**: extender `BaseBarChart`/`BaseLineChart` en `js/core` o usar sus métodos directamente, y registrar el renderer resultante con `chartManager.registerChart({ id, render })`.
+- **Añadir tabla**: crear nueva clase basada en `BaseTable` (`js/core/base_table.js`) y extender `DEFAULT_TABLES` en `TableManager` o pasar configuración propia al construir `DashboardApp`.
 - **Nuevos filtros**: ampliar `FilterManager` para manipular `AppState` y actualizar `FilterPanel` si se requieren badges adicionales.
 - **Exportación CSV**: `DashboardApp.handleExportToCSV` deja un placeholder; integrar librería o utilidades según la nueva especificación.
 
