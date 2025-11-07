@@ -47,13 +47,23 @@ export class AllTransactionsTable extends BaseTable {
     }
 
     renderRow(item, columns) {
-        let html = '<tr>';
+        const category = item.Categoria || 'Sin categoría';
+        const itemDate = parseDate(item['F. Operativa']);
+        const monthKey = itemDate ? `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}` : '';
+        
+        const isPendingCategory = AppState.filters.pendingCategories.has(category);
+        const isPendingMonth = monthKey && AppState.filters.pendingMonths.has(monthKey);
+        const pendingClass = (isPendingCategory || isPendingMonth) ? 'pending-selected' : '';
+        
+        let html = `<tr class="${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">`;
         
         columns.forEach(col => {
             const value = this.formatCellValue(item[col.key], col);
             const classes = col.cellClass ? (typeof col.cellClass === 'function' ? col.cellClass(item) : col.cellClass) : '';
+            const cssClass = col.cssClass || '';
             const align = col.align || '';
-            html += `<td class="${classes} ${align}">${value}</td>`;
+            const allClasses = [classes, cssClass, align].filter(c => c).join(' ');
+            html += `<td class="${allClasses}">${value}</td>`;
         });
         
         html += '</tr>';

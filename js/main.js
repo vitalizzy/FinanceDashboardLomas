@@ -13,7 +13,7 @@ import { formatCurrency } from './formatters.js';
 import { allTransactionsTable } from './AllTransactionsTable.js';
 import { topMovementsTable } from './TopMovementsTable.js';
 import { categorySummaryTable } from './CategorySummaryTable.js';
-import { createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow } from './charts.js';
+import { createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow, destroyAllCharts } from './charts.js';
 import { initSecurityListeners } from './security.js';
 
 // Registry for chart instances
@@ -497,15 +497,22 @@ function updateCharts(data) {
     try {
         console.log('📈 Updating charts with', data.length, 'records');
         
+        // Destruir gráficos existentes para regenerarlos con colores actualizados
+        destroyAllCharts();
+        
         // Gráfico de gastos por categoría (barras)
         const expensesByCategory = getExpensesByCategory(data);
-        createBarChart('expenses-chart', expensesByCategory);
-        console.log('✅ Expenses chart updated');
+        if (expensesByCategory.length > 0) {
+            createBarChart('expenses-chart', expensesByCategory);
+            console.log('✅ Expenses chart updated');
+        }
         
         // Gráfico de flujo mensual (líneas)
         const monthlyFlow = getMonthlyFlow(data);
-        createLineChart('monthly-flow-chart', monthlyFlow);
-        console.log('✅ Monthly flow chart updated');
+        if (monthlyFlow.length > 0) {
+            createLineChart('monthly-flow-chart', monthlyFlow);
+            console.log('✅ Monthly flow chart updated');
+        }
         
     } catch (error) {
         console.error('❌ Error updating charts:', error);

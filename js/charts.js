@@ -10,6 +10,35 @@ import { hexToRgba, parseDate, parseAmount } from './utils.js';
 import { formatCurrency } from './formatters.js';
 
 /**
+ * Destruye todos los gráficos existentes
+ */
+export function destroyAllCharts() {
+    try {
+        if (window._charts) {
+            for (const key in window._charts) {
+                try {
+                    const c = window._charts[key];
+                    if (c && typeof c.destroy === 'function') {
+                        c.destroy();
+                    }
+                } catch (e) { /* ignore */ }
+            }
+        }
+        // Fallback: intenta con Chart.getChart para cada canvas
+        const canvases = document.querySelectorAll('canvas');
+        canvases.forEach(canvas => {
+            try {
+                const ch = Chart.getChart(canvas);
+                if (ch) ch.destroy();
+            } catch (e) { /* ignore */ }
+        });
+        window._charts = {};
+    } catch (e) {
+        console.error('[destroyAllCharts] Error:', e);
+    }
+}
+
+/**
  * Crea un gráfico de barras para gastos por categoría
  */
 export function createBarChart(canvasId, data) {
