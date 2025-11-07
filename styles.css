@@ -308,7 +308,7 @@ body {
 .fab-confirm {
     background-color: var(--color-ingresos);
     right: 30px;
-    bottom: 100px;
+    bottom: 170px;
 }
 
 .fab-confirm:hover {
@@ -318,7 +318,7 @@ body {
 .fab-cancel {
     background-color: var(--color-gastos);
     right: 30px;
-    bottom: 170px;
+    bottom: 100px;
 }
 
 .fab-cancel:hover {
