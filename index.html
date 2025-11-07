@@ -2555,11 +2555,11 @@
                     { key: 'percentage', labelKey: 'total_percent', class: 'text-right' }
                 ];
 
-                let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table"><thead><tr>`;
+                let tableHTML = `<div class="table-scroll-wrapper"><table class="db-table compact"><thead><tr>`;
                 
                 columns.forEach(col => {
                     const sortClass = categorySummarySortColumn === col.key ? 
-                        (categorySummarySortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : '';
+                        (categorySummarySortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 'sortable';
                     tableHTML += `<th class="${sortClass} ${col.class}" onclick="window.sortCategorySummaryTable('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey)}</th>`;
                 });
                 
@@ -2573,10 +2573,10 @@
                     const isPending = pendingSelectedCategories.has(category);
                     const pendingClass = isPending ? 'pending-selected' : '';
                     tableHTML += `<tr class="${rowClass} ${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">
-                            <td style="font-weight: 500;">${category}</td>
+                            <td class="weight-medium">${category}</td>
                             <td class="text-center">${formatNumber(stats.count, 0, 0)}</td>
-                            <td class="text-right color-gastos" style="font-weight: 500;">${formatCurrency(stats.total)}</td>
-                            <td class="text-right color-per-home" style="font-weight: 500;">${formatCurrency(stats.totalPerHome)}</td>
+                            <td class="text-right color-gastos weight-medium">${formatCurrency(stats.total)}</td>
+                            <td class="text-right color-per-home weight-medium">${formatCurrency(stats.totalPerHome)}</td>
                             <td class="text-right color-secondary">${percentage}%</td>
                     </tr>`;
                 });
