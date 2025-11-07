@@ -540,6 +540,17 @@ function updateActiveFiltersPanel() {
     
     let hasFilters = false;
     
+    // Verificar si el período NO es el predeterminado (current_year)
+    const hasCustomPeriod = AppState.filters.current !== APP_CONFIG.DEFAULT_FILTER;
+    
+    // Verificar si hay rango de fechas personalizado
+    const hasCustomDateRange = AppState.filters.dateRange.start !== null || AppState.filters.dateRange.end !== null;
+    
+    // Si hay período o rango personalizado, considerarlo como filtro activo
+    if (hasCustomPeriod || hasCustomDateRange) {
+        hasFilters = true;
+    }
+    
     // Filtros de categoría
     AppState.filters.categories.forEach(cat => {
         hasFilters = true;
