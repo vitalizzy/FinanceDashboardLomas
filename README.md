@@ -23,6 +23,9 @@
 	- `charts/`: registro central (`ChartRegistry`), renderers (`BarChart`, `LineChart`) y transformadores de datos (`dataTransforms`).
 
 ## Estructura de Carpetas
+- `assets/images`: iconos y logotipos servidos por el PWA.
+- `assets/styles`: hoja de estilos principal (`main.css`).
+- `assets/manifest.webmanifest`: manifest PWA legible y versionable.
 - `js/core`: configuración global, estado, utilidades comunes, internacionalización, formateo, errores y seguridad.
 - `js/components/filters`: controladores de UI para filtros rápidos, rangos de fechas y búsqueda.
 - `js/components/feedback`: componentes de overlay y banner contextual.

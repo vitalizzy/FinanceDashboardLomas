@@ -1,0 +1,26 @@
+{
+  "name": "Finance Dashboard Lomas 2",
+  "short_name": "L2H Dashboard",
+  "description": "Análisis y seguimiento de transacciones bancarias de Lomas 2",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#22303B",
+  "icons": [
+    {
+      "src": "assets/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/L2H_logo.ico",
+      "sizes": "64x64 32x32 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
