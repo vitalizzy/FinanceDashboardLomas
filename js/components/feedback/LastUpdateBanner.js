@@ -1,6 +1,6 @@
-import { translate } from '../i18n.js';
-import { AppState } from '../state.js';
-import { APP_CONFIG } from '../config.js';
+import { translate } from '../../core/i18n.js';
+import { AppState } from '../../core/state.js';
+import { APP_CONFIG } from '../../core/config.js';
 
 /**
  * Displays the timestamp of the latest record loaded.

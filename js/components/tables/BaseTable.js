@@ -4,10 +4,10 @@
  * ============================================================================
  */
 
-import { AppState } from '../../state.js';
-import { translate } from '../../i18n.js';
-import { formatCurrency, formatPercent, formatNumber } from '../../formatters.js';
-import { parseDate, parseAmount } from '../../utils.js';
+import { AppState } from '../../core/state.js';
+import { translate } from '../../core/i18n.js';
+import { formatCurrency, formatPercent, formatNumber } from '../../core/formatters.js';
+import { parseDate, parseAmount } from '../../core/utils.js';
 
 export class BaseTable {
     constructor(containerId, options = {}) {

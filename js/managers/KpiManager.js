@@ -1,6 +1,6 @@
-import { parseAmount } from '../utils.js';
-import { formatCurrency } from '../formatters.js';
-import { AppState } from '../state.js';
+import { parseAmount } from '../core/utils.js';
+import { formatCurrency } from '../core/formatters.js';
+import { AppState } from '../core/state.js';
 
 /**
  * Responsible for updating the KPI summary tiles.

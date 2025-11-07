@@ -6,26 +6,31 @@
 - Incluye tablas con filtrado/ordenación, KPIs en vivo y gráficos Chart.js (barras, líneas, combinados extendibles).
 
 ## Arquitectura
-- **DashboardApp (`js/app/DashboardApp.js`)**: orquestador que inicializa servicios, reacciona a eventos y ejecuta `updateDashboard`.
-- **DataService (`js/services/DataService.js`)**: obtiene el TSV, normaliza columnas (`Importe`, `Tipo`) y entrega la última fecha disponible.
-- **Gestores reutilizables**:
-	- `FilterManager`: encapsula la lógica de filtros (periodos, meses, categorías, search, rangos de fecha).
-	- `ChartManager`: destruye gráficos existentes y renderiza cada descriptor registrado (bar/line/combined) usando `destroyAllCharts`, `createBarChart`, `createLineChart`.
-	- `TableManager`: renderiza las tablas registradas reutilizando `BaseTable` y las instancias `allTransactionsTable`, `topMovementsTable`, `categorySummaryTable`.
-	- `KpiManager`: calcula totales (ingresos, gastos, per home, saldo final, nº transacciones) aplicando el formateo centralizado de `formatCurrency`.
-- **Componentes UI reutilizables (`js/components/`)**:
-	- `FilterPanel`: badges activos + botones de confirmación/cancelación para selecciones pendientes.
-	- `Dropdown`, `DateRangePicker`, `SearchBox`: encapsulan interacción de filtros, rangos y búsqueda con `debounce` configurable.
-	- `LoadingOverlay`, `LastUpdateBanner`: gestionan feedback visual (carga inicial, fecha de última actualización traducida).
-	- Tablas especializadas (`components/tables/*.js`) y renderers de gráficos (`components/charts/*.js`) para mantener el DOM desacoplado de la lógica.
-- **Núcleo existente**: `APP_CONFIG`, `AppState`, `formatters`, `utils`, `i18n`, `errors` y componentes de tablas/gráficos continúan intactos y ahora se consumen a través de los gestores anteriores.
-- **Acciones globales (`js/app/globalActions.js`)**: expone las funciones requeridas por `index.html` (`clearAllFilters`, `updateDashboard`, `selectPendingCategory`, etc.), preservando la compatibilidad sin duplicar lógica.
+- **Core (`js/core/`)**: capa fundacional con configuración (`config`), estado global (`state`), internacionalización (`i18n`), formateadores numéricos, utilidades comunes, manejo de errores y helpers de seguridad. Todo el front consume estos módulos con rutas `../core/...`.
+- **Aplicación (`js/app/`)**:
+	- `DashboardApp`: orquestador que inicializa servicios, coordina managers y ejecuta `updateDashboard()`.
+	- `globalActions`: expone la superficie pública utilizada por los handlers inline de `index.html` (clear/apply filters, export, etc.).
+- **Servicios (`js/services/`)**: `DataService` obtiene y normaliza el TSV (deriva `Importe`, `Tipo`) apoyándose en utilidades del core.
+- **Gestores (`js/managers/`)**: capas de dominio que reutilizan componentes para pintar la UI.
+	- `FilterManager`: aplica periodos, meses, categorías, búsqueda y rangos.
+	- `ChartManager`: destruye y re-renderiza cada descriptor (`destroyAllCharts`, `createBarChart`, `createLineChart`).
+	- `TableManager`: monta tablas registradas (`allTransactionsTable`, `topMovementsTable`, `categorySummaryTable`).
+	- `KpiManager`: agrega ingresos/gastos/per home/saldo final reutilizando `formatCurrency`.
+- **Componentes (`js/components/`)**: UI desacoplada por ámbito.
+	- `filters/`: `FilterPanel`, `Dropdown`, `DateRangePicker`, `SearchBox` coordinan interacción de filtros con `FilterManager`.
+	- `feedback/`: `LoadingOverlay`, `LastUpdateBanner` muestran estado de carga y fecha de actualización.
+	- `tables/`: `BaseTable` (scroll infinito + ordenamiento) y especializaciones por vista.
+	- `charts/`: registro central (`ChartRegistry`), renderers (`BarChart`, `LineChart`) y transformadores de datos (`dataTransforms`).
 
 ## Estructura de Carpetas
+- `js/core`: configuración global, estado, utilidades comunes, internacionalización, formateo, errores y seguridad.
+- `js/components/filters`: controladores de UI para filtros rápidos, rangos de fechas y búsqueda.
+- `js/components/feedback`: componentes de overlay y banner contextual.
 - `js/components/tables`: `BaseTable` y las implementaciones `AllTransactionsTable`, `TopMovementsTable`, `CategorySummaryTable`.
 - `js/components/charts`: registro central (`ChartRegistry`), renderers (`BarChart`, `LineChart`) y transformadores de datos.
 - `js/managers`: orquestadores de tablas, gráficos, filtros y KPIs que consumen los componentes anteriores.
-- `js/services`, `js/app`, `js/lib`: módulos core (estado, traducciones, utils, errores) sin cambios estructurales.
+- `js/services`: integraciones externas y normalización de datos (TSV).
+- `js/app`: inicialización, wiring general y acciones globales.
 
 ## Artefactos Reutilizables
 - **Tablas**: `BaseTable` + especializaciones. Añadir una tabla nueva solo requiere crear la definición y registrarla en `TableManager`.

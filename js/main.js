@@ -1,4 +1,4 @@
-import { ErrorHandler } from './errors.js';
+import { ErrorHandler } from './core/errors.js';
 import { DashboardApp } from './app/DashboardApp.js';
 import { registerGlobalActions } from './app/globalActions.js';
 

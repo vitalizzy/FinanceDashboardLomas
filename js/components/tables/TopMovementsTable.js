@@ -5,10 +5,10 @@
  */
 
 import { BaseTable } from './BaseTable.js';
-import { AppState } from '../../state.js';
-import { translate } from '../../i18n.js';
-import { parseAmount } from '../../utils.js';
-import { formatCurrency } from '../../formatters.js';
+import { AppState } from '../../core/state.js';
+import { translate } from '../../core/i18n.js';
+import { parseAmount } from '../../core/utils.js';
+import { formatCurrency } from '../../core/formatters.js';
 
 export class TopMovementsTable extends BaseTable {
     constructor() {

@@ -1,6 +1,6 @@
-import { AppState } from '../state.js';
-import { APP_CONFIG } from '../config.js';
-import { parseDate } from '../utils.js';
+import { AppState } from '../core/state.js';
+import { APP_CONFIG } from '../core/config.js';
+import { parseDate } from '../core/utils.js';
 
 const DEFAULT_SELECTORS = {
     periodFilter: 'filter-select'

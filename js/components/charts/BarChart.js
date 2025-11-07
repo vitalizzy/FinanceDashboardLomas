@@ -2,10 +2,10 @@
  * Gráfico de barras para gastos por categoría
  */
 
-import { AppState } from '../../state.js';
-import { translate } from '../../i18n.js';
-import { hexToRgba } from '../../utils.js';
-import { formatCurrency } from '../../formatters.js';
+import { AppState } from '../../core/state.js';
+import { translate } from '../../core/i18n.js';
+import { hexToRgba } from '../../core/utils.js';
+import { formatCurrency } from '../../core/formatters.js';
 
 export function createBarChart(canvasId, data) {
     const canvas = document.getElementById(canvasId);

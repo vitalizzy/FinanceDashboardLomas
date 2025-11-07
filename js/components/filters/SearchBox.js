@@ -1,4 +1,4 @@
-import { debounce } from '../utils.js';
+import { debounce } from '../../core/utils.js';
 
 /**
  * Standard debounced search behaviour.

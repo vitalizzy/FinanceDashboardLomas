@@ -1,4 +1,4 @@
-import { parseAmount } from '../utils.js';
+import { parseAmount } from '../core/utils.js';
 import { allTransactionsTable } from '../components/tables/AllTransactionsTable.js';
 import { topMovementsTable } from '../components/tables/TopMovementsTable.js';
 import { categorySummaryTable } from '../components/tables/CategorySummaryTable.js';

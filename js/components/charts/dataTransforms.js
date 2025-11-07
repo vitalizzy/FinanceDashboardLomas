@@ -2,7 +2,7 @@
  * Transformaciones de datos reutilizables para los gráficos
  */
 
-import { parseAmount, parseDate } from '../../utils.js';
+import { parseAmount, parseDate } from '../../core/utils.js';
 
 export function getExpensesByCategory(data) {
     const categories = {};

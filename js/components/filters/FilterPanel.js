@@ -1,5 +1,5 @@
-import { AppState } from '../state.js';
-import { APP_CONFIG } from '../config.js';
+import { AppState } from '../../core/state.js';
+import { APP_CONFIG } from '../../core/config.js';
 
 const DEFAULT_CONFIG = {
     panelId: 'active-filters',

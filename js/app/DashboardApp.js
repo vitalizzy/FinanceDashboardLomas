@@ -1,19 +1,19 @@
-import { APP_CONFIG } from '../config.js';
-import { AppState } from '../state.js';
-import { translate } from '../i18n.js';
-import { initSecurityListeners } from '../security.js';
+import { APP_CONFIG } from '../core/config.js';
+import { AppState } from '../core/state.js';
+import { translate } from '../core/i18n.js';
+import { initSecurityListeners } from '../core/security.js';
 import { DataService } from '../services/DataService.js';
-import { ErrorHandler } from '../errors.js';
+import { ErrorHandler } from '../core/errors.js';
 import { FilterManager } from '../managers/FilterManager.js';
 import { TableManager } from '../managers/TableManager.js';
 import { ChartManager } from '../managers/ChartManager.js';
 import { KpiManager } from '../managers/KpiManager.js';
-import { FilterPanel } from '../components/FilterPanel.js';
-import { Dropdown } from '../components/Dropdown.js';
-import { DateRangePicker } from '../components/DateRangePicker.js';
-import { SearchBox } from '../components/SearchBox.js';
-import { LoadingOverlay } from '../components/LoadingOverlay.js';
-import { LastUpdateBanner } from '../components/LastUpdateBanner.js';
+import { FilterPanel } from '../components/filters/FilterPanel.js';
+import { Dropdown } from '../components/filters/Dropdown.js';
+import { DateRangePicker } from '../components/filters/DateRangePicker.js';
+import { SearchBox } from '../components/filters/SearchBox.js';
+import { LoadingOverlay } from '../components/feedback/LoadingOverlay.js';
+import { LastUpdateBanner } from '../components/feedback/LastUpdateBanner.js';
 
 /**
  * High-level orchestrator that wires together services and UI components.
