@@ -14,6 +14,7 @@ import { allTransactionsTable } from './AllTransactionsTable.js';
 import { topMovementsTable } from './TopMovementsTable.js';
 import { categorySummaryTable } from './CategorySummaryTable.js';
 import { createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow } from './charts.js';
+import { initSecurityListeners } from './security.js';
 
 // Registry for chart instances
 window._charts = window._charts || {};
@@ -167,6 +168,9 @@ function setupEventListeners() {
         updateLanguage();
         updateDashboard();
     });
+    
+    // Inicializar listeners de seguridad (toggle de columna secreta)
+    initSecurityListeners();
 }
 
 /**
@@ -201,6 +205,10 @@ function updateDashboard() {
 function getFilteredData() {
     let data = AppState.data.financial;
     const isDateRangeActive = AppState.filters.dateRange.start || AppState.filters.dateRange.end;
+    
+    console.log('[getFilteredData] Starting with', data.length, 'records');
+    console.log('[getFilteredData] Active filters - categories:', Array.from(AppState.filters.categories));
+    console.log('[getFilteredData] Active filters - months:', Array.from(AppState.filters.months));
     
     const filterSelect = document.getElementById('filter-select');
     if (filterSelect) {
@@ -249,6 +257,7 @@ function getFilteredData() {
             const category = item.Categoria || 'Sin categoría';
             return AppState.filters.categories.has(category);
         });
+        console.log('[getFilteredData] After category filter:', data.length, 'records');
     }
     
     if (AppState.filters.months.size > 0) {
@@ -258,6 +267,7 @@ function getFilteredData() {
             const itemMonthKey = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}`;
             return AppState.filters.months.has(itemMonthKey);
         });
+        console.log('[getFilteredData] After month filter:', data.length, 'records');
     }
     
     if (AppState.filters.searchQuery) {
@@ -267,6 +277,7 @@ function getFilteredData() {
         });
     }
     
+    console.log('[getFilteredData] Final result:', data.length, 'records');
     return data;
 }
 
@@ -526,15 +537,27 @@ window.selectPendingMonth = (event, monthKey) => {
 };
 
 window.applyPendingSelection = () => {
+    console.log('[applyPendingSelection] Before - pendingCategories:', Array.from(AppState.filters.pendingCategories));
+    console.log('[applyPendingSelection] Before - pendingMonths:', Array.from(AppState.filters.pendingMonths));
+    console.log('[applyPendingSelection] Before - categories:', Array.from(AppState.filters.categories));
+    console.log('[applyPendingSelection] Before - months:', Array.from(AppState.filters.months));
+    
     AppState.confirmPendingCategories();
     AppState.confirmPendingMonths();
+    
+    console.log('[applyPendingSelection] After - categories:', Array.from(AppState.filters.categories));
+    console.log('[applyPendingSelection] After - months:', Array.from(AppState.filters.months));
+    
     hideConfirmCancelButtons();
     updateDashboard();
 };
 
 window.clearPendingSelection = () => {
-    AppState.clearCategories(true);
-    AppState.clearMonths(true);
+    console.log('[clearPendingSelection] Clearing all pending and applied selections');
+    AppState.clearCategories(true);  // Clear pending
+    AppState.clearCategories(false); // Clear applied
+    AppState.clearMonths(true);      // Clear pending
+    AppState.clearMonths(false);     // Clear applied
     hideConfirmCancelButtons();
     updateDashboard();
 };

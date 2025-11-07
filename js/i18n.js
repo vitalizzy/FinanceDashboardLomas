@@ -76,7 +76,10 @@ export const translations = {
         'kpi_transacciones_note': 'Registros procesados',
         'label_language': '🌐 Idioma:',
         'dashboard_title': 'Movimientos Bancarios',
-        'dashboard_subtitle': 'Análisis y seguimiento de transacciones bancarias'
+        'dashboard_subtitle': 'Análisis y seguimiento de transacciones bancarias',
+        'cancel': 'Cancelar',
+        'accept': 'Aceptar',
+        'incorrect_password': 'Contraseña incorrecta'
     },
     en: {
         'filters': '🔍 Filters',
@@ -148,7 +151,10 @@ export const translations = {
         'kpi_transacciones_note': 'Processed records',
         'label_language': '🌐 Language:',
         'dashboard_title': 'Bank Movements',
-        'dashboard_subtitle': 'Bank transaction analysis and tracking'
+        'dashboard_subtitle': 'Bank transaction analysis and tracking',
+        'cancel': 'Cancel',
+        'accept': 'Accept',
+        'incorrect_password': 'Incorrect password'
     }
 };
 

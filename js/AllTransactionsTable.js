@@ -23,7 +23,8 @@ export class AllTransactionsTable extends BaseTable {
         this.columns = [
             { key: 'F. Operativa', labelKey: 'date', type: 'date', align: '' },
             { key: 'Categoria', labelKey: 'category', align: '' },
-            { key: 'Concepto Publico', labelKey: 'concept', align: '' },
+            { key: 'Concepto (Original)', labelKey: 'concept', align: '', cssClass: 'col-concepto-original' },
+            { key: 'Concepto Publico', labelKey: 'concept', align: '', cssClass: 'col-secreta' },
             { key: 'Importe', labelKey: 'amount', type: 'currency', align: 'text-right', cellClass: (item) => this.getAmountClass(item) },
             { key: 'per Home', labelKey: 'per_home', type: 'currency', align: 'text-right', cellClass: 'color-per-home' },
             { key: 'Tipo', labelKey: 'type', align: 'text-center', cellClass: (item) => this.getTypeClass(item) },

@@ -39,7 +39,8 @@ export const AppState = {
         topMovementsSortColumn: null,
         topMovementsSortDirection: 'asc',
         categorySummarySortColumn: null,
-        categorySummarySortDirection: 'asc'
+        categorySummarySortDirection: 'asc',
+        secretColumnVisible: false
     },
     
     // Colores de los gráficos

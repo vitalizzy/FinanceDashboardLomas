@@ -64,7 +64,9 @@ export class BaseTable {
             const sortClass = this.sortColumn === col.key ? 
                 (this.sortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 'sortable';
             const alignClass = col.align || '';
-            html += `<th class="${sortClass} ${alignClass}" onclick="window.sortTable_${this.safeId}('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey, AppState.language)}</th>`;
+            const cssClass = col.cssClass || '';
+            const allClasses = [sortClass, alignClass, cssClass].filter(c => c).join(' ');
+            html += `<th class="${allClasses}" onclick="window.sortTable_${this.safeId}('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey, AppState.language)}</th>`;
         });
         
         html += '</tr></thead>';
@@ -93,8 +95,11 @@ export class BaseTable {
         
         columns.forEach(col => {
             const value = this.formatCellValue(item[col.key], col);
-            const classes = col.cellClass ? (typeof col.cellClass === 'function' ? col.cellClass(item) : col.cellClass) : '';
-            html += `<td class="${classes}">${value}</td>`;
+            const cellClass = col.cellClass ? (typeof col.cellClass === 'function' ? col.cellClass(item) : col.cellClass) : '';
+            const cssClass = col.cssClass || '';
+            const align = col.align || '';
+            const allClasses = [cellClass, cssClass, align].filter(c => c).join(' ');
+            html += `<td class="${allClasses}">${value}</td>`;
         });
         
         html += '</tr>';
