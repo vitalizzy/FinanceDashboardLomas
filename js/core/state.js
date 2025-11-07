@@ -23,6 +23,8 @@ export const AppState = {
         pendingCategories: new Set(),
         months: new Set(),
         pendingMonths: new Set(),
+        columnFilters: new Map(),
+        pendingColumnFilters: new Map(),
         dateRange: {
             start: null,
             end: null
@@ -36,10 +38,9 @@ export const AppState = {
         itemsPerPage: APP_CONFIG.DEFAULT_ITEMS_PER_PAGE,
         sortColumn: APP_CONFIG.DEFAULT_SORT_COLUMN,
         sortDirection: APP_CONFIG.DEFAULT_SORT_DIRECTION,
-        topMovementsSortColumn: null,
-        topMovementsSortDirection: 'asc',
-        categorySummarySortColumn: null,
-        categorySummarySortDirection: 'asc',
+        topMovementsSortState: [],
+        categorySummarySortState: [],
+        allTransactionsSortState: [],
         secretColumnVisible: false
     },
     
@@ -128,10 +129,80 @@ export const AppState = {
         this.filters.pendingCategories.clear();
         this.filters.months.clear();
         this.filters.pendingMonths.clear();
+        this.filters.columnFilters.clear();
+        this.filters.pendingColumnFilters.clear();
         this.filters.dateRange.start = null;
         this.filters.dateRange.end = null;
         this.filters.searchQuery = '';
         this.ui.currentPage = 1;
+    },
+
+    setPendingColumnFilter(columnKey, { value = '', labelKey = null, field = null } = {}) {
+        if (!columnKey) return;
+        const normalizedValue = value.trim();
+        const confirmed = this.filters.columnFilters.get(columnKey);
+        const confirmedValue = confirmed ? confirmed.value : '';
+
+        if (!normalizedValue && !confirmedValue) {
+            this.filters.pendingColumnFilters.delete(columnKey);
+            return;
+        }
+
+        if (normalizedValue === confirmedValue) {
+            this.filters.pendingColumnFilters.delete(columnKey);
+            return;
+        }
+
+        this.filters.pendingColumnFilters.set(columnKey, {
+            value: normalizedValue,
+            labelKey: labelKey || confirmed?.labelKey || null,
+            field: field || confirmed?.field || columnKey
+        });
+    },
+
+    confirmPendingColumnFilters() {
+        this.filters.pendingColumnFilters.forEach((payload, columnKey) => {
+            const normalized = (payload.value || '').trim();
+            if (!normalized) {
+                this.filters.columnFilters.delete(columnKey);
+                return;
+            }
+            this.filters.columnFilters.set(columnKey, {
+                value: normalized,
+                labelKey: payload.labelKey || null,
+                field: payload.field || columnKey
+            });
+        });
+        this.filters.pendingColumnFilters.clear();
+    },
+
+    clearColumnFilters(isPending = false) {
+        const target = isPending ? this.filters.pendingColumnFilters : this.filters.columnFilters;
+        target.clear();
+    },
+
+    removeColumnFilter(columnKey) {
+        this.filters.columnFilters.delete(columnKey);
+        this.filters.pendingColumnFilters.delete(columnKey);
+    },
+
+    clearPendingColumnFilter(columnKey) {
+        this.filters.pendingColumnFilters.delete(columnKey);
+    },
+
+    getColumnFilterValue(columnKey, { preferPending = true } = {}) {
+        if (preferPending && this.filters.pendingColumnFilters.has(columnKey)) {
+            return this.filters.pendingColumnFilters.get(columnKey).value || '';
+        }
+        const confirmed = this.filters.columnFilters.get(columnKey);
+        return confirmed ? confirmed.value || '' : '';
+    },
+
+    getColumnFilterMetadata(columnKey, { preferPending = true } = {}) {
+        if (preferPending && this.filters.pendingColumnFilters.has(columnKey)) {
+            return this.filters.pendingColumnFilters.get(columnKey);
+        }
+        return this.filters.columnFilters.get(columnKey);
     },
     
     setSortColumn(column, direction = null) {

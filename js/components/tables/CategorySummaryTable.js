@@ -65,9 +65,9 @@ export class CategorySummaryTable extends BaseTable {
     render(categoryStats, totalGastos) {
         this.totalGastos = totalGastos;
         
-        if (AppState.ui.categorySummarySortColumn) {
-            this.sortColumn = AppState.ui.categorySummarySortColumn;
-            this.sortDirection = AppState.ui.categorySummarySortDirection;
+        const storedSort = AppState.ui.categorySummarySortState;
+        if (Array.isArray(storedSort) && storedSort.length) {
+            this.setSortState(storedSort);
         }
         
         const data = Object.entries(categoryStats).map(([category, stats]) => ({
@@ -117,11 +117,7 @@ export const categorySummaryTable = new CategorySummaryTable();
 // Exponer funciones globalmente (usando safeId)
 window.sortTable_category_summary_table = (col) => {
     categorySummaryTable.sort(col);
-    AppState.ui.categorySummarySortColumn = categorySummaryTable.sortColumn;
-    AppState.ui.categorySummarySortDirection = categorySummaryTable.sortDirection;
-    if (typeof window.updateDashboard === 'function') {
-        window.updateDashboard();
-    }
+    AppState.ui.categorySummarySortState = categorySummaryTable.getSortState();
 };
 
 window.toggleColumnFilter_category_summary_table = (col, event) => {
@@ -131,9 +127,6 @@ window.toggleColumnFilter_category_summary_table = (col, event) => {
 window.applyColumnFilter_category_summary_table = (col, event) => {
     if (event) event.stopPropagation();
     categorySummaryTable.applyColumnFilterFromDropdown(col);
-    if (typeof window.updateDashboard === 'function') {
-        window.updateDashboard();
-    }
 };
 
 window.cancelColumnFilter_category_summary_table = (col, event) => {

@@ -25,19 +25,26 @@ export class BaseTable {
         // Crear un ID seguro para funciones JavaScript (reemplazar guiones con guiones bajos)
         this.safeId = containerId.replace(/-/g, '_');
         const mergedOptions = { ...BASE_TABLE_DEFAULTS, ...options };
-        this.sortColumn = mergedOptions.sortColumn;
-        this.sortDirection = mergedOptions.sortDirection;
+        this.sortColumn = null;
+        this.sortDirection = 'asc';
         this.isCompact = mergedOptions.compact;
         this.initialRows = mergedOptions.initialRows;
         this.rowsIncrement = mergedOptions.rowsIncrement ?? mergedOptions.initialRows;
         this.visibleRows = this.initialRows;
-        this.columnFilters = {}; // Filtros por columna
+        this.sortState = [];
         this.lastColumns = [];
         this.lastData = [];
         this.currentData = [];
         this.totalRows = 0;
         this.handleScrollBound = this.handleScroll.bind(this);
         this.isRendering = false;
+
+        const initialSortState = Array.isArray(mergedOptions.initialSortState)
+            ? mergedOptions.initialSortState
+            : (mergedOptions.sortColumn
+                ? [{ key: mergedOptions.sortColumn, direction: mergedOptions.sortDirection }]
+                : []);
+        this.setSortState(initialSortState);
     }
 
     /**
@@ -56,8 +63,8 @@ export class BaseTable {
         this.lastColumns = columns;
 
         // Aplicar filtros de columna
-        const filteredData = this.applyColumnFilters(data);
-        const sortedData = this.sortData(filteredData);
+    const filteredData = this.applyColumnFilters(data);
+    const sortedData = this.sortData(filteredData);
 
         this.currentData = sortedData;
         this.totalRows = sortedData.length;
@@ -99,9 +106,9 @@ export class BaseTable {
             const isSearchable = col.searchable !== false;
             
             // Clases de ordenamiento
-            const sortClass = isSortable && this.sortColumn === col.key ? 
-                (this.sortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 
-                (isSortable ? 'sortable' : '');
+            const sortEntryIndex = this.sortState.findIndex(entry => entry.key === col.key);
+            const sortEntry = sortEntryIndex >= 0 ? this.sortState[sortEntryIndex] : null;
+            const sortClass = isSortable && sortEntry ? `sortable sorted-${sortEntry.direction}` : (isSortable ? 'sortable' : '');
             
             // Configuración de alineamiento y clases
             const alignClass = col.headerAlign || col.align || '';
@@ -128,22 +135,24 @@ export class BaseTable {
             const metaParts = [];
 
             if (isSortable) {
-                const isActiveSort = this.sortColumn === col.key;
-                const sortState = isActiveSort ? this.sortDirection : null;
-                const sortSymbol = sortState === 'asc' ? '↑' : sortState === 'desc' ? '↓' : '⇅';
+                const sortSymbol = sortEntry ? (sortEntry.direction === 'asc' ? '↑' : '↓') : '⇅';
                 const sortClasses = ['th-sort-icon'];
-                if (sortState) sortClasses.push(`sorted-${sortState}`);
-                metaParts.push(`<span class="${sortClasses.join(' ')}" onclick="window.sortTable_${this.safeId}('${col.key}')">${sortSymbol}</span>`);
+                if (sortEntry) sortClasses.push(`sorted-${sortEntry.direction}`);
+                const priorityBadge = sortEntry ? `<span class="sort-order-badge">${sortEntryIndex + 1}</span>` : '';
+                metaParts.push(`<span class="${sortClasses.join(' ')}" onclick="window.sortTable_${this.safeId}('${col.key}')">${sortSymbol}${priorityBadge}</span>`);
             }
 
             if (isSearchable) {
+                const filterKey = this.resolveFilterKey(col);
+                const currentFilterValue = AppState.getColumnFilterValue(filterKey, { preferPending: true });
+                const inputValue = this.escapeAttribute(currentFilterValue);
                 metaParts.push(`<span class="th-search-icon" onclick="window.toggleColumnFilter_${this.safeId}('${col.key}', event)">🔍</span>`);
                 metaParts.push(`<div class="column-filter-dropdown" id="filter_${this.safeId}_${col.key}" style="display:none;">
                     <input 
                         type="text" 
                         class="column-search-input" 
                         placeholder="Buscar..."
-                        value="${this.columnFilters[col.key] || ''}"
+                        value="${inputValue}"
                         data-column="${col.key}"
                         onclick="event.stopPropagation()"
                     />
@@ -269,26 +278,19 @@ export class BaseTable {
      * Ordena los datos según la columna y dirección actuales
      */
     sortData(data) {
-        if (!this.sortColumn) return data;
-        
+        if (this.sortState.length === 0) return data;
+
+        const columnsByKey = Object.fromEntries((this.lastColumns || []).map(col => [col.key, col]));
+
         return [...data].sort((a, b) => {
-            let aVal = a[this.sortColumn];
-            let bVal = b[this.sortColumn];
-            
-            // Manejar valores numéricos
-            if (typeof aVal === 'string' && aVal.includes('€')) {
-                aVal = parseAmount(aVal);
-                bVal = parseAmount(bVal);
+            for (const { key, direction } of this.sortState) {
+                const column = columnsByKey[key] || {};
+                const valA = this.getSortableValue(a, key, column);
+                const valB = this.getSortableValue(b, key, column);
+
+                if (valA < valB) return direction === 'asc' ? -1 : 1;
+                if (valA > valB) return direction === 'asc' ? 1 : -1;
             }
-            
-            // Manejar fechas
-            if (this.sortColumn.includes('Fecha') || this.sortColumn === 'F. Operativa') {
-                aVal = parseDate(aVal)?.getTime() || 0;
-                bVal = parseDate(bVal)?.getTime() || 0;
-            }
-            
-            if (aVal < bVal) return this.sortDirection === 'asc' ? -1 : 1;
-            if (aVal > bVal) return this.sortDirection === 'asc' ? 1 : -1;
             return 0;
         });
     }
@@ -297,12 +299,21 @@ export class BaseTable {
      * Métodos de control de ordenamiento
      */
     sort(column) {
-        if (this.sortColumn === column) {
-            this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+        const index = this.sortState.findIndex(entry => entry.key === column);
+
+        if (index === -1) {
+            this.sortState.push({ key: column, direction: 'asc' });
         } else {
-            this.sortColumn = column;
-            this.sortDirection = 'asc';
+            const currentDirection = this.sortState[index].direction;
+            if (currentDirection === 'asc') {
+                this.sortState[index].direction = 'desc';
+            } else if (currentDirection === 'desc') {
+                this.sortState.splice(index, 1);
+            }
         }
+
+        this.sortColumn = this.sortState[0]?.key || null;
+        this.sortDirection = this.sortState[0]?.direction || 'asc';
         this.resetVisibleRows();
     }
 
@@ -310,35 +321,25 @@ export class BaseTable {
      * Aplica filtros por columna
      */
     applyColumnFilters(data) {
-        if (Object.keys(this.columnFilters).length === 0) {
+        if (!AppState.filters.columnFilters || AppState.filters.columnFilters.size === 0) {
             return data;
         }
 
         return data.filter(item => {
-            for (const [columnKey, filterValue] of Object.entries(this.columnFilters)) {
+            for (const [columnKey, filterPayload] of AppState.filters.columnFilters.entries()) {
+                if (!filterPayload) continue;
+                const filterValue = (filterPayload.value || '').toLowerCase();
                 if (!filterValue) continue;
+
+                const targetField = filterPayload.field || columnKey;
+                const cellValue = String(item[targetField] || '').toLowerCase();
                 
-                const cellValue = String(item[columnKey] || '').toLowerCase();
-                const searchValue = filterValue.toLowerCase();
-                
-                if (!cellValue.includes(searchValue)) {
+                if (!cellValue.includes(filterValue)) {
                     return false;
                 }
             }
             return true;
         });
-    }
-
-    /**
-     * Filtra por una columna específica
-     */
-    filterColumn(columnKey, filterValue) {
-        if (filterValue && filterValue.trim()) {
-            this.columnFilters[columnKey] = filterValue.trim();
-        } else {
-            delete this.columnFilters[columnKey];
-        }
-        this.resetVisibleRows();
     }
 
     applyColumnFilterFromDropdown(columnKey) {
@@ -348,9 +349,19 @@ export class BaseTable {
 
         const input = dropdown.querySelector('input');
         const value = input ? input.value : '';
+    const column = this.getColumnDefinition(columnKey);
+    const filterKey = this.resolveFilterKey(column) || columnKey;
+        const labelKey = column?.labelKey || null;
 
-        this.filterColumn(columnKey, value);
+        AppState.setPendingColumnFilter(filterKey, {
+            value,
+            labelKey,
+            field: filterKey
+        });
+
         dropdown.style.display = 'none';
+        this.resetVisibleRows();
+        document.dispatchEvent(new CustomEvent('filters:pending-updated'));
     }
 
     cancelColumnFilter(columnKey) {
@@ -359,10 +370,14 @@ export class BaseTable {
         if (!dropdown) return;
 
         const input = dropdown.querySelector('input');
+    const column = this.getColumnDefinition(columnKey);
+    const filterKey = this.resolveFilterKey(column) || columnKey;
+        AppState.clearPendingColumnFilter(filterKey);
         if (input) {
-            input.value = this.columnFilters[columnKey] || '';
+            input.value = AppState.getColumnFilterValue(filterKey, { preferPending: false }) || '';
         }
         dropdown.style.display = 'none';
+        document.dispatchEvent(new CustomEvent('filters:pending-updated'));
     }
 
     /**
@@ -385,7 +400,12 @@ export class BaseTable {
         if (dropdown.style.display === 'none') {
             dropdown.style.display = 'block';
             const input = dropdown.querySelector('input');
-            if (input) setTimeout(() => input.focus(), 100);
+            if (input) {
+                const column = this.getColumnDefinition(columnKey);
+                const filterKey = this.resolveFilterKey(column) || columnKey;
+                input.value = AppState.getColumnFilterValue(filterKey, { preferPending: true }) || '';
+                setTimeout(() => input.focus(), 100);
+            }
         } else {
             dropdown.style.display = 'none';
         }
@@ -396,7 +416,9 @@ export class BaseTable {
      */
     clearColumnFilter(columnKey, event) {
         if (event) event.stopPropagation();
-        delete this.columnFilters[columnKey];
+    const column = this.getColumnDefinition(columnKey);
+    const filterKey = this.resolveFilterKey(column) || columnKey;
+        AppState.removeColumnFilter(filterKey);
         const dropdownId = `filter_${this.safeId}_${columnKey}`;
         const dropdown = document.getElementById(dropdownId);
         if (dropdown) {
@@ -404,7 +426,7 @@ export class BaseTable {
             if (input) input.value = '';
             dropdown.style.display = 'none';
         }
-        this.resetVisibleRows();
+        document.dispatchEvent(new CustomEvent('filters:updated'));
     }
 
     /**
@@ -413,5 +435,69 @@ export class BaseTable {
     resetVisibleRows() {
         this.visibleRows = this.initialRows;
         this.render(this.lastData, this.lastColumns);
+    }
+
+    setSortState(sortState = []) {
+        this.sortState = sortState
+            .filter(entry => entry && entry.key)
+            .map(entry => ({
+                key: entry.key,
+                direction: entry.direction === 'desc' ? 'desc' : 'asc'
+            }));
+        this.sortColumn = this.sortState[0]?.key || null;
+        this.sortDirection = this.sortState[0]?.direction || 'asc';
+    }
+
+    getSortState() {
+        return this.sortState.map(entry => ({ ...entry }));
+    }
+
+    getColumnDefinition(columnKey) {
+        return (this.lastColumns || []).find(col => col.key === columnKey);
+    }
+
+    resolveFilterKey(column) {
+        if (!column) return null;
+        return column.filterKey || column.key;
+    }
+
+    getSortableValue(row, columnKey, column = {}) {
+        if (typeof column.sortAccessor === 'function') {
+            return column.sortAccessor(row);
+        }
+
+        let value = row[columnKey];
+
+        if (column.type === 'currency') {
+            return parseAmount(value || 0);
+        }
+
+        if (column.type === 'percent' || column.type === 'number') {
+            const numeric = typeof value === 'number' ? value : parseFloat(String(value).replace(/[^0-9.-]/g, ''));
+            return Number.isNaN(numeric) ? 0 : numeric;
+        }
+
+        if (column.type === 'date' || columnKey.includes('Fecha') || columnKey === 'F. Operativa') {
+            return parseDate(value)?.getTime() || 0;
+        }
+
+        if (typeof value === 'number') {
+            return value;
+        }
+
+        if (typeof value === 'string' && value.includes('€')) {
+            return parseAmount(value);
+        }
+
+        return String(value ?? '').toLowerCase();
+    }
+
+    escapeAttribute(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
     }
 }

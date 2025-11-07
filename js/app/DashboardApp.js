@@ -175,6 +175,11 @@ export class DashboardApp {
             this.updateDashboard();
         });
 
+        document.addEventListener('filters:pending-updated', () => {
+            this.filterPanel.togglePendingControls(this.filterManager.hasPendingSelections());
+            this.updateDashboard();
+        });
+
         document.addEventListener('click', event => {
             const isDropdown = event.target.closest('.column-filter-dropdown');
             const isTrigger = event.target.closest('.th-search-icon');

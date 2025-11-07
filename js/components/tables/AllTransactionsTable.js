@@ -103,6 +103,10 @@ export class AllTransactionsTable extends BaseTable {
     }
 
     render(data) {
+        const storedSort = AppState.ui.allTransactionsSortState;
+        if (Array.isArray(storedSort) && storedSort.length) {
+            this.setSortState(storedSort);
+        }
         super.render(data, this.columns);
     }
 
@@ -147,7 +151,7 @@ export const allTransactionsTable = new AllTransactionsTable();
 // Exponer funciones globalmente para onclick (usando safeId)
 window.sortTable_all_transactions_table = (col) => {
     allTransactionsTable.sort(col);
-    allTransactionsTable.render(AppState.data.filtered);
+    AppState.ui.allTransactionsSortState = allTransactionsTable.getSortState();
 };
 
 window.toggleColumnFilter_all_transactions_table = (col, event) => {
@@ -157,7 +161,6 @@ window.toggleColumnFilter_all_transactions_table = (col, event) => {
 window.applyColumnFilter_all_transactions_table = (col, event) => {
     if (event) event.stopPropagation();
     allTransactionsTable.applyColumnFilterFromDropdown(col);
-    allTransactionsTable.render(AppState.data.filtered);
 };
 
 window.cancelColumnFilter_all_transactions_table = (col, event) => {

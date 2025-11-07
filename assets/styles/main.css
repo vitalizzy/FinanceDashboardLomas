@@ -665,6 +665,19 @@ body {
     color: var(--table-search-icon-hover-color);
 }
 
+.sort-order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    padding: 0 5px;
+    font-size: 10px;
+    line-height: 16px;
+    border-radius: 999px;
+    background-color: rgba(13, 110, 253, 0.12);
+    color: var(--color-balance);
+    min-width: 16px;
+}
 .th-sort-icon.sorted-asc,
 .th-sort-icon.sorted-desc {
     color: var(--table-header-text-color);

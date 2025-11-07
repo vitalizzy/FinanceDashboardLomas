@@ -70,10 +70,9 @@ export class TopMovementsTable extends BaseTable {
     }
 
     render(data) {
-        // Asignar sortColumn/sortDirection desde AppState.ui si está disponible
-        if (AppState.ui.topMovementsSortColumn) {
-            this.sortColumn = AppState.ui.topMovementsSortColumn;
-            this.sortDirection = AppState.ui.topMovementsSortDirection;
+        const storedSort = AppState.ui.topMovementsSortState;
+        if (Array.isArray(storedSort) && storedSort.length) {
+            this.setSortState(storedSort);
         }
         
         super.render(data, this.columns);
@@ -122,11 +121,7 @@ export const topMovementsTable = new TopMovementsTable();
 // Exponer funciones globalmente (usando safeId)
 window.sortTable_top_movements_table = (col) => {
     topMovementsTable.sort(col);
-    AppState.ui.topMovementsSortColumn = topMovementsTable.sortColumn;
-    AppState.ui.topMovementsSortDirection = topMovementsTable.sortDirection;
-    if (typeof window.updateDashboard === 'function') {
-        window.updateDashboard();
-    }
+    AppState.ui.topMovementsSortState = topMovementsTable.getSortState();
 };
 
 window.toggleColumnFilter_top_movements_table = (col, event) => {
@@ -136,9 +131,6 @@ window.toggleColumnFilter_top_movements_table = (col, event) => {
 window.applyColumnFilter_top_movements_table = (col, event) => {
     if (event) event.stopPropagation();
     topMovementsTable.applyColumnFilterFromDropdown(col);
-    if (typeof window.updateDashboard === 'function') {
-        window.updateDashboard();
-    }
 };
 
 window.cancelColumnFilter_top_movements_table = (col, event) => {

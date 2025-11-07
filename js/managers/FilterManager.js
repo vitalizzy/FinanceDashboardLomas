@@ -20,6 +20,8 @@ export class FilterManager {
         this.state.clearCategories(true);
         this.state.clearMonths(false);
         this.state.clearMonths(true);
+        this.state.clearColumnFilters(false);
+        this.state.clearColumnFilters(true);
         this.state.setDateRange(null, null);
         this.state.setSearchQuery('');
         this.state.filters.current = APP_CONFIG.DEFAULT_FILTER;
@@ -28,17 +30,19 @@ export class FilterManager {
     applyPendingSelections() {
         this.state.confirmPendingCategories();
         this.state.confirmPendingMonths();
+        this.state.confirmPendingColumnFilters();
     }
 
     clearPendingSelections() {
         this.state.clearCategories(true);
-        this.state.clearCategories(false);
         this.state.clearMonths(true);
-        this.state.clearMonths(false);
+        this.state.clearColumnFilters(true);
     }
 
     hasPendingSelections() {
-        return this.state.filters.pendingCategories.size > 0 || this.state.filters.pendingMonths.size > 0;
+        return this.state.filters.pendingCategories.size > 0 ||
+            this.state.filters.pendingMonths.size > 0 ||
+            this.state.filters.pendingColumnFilters.size > 0;
     }
 
     toggleCategory(category, isPending = false) {
@@ -74,6 +78,7 @@ export class FilterManager {
         dataset = this._applyCategoryFilter(dataset);
         dataset = this._applyMonthFilter(dataset);
         dataset = this._applySearchFilter(dataset);
+        dataset = this._applyColumnFilters(dataset);
 
         return dataset;
     }
@@ -148,6 +153,27 @@ export class FilterManager {
         return data.filter(item => {
             const concepto = (item['Concepto Publico'] || item['Concepto Público'] || item.Concepto || '').toLowerCase();
             return concepto.includes(this.state.filters.searchQuery);
+        });
+    }
+
+    _applyColumnFilters(data) {
+        if (this.state.filters.columnFilters.size === 0) {
+            return data;
+        }
+
+        return data.filter(item => {
+            for (const [columnKey, filter] of this.state.filters.columnFilters.entries()) {
+                if (!filter) continue;
+                const targetField = filter.field || columnKey;
+                const filterValue = (filter.value || '').toLowerCase();
+                if (!filterValue) continue;
+
+                const cellValue = String(item[targetField] ?? '').toLowerCase();
+                if (!cellValue.includes(filterValue)) {
+                    return false;
+                }
+            }
+            return true;
         });
     }
 }

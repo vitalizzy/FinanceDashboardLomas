@@ -1,5 +1,6 @@
 import { AppState } from '../../core/state.js';
 import { APP_CONFIG } from '../../core/config.js';
+import { translate } from '../../core/i18n.js';
 
 const DEFAULT_CONFIG = {
     panelId: 'active-filters',
@@ -66,6 +67,17 @@ export class FilterPanel {
             badgesContainer.appendChild(badge);
         });
 
+        AppState.filters.columnFilters.forEach((filter, columnKey) => {
+            hasActiveFilters = true;
+            const label = filter?.labelKey ? translate(filter.labelKey, AppState.language) : columnKey;
+            const badge = this._createBadge(`🔎 ${label}: ${filter?.value || ''}`, () => {
+                AppState.removeColumnFilter(columnKey);
+                document.dispatchEvent(new CustomEvent('filters:updated'));
+                document.dispatchEvent(new CustomEvent('filters:pending-updated'));
+            });
+            badgesContainer.appendChild(badge);
+        });
+
         panel.classList.toggle('visible', hasActiveFilters);
 
         if (clearFiltersFab) {
@@ -101,11 +113,13 @@ export class FilterPanel {
     _createBadge(text, onRemove) {
         const badge = document.createElement('div');
         badge.className = 'filter-badge';
-        badge.innerHTML = `
-            <span>${text}</span>
-            <span class="remove">×</span>
-        `;
-        badge.querySelector('.remove').addEventListener('click', onRemove);
+        const label = document.createElement('span');
+        label.textContent = text;
+        const remove = document.createElement('span');
+        remove.className = 'remove';
+        remove.textContent = '×';
+        remove.addEventListener('click', onRemove);
+        badge.append(label, remove);
         return badge;
     }
 }
