@@ -24,25 +24,34 @@ window._charts = window._charts || {};
  */
 async function init() {
     try {
+        console.log('🚀 Initializing Finance Dashboard...');
         showLoading(true);
         
         // Cargar colores de gráficos
         AppState.loadChartColors();
+        console.log('✅ Chart colors loaded');
         
         // Cargar datos
         const data = await loadFinancialData();
         AppState.setFinancialData(data);
+        console.log('✅ Financial data loaded:', data.length, 'records');
         
         // Configurar UI
         setupEventListeners();
+        console.log('✅ Event listeners configured');
+        
         setupLanguage();
+        console.log('✅ Language setup complete');
         
         // Renderizar dashboard
         updateDashboard();
+        console.log('✅ Dashboard updated');
         
         showLoading(false);
+        console.log('✅ Dashboard initialization complete');
         
     } catch (error) {
+        console.error('❌ Initialization error:', error);
         ErrorHandler.handle(error);
         showLoading(false);
     }
@@ -114,11 +123,17 @@ async function loadFinancialData() {
  * ============================================================================
  */
 function setupEventListeners() {
-    // Filtro de período
-    document.getElementById('filter-select')?.addEventListener('change', (e) => {
-        AppState.updateFilter('period', e.target.value);
-        updateDashboard();
-    });
+    // Filtro de período - Sincronizar valor inicial del select con AppState
+    const filterSelect = document.getElementById('filter-select');
+    if (filterSelect) {
+        // Sincronizar el estado inicial
+        AppState.filters.current = filterSelect.value;
+        
+        filterSelect.addEventListener('change', (e) => {
+            AppState.filters.current = e.target.value;
+            updateDashboard();
+        });
+    }
     
     // Filtros de fecha
     document.getElementById('start-date-select')?.addEventListener('change', (e) => {
@@ -159,27 +174,37 @@ function setupEventListeners() {
  * ============================================================================
  */
 function updateDashboard() {
-    const filteredData = getFilteredData();
-    AppState.data.filtered = filteredData;
-    
-    // Actualizar KPIs
-    updateKPIs(filteredData);
-    
-    // Actualizar gráficos
-    updateCharts(filteredData);
-    
-    // Actualizar tablas
-    updateTables(filteredData);
-    
-    // Actualizar panel de filtros activos
-    updateActiveFiltersPanel();
+    try {
+        const filteredData = getFilteredData();
+        AppState.data.filtered = filteredData;
+        
+        console.log('Filtered data:', filteredData.length, 'records');
+        
+        // Actualizar KPIs
+        updateKPIs(filteredData);
+        
+        // Actualizar gráficos
+        updateCharts(filteredData);
+        
+        // Actualizar tablas
+        updateTables(filteredData);
+        
+        // Actualizar panel de filtros activos
+        updateActiveFiltersPanel();
+    } catch (error) {
+        console.error('Error updating dashboard:', error);
+        ErrorHandler.handle(error);
+    }
 }
 
 function getFilteredData() {
     let data = AppState.data.financial;
     const isDateRangeActive = AppState.filters.dateRange.start || AppState.filters.dateRange.end;
     
-    document.getElementById('filter-select').disabled = isDateRangeActive;
+    const filterSelect = document.getElementById('filter-select');
+    if (filterSelect) {
+        filterSelect.disabled = isDateRangeActive;
+    }
     
     if (isDateRangeActive) {
         data = data.filter(item => {
@@ -271,17 +296,27 @@ function updateKPIs(data) {
 }
 
 function updateTables(data) {
-    // Tabla de todas las transacciones
-    allTransactionsTable.render(data);
-    
-    // Tabla de top movimientos
-    const topMovements = getTopMovements(data);
-    topMovementsTable.render(topMovements);
-    
-    // Tabla de resumen por categorías
-    const categoryStats = getCategoryStats(data);
-    const totalGastos = data.reduce((sum, item) => sum + parseAmount(item.Gastos || '0'), 0);
-    categorySummaryTable.render(categoryStats, totalGastos);
+    try {
+        console.log('📊 Updating tables with', data.length, 'records');
+        
+        // Tabla de todas las transacciones
+        allTransactionsTable.render(data);
+        console.log('✅ All transactions table updated');
+        
+        // Tabla de top movimientos
+        const topMovements = getTopMovements(data);
+        topMovementsTable.render(topMovements);
+        console.log('✅ Top movements table updated');
+        
+        // Tabla de resumen por categorías
+        const categoryStats = getCategoryStats(data);
+        const totalGastos = data.reduce((sum, item) => sum + parseAmount(item.Gastos || '0'), 0);
+        categorySummaryTable.render(categoryStats, totalGastos);
+        console.log('✅ Category summary table updated');
+    } catch (error) {
+        console.error('❌ Error updating tables:', error);
+        throw error;
+    }
 }
 
 function getCategoryStats(data) {

@@ -78,8 +78,8 @@ export class CategorySummaryTable extends BaseTable {
 // Instancia global
 export const categorySummaryTable = new CategorySummaryTable();
 
-// Exponer funciones globalmente
-window.sortTablecategory_summary_table = (col) => {
+// Exponer funciones globalmente (usando safeId)
+window.sortTable_category_summary_table = (col) => {
     categorySummaryTable.sort(col);
     AppState.ui.categorySummarySortColumn = categorySummaryTable.sortColumn;
     AppState.ui.categorySummarySortDirection = categorySummaryTable.sortDirection;

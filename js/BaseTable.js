@@ -13,6 +13,8 @@ export class BaseTable {
     constructor(containerId, options = {}) {
         this.containerId = containerId;
         this.container = document.getElementById(containerId);
+        // Crear un ID seguro para funciones JavaScript (reemplazar guiones con guiones bajos)
+        this.safeId = containerId.replace(/-/g, '_');
         this.sortColumn = options.sortColumn || null;
         this.sortDirection = options.sortDirection || 'asc';
         this.isCompact = options.compact || false;
@@ -62,7 +64,7 @@ export class BaseTable {
             const sortClass = this.sortColumn === col.key ? 
                 (this.sortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 'sortable';
             const alignClass = col.align || '';
-            html += `<th class="${sortClass} ${alignClass}" onclick="window.sortTable${this.containerId}('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey, AppState.language)}</th>`;
+            html += `<th class="${sortClass} ${alignClass}" onclick="window.sortTable_${this.safeId}('${col.key}')" data-i18n="${col.labelKey}">${translate(col.labelKey, AppState.language)}</th>`;
         });
         
         html += '</tr></thead>';
@@ -171,9 +173,9 @@ export class BaseTable {
         const totalPages = Math.ceil(totalItems / this.itemsPerPage);
         
         let html = '<div class="pagination">';
-        html += `<button ${this.currentPage === 1 ? 'disabled' : ''} onclick="window.prevPage${this.containerId}()">←</button>`;
+        html += `<button ${this.currentPage === 1 ? 'disabled' : ''} onclick="window.prevPage_${this.safeId}()">←</button>`;
         html += `<span class="page-info">${translate('page', AppState.language)} ${this.currentPage} ${translate('of', AppState.language)} ${totalPages} (${totalItems} ${translate('records', AppState.language)})</span>`;
-        html += `<button ${this.currentPage === totalPages ? 'disabled' : ''} onclick="window.nextPage${this.containerId}()">→</button>`;
+        html += `<button ${this.currentPage === totalPages ? 'disabled' : ''} onclick="window.nextPage_${this.safeId}()">→</button>`;
         html += '</div>';
         
         return html;

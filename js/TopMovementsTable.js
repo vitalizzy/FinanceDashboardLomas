@@ -76,8 +76,8 @@ export class TopMovementsTable extends BaseTable {
 // Instancia global
 export const topMovementsTable = new TopMovementsTable();
 
-// Exponer funciones globalmente
-window.sortTabletop_movements_table = (col) => {
+// Exponer funciones globalmente (usando safeId)
+window.sortTable_top_movements_table = (col) => {
     topMovementsTable.sort(col);
     AppState.ui.topMovementsSortColumn = topMovementsTable.sortColumn;
     AppState.ui.topMovementsSortDirection = topMovementsTable.sortDirection;

@@ -63,18 +63,18 @@ export class AllTransactionsTable extends BaseTable {
 // Instancia global
 export const allTransactionsTable = new AllTransactionsTable();
 
-// Exponer funciones globalmente para onclick
-window.sortTableall_transactions_table = (col) => {
+// Exponer funciones globalmente para onclick (usando safeId)
+window.sortTable_all_transactions_table = (col) => {
     allTransactionsTable.sort(col);
     allTransactionsTable.render(AppState.data.filtered);
 };
 
-window.nextPageall_transactions_table = () => {
+window.nextPage_all_transactions_table = () => {
     allTransactionsTable.nextPage();
     allTransactionsTable.render(AppState.data.filtered);
 };
 
-window.prevPageall_transactions_table = () => {
+window.prevPage_all_transactions_table = () => {
     allTransactionsTable.prevPage();
     allTransactionsTable.render(AppState.data.filtered);
 };
