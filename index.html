@@ -329,6 +329,30 @@
         .fab .fab-icon svg { width: 12px; height: 12px; fill: white; }
         .fab .fab-x { display: inline-block; font-size: 12px; line-height: 1; margin-left: 6px; }
 
+        /* FAB Confirm - Verde */
+        .fab-confirm {
+            background-color: #28a745;
+            right: 30px;
+            bottom: 100px; /* Encima del FAB principal */
+        }
+
+        .fab-confirm:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        /* FAB Cancel - Rojo */
+        .fab-cancel {
+            background-color: #dc3545;
+            right: 30px;
+            bottom: 170px; /* Más arriba */
+        }
+
+        .fab-cancel:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
         /* Icon buttons for confirm/cancel (compact circular style) */
         .icon-btn {
             display: inline-flex;
@@ -918,6 +942,16 @@
                 font-size: 12px;
             }
             
+            /* FAB Confirm en móvil */
+            .fab-confirm {
+                bottom: 80px; /* Más cerca en móvil */
+            }
+            
+            /* FAB Cancel en móvil */
+            .fab-cancel {
+                bottom: 144px; /* Ajustado para móvil */
+            }
+            
             /* Active filters responsive */
             .active-filters {
                 width: 100%;
@@ -1339,6 +1373,7 @@
         <div id="loading" data-i18n="loading_data">Cargando datos financieros... ⏳</div>
         <div id="error"></div>
         
+        <!-- Botones flotantes (FAB) -->
         <button id="clear-filters-fab" class="fab" title="" onclick="window.clearAllFilters()" data-i18n="clear_all_title">
             <span class="fab-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
@@ -1348,6 +1383,16 @@
             <span class="fab-x" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
             </span>
+        </button>
+        
+        <!-- FAB Confirmar selección -->
+        <button id="fab-confirm" class="fab fab-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección" style="display: none;">
+            ✓
+        </button>
+        
+        <!-- FAB Cancelar selección -->
+        <button id="fab-cancel" class="fab fab-cancel" title="Cancelar selección" onclick="window.clearPendingSelection()" aria-label="Cancelar selección" style="display: none;">
+            <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z"/></svg>
         </button>
     </div>
 
@@ -2765,6 +2810,13 @@
                     if (!el) return;
                     el.style.display = displayStyle;
                 });
+                
+                // También mostrar/ocultar los FABs flotantes de confirmación y cancelación
+                const fabConfirm = document.getElementById('fab-confirm');
+                const fabCancel = document.getElementById('fab-cancel');
+                const fabDisplayStyle = hasAnyPending ? 'flex' : 'none';
+                if (fabConfirm) fabConfirm.style.display = fabDisplayStyle;
+                if (fabCancel) fabCancel.style.display = fabDisplayStyle;
             }
 
             // Note: FAB menu removed; FAB now calls clearAllFilters (restores previous behavior)
