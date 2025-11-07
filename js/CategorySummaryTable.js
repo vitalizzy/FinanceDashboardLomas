@@ -17,10 +17,46 @@ export class CategorySummaryTable extends BaseTable {
         });
         
         this.columns = [
-            { key: 'category', labelKey: 'category', align: 'weight-medium', sortable: true },
-            { key: 'count', labelKey: 'count', type: 'number', align: 'text-right', sortable: true },
-            { key: 'total', labelKey: 'expenses_sum', type: 'currency', align: 'text-right color-gastos weight-medium', sortable: true },
-            { key: 'percentage', labelKey: 'total_percent', type: 'percent', align: 'text-right color-secondary', sortable: true }
+            { 
+                key: 'category', 
+                labelKey: 'category', 
+                minWidth: '150px',
+                cssClass: 'weight-medium',
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'count', 
+                labelKey: 'count', 
+                type: 'number', 
+                width: '80px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                sortable: true,
+                searchable: false
+            },
+            { 
+                key: 'total', 
+                labelKey: 'expenses_sum', 
+                type: 'currency', 
+                width: '130px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                cssClass: 'color-gastos weight-medium',
+                sortable: true,
+                searchable: false
+            },
+            { 
+                key: 'percentage', 
+                labelKey: 'total_percent', 
+                type: 'percent', 
+                width: '100px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                cssClass: 'color-secondary',
+                sortable: true,
+                searchable: false
+            }
         ];
     }
 

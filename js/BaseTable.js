@@ -68,16 +68,42 @@ export class BaseTable {
         columns.forEach(col => {
             const isSortable = col.sortable !== false;
             const isSearchable = col.searchable !== false;
+            
+            // Clases de ordenamiento
             const sortClass = isSortable && this.sortColumn === col.key ? 
                 (this.sortDirection === 'asc' ? 'sort-asc' : 'sort-desc') : 
                 (isSortable ? 'sortable' : '');
-            const alignClass = col.align || '';
-            const cssClass = col.cssClass || '';
-            const allClasses = [sortClass, alignClass, cssClass].filter(c => c).join(' ');
             
-            html += `<th class="${allClasses}" data-i18n="${col.labelKey}">`;
-            html += `<div class="th-content">`;
-            html += `<span class="th-label" ${isSortable ? `onclick="window.sortTable_${this.safeId}('${col.key}')"` : ''}>${translate(col.labelKey, AppState.language)}</span>`;
+            // Configuración de alineamiento y clases
+            const alignClass = col.headerAlign || col.align || ''; // Alineamiento específico del header o general
+            const cssClass = col.cssClass || '';
+            const headerClass = col.headerClass || ''; // Clase específica para el header
+            
+            // Combinar todas las clases
+            const allClasses = [sortClass, alignClass, cssClass, headerClass].filter(c => c).join(' ');
+            
+            // Estilos inline configurables
+            const styles = [];
+            if (col.width) styles.push(`width: ${col.width}`);
+            if (col.minWidth) styles.push(`min-width: ${col.minWidth}`);
+            if (col.maxWidth) styles.push(`max-width: ${col.maxWidth}`);
+            if (col.headerColor) styles.push(`color: ${col.headerColor}`);
+            if (col.headerBgColor) styles.push(`background-color: ${col.headerBgColor}`);
+            if (col.headerFontSize) styles.push(`font-size: ${col.headerFontSize}`);
+            if (col.headerFontWeight) styles.push(`font-weight: ${col.headerFontWeight}`);
+            if (col.headerPadding) styles.push(`padding: ${col.headerPadding}`);
+            
+            const styleAttr = styles.length > 0 ? `style="${styles.join('; ')}"` : '';
+            
+            html += `<th class="${allClasses}" ${styleAttr} data-i18n="${col.labelKey}">`;
+            html += `<div class="th-content" ${col.headerAlign ? `style="justify-content: ${this.getJustifyContent(col.headerAlign)}"` : ''}>`;
+            
+            // Label del header
+            const labelStyle = [];
+            if (col.headerTextAlign) labelStyle.push(`text-align: ${col.headerTextAlign}`);
+            const labelStyleAttr = labelStyle.length > 0 ? `style="${labelStyle.join('; ')}"` : '';
+            
+            html += `<span class="th-label" ${labelStyleAttr} ${isSortable ? `onclick="window.sortTable_${this.safeId}('${col.key}')"` : ''}>${translate(col.labelKey, AppState.language)}</span>`;
             
             // Icono de lupa si es searchable
             if (isSearchable) {
@@ -315,5 +341,14 @@ export class BaseTable {
             dropdown.style.display = 'none';
         }
         this.currentPage = 1;
+    }
+
+    /**
+     * Convierte clases de alineamiento a justify-content para flexbox
+     */
+    getJustifyContent(alignClass) {
+        if (alignClass.includes('text-right')) return 'flex-end';
+        if (alignClass.includes('text-center')) return 'center';
+        return 'flex-start'; // text-left o default
     }
 }

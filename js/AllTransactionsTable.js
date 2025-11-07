@@ -21,14 +21,83 @@ export class AllTransactionsTable extends BaseTable {
         });
         
         this.columns = [
-            { key: 'F. Operativa', labelKey: 'date', type: 'date', align: '', sortable: true },
-            { key: 'Categoria', labelKey: 'category', align: '', sortable: true },
-            { key: 'Concepto (Original)', labelKey: 'concept', align: '', cssClass: 'col-concepto-original', sortable: true },
-            { key: 'Concepto Publico', labelKey: 'concept', align: '', cssClass: 'col-secreta', sortable: true },
-            { key: 'Importe', labelKey: 'amount', type: 'currency', align: 'text-right', cellClass: (item) => this.getAmountClass(item), sortable: true },
-            { key: 'per Home', labelKey: 'per_home', type: 'currency', align: 'text-right', cellClass: 'color-per-home', sortable: true },
-            { key: 'Tipo', labelKey: 'type', align: 'text-center', cellClass: (item) => this.getTypeClass(item), sortable: true },
-            { key: 'Saldo', labelKey: 'balance', type: 'currency', align: 'text-right', cellClass: 'color-secondary', sortable: true }
+            { 
+                key: 'F. Operativa', 
+                labelKey: 'date', 
+                type: 'date', 
+                width: '110px',
+                align: 'text-center',
+                headerAlign: 'text-center',
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'Categoria', 
+                labelKey: 'category', 
+                minWidth: '120px',
+                maxWidth: '180px',
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'Concepto (Original)', 
+                labelKey: 'concept', 
+                minWidth: '200px',
+                cssClass: 'col-concepto-original', 
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'Concepto Publico', 
+                labelKey: 'concept', 
+                minWidth: '200px',
+                cssClass: 'col-secreta', 
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'Importe', 
+                labelKey: 'amount', 
+                type: 'currency', 
+                width: '120px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                cellClass: (item) => this.getAmountClass(item), 
+                sortable: true,
+                searchable: false
+            },
+            { 
+                key: 'per Home', 
+                labelKey: 'per_home', 
+                type: 'currency', 
+                width: '110px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                cellClass: 'color-per-home', 
+                sortable: true,
+                searchable: false
+            },
+            { 
+                key: 'Tipo', 
+                labelKey: 'type', 
+                width: '90px',
+                align: 'text-center',
+                headerAlign: 'text-center',
+                cellClass: (item) => this.getTypeClass(item), 
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'Saldo', 
+                labelKey: 'balance', 
+                type: 'currency', 
+                width: '120px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                cellClass: 'color-secondary', 
+                sortable: true,
+                searchable: false
+            }
         ];
     }
 

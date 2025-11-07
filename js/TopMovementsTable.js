@@ -18,11 +18,52 @@ export class TopMovementsTable extends BaseTable {
         });
         
         this.columns = [
-            { key: 'F. Operativa', labelKey: 'date', type: 'date', align: '', sortable: true },
-            { key: 'Categoria', labelKey: 'category', align: '', sortable: true },
-            { key: 'Concepto Publico', labelKey: 'concept', align: '', sortable: true },
-            { key: 'amount', labelKey: 'amount', type: 'custom', align: 'text-right', cellClass: (item) => this.getAmountClass(item), sortable: true },
-            { key: 'per Home', labelKey: 'per_home', type: 'currency', align: 'text-right', sortable: true }
+            { 
+                key: 'F. Operativa', 
+                labelKey: 'date', 
+                type: 'date', 
+                width: '110px',
+                align: 'text-center',
+                headerAlign: 'text-center',
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'Categoria', 
+                labelKey: 'category', 
+                minWidth: '120px',
+                maxWidth: '180px',
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'Concepto Publico', 
+                labelKey: 'concept', 
+                minWidth: '200px',
+                sortable: true,
+                searchable: true
+            },
+            { 
+                key: 'amount', 
+                labelKey: 'amount', 
+                type: 'custom', 
+                width: '130px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                cellClass: (item) => this.getAmountClass(item), 
+                sortable: true,
+                searchable: false
+            },
+            { 
+                key: 'per Home', 
+                labelKey: 'per_home', 
+                type: 'currency', 
+                width: '110px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                sortable: true,
+                searchable: false
+            }
         ];
     }
 

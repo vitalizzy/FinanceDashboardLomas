@@ -529,10 +529,27 @@ body {
     position: relative;
 }
 
+/* Alineamiento específico para headers */
+.th-content.text-left,
+.text-left .th-content {
+    justify-content: flex-start;
+}
+
+.th-content.text-center,
+.text-center .th-content {
+    justify-content: center;
+}
+
+.th-content.text-right,
+.text-right .th-content {
+    justify-content: flex-end;
+}
+
 .th-label {
     flex: 1;
     cursor: pointer;
     transition: color 0.2s;
+    min-width: 0; /* Permite que el texto se ajuste correctamente */
 }
 
 .th-label:hover {
