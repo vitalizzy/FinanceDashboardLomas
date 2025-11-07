@@ -4,10 +4,10 @@
  * ============================================================================
  */
 
-import { AppState } from './state.js';
-import { translate } from './i18n.js';
-import { formatCurrency, formatPercent, formatNumber } from './formatters.js';
-import { parseDate, parseAmount } from './utils.js';
+import { AppState } from '../../state.js';
+import { translate } from '../../i18n.js';
+import { formatCurrency, formatPercent, formatNumber } from '../../formatters.js';
+import { parseDate, parseAmount } from '../../utils.js';
 
 export class BaseTable {
     constructor(containerId, options = {}) {
@@ -18,10 +18,16 @@ export class BaseTable {
         this.sortColumn = options.sortColumn || null;
         this.sortDirection = options.sortDirection || 'asc';
         this.isCompact = options.compact || false;
-        this.showPagination = options.pagination || false;
-        this.itemsPerPage = options.itemsPerPage || 50;
-        this.currentPage = 1;
+        this.initialRows = options.initialRows || 20;
+        this.rowsIncrement = options.rowsIncrement || this.initialRows;
+        this.visibleRows = this.initialRows;
         this.columnFilters = {}; // Filtros por columna
+        this.lastColumns = [];
+        this.lastData = [];
+        this.currentData = [];
+        this.totalRows = 0;
+        this.handleScrollBound = this.handleScroll.bind(this);
+        this.isRendering = false;
     }
 
     /**
@@ -35,26 +41,39 @@ export class BaseTable {
             return;
         }
 
+        this.isRendering = true;
+        this.lastData = data;
+        this.lastColumns = columns;
+
         // Aplicar filtros de columna
         const filteredData = this.applyColumnFilters(data);
         const sortedData = this.sortData(filteredData);
-        const paginatedData = this.showPagination ? this.paginateData(sortedData) : sortedData;
+
+        this.currentData = sortedData;
+        this.totalRows = sortedData.length;
+
+        this.visibleRows = this.totalRows === 0 ? 0 : Math.min(this.initialRows, this.totalRows);
+
+        const visibleData = sortedData.slice(0, this.visibleRows);
         
         let tableHTML = '<div class="table-scroll-wrapper"><table class="db-table';
         if (this.isCompact) tableHTML += ' compact';
         tableHTML += '">';
         
         tableHTML += this.renderHeader(columns);
-        tableHTML += this.renderBody(paginatedData, columns);
+        tableHTML += this.renderBody(visibleData, columns);
         tableHTML += this.renderFooter(filteredData, columns);
         
         tableHTML += '</table></div>';
         
-        if (this.showPagination) {
-            tableHTML += this.renderPagination(filteredData.length);
-        }
-        
         this.container.innerHTML = tableHTML;
+        const wrapper = this.container.querySelector('.table-scroll-wrapper');
+        if (wrapper) {
+            wrapper.scrollTop = 0;
+        }
+        this.visibleRows = visibleData.length;
+        this.setupInfiniteScroll();
+        this.isRendering = false;
     }
 
     /**
@@ -133,6 +152,43 @@ export class BaseTable {
         
         html += '</thead>';
         return html;
+    }
+
+    setupInfiniteScroll() {
+        const wrapper = this.container?.querySelector('.table-scroll-wrapper');
+        if (!wrapper) return;
+
+        wrapper.removeEventListener('scroll', this.handleScrollBound);
+        wrapper.addEventListener('scroll', this.handleScrollBound, { passive: true });
+    }
+
+    handleScroll(event) {
+        if (this.isRendering || !this.currentData || this.visibleRows >= this.totalRows) return;
+
+        const wrapper = event.currentTarget;
+        const threshold = 24;
+        if (wrapper.scrollTop + wrapper.clientHeight < wrapper.scrollHeight - threshold) {
+            return;
+        }
+
+        const nextVisible = Math.min(this.visibleRows + this.rowsIncrement, this.totalRows);
+        const rowsToAdd = this.currentData.slice(this.visibleRows, nextVisible);
+        if (!rowsToAdd.length) return;
+
+        const tbody = wrapper.querySelector('tbody');
+        if (!tbody) return;
+
+        const fragment = document.createDocumentFragment();
+        rowsToAdd.forEach(item => {
+            const template = document.createElement('template');
+            template.innerHTML = this.renderRow(item, this.lastColumns).trim();
+            if (template.content.firstElementChild) {
+                fragment.appendChild(template.content.firstElementChild);
+            }
+        });
+
+        tbody.appendChild(fragment);
+        this.visibleRows = nextVisible;
     }
 
     /**
@@ -225,41 +281,6 @@ export class BaseTable {
     }
 
     /**
-     * Pagina los datos
-     */
-    paginateData(data) {
-        const start = (this.currentPage - 1) * this.itemsPerPage;
-        const end = start + this.itemsPerPage;
-        return data.slice(start, end);
-    }
-
-    /**
-     * Renderiza la paginación
-     */
-    renderPagination(totalItems) {
-        const totalPages = Math.ceil(totalItems / this.itemsPerPage);
-        
-        let html = '<div class="pagination">';
-        html += `<button ${this.currentPage === 1 ? 'disabled' : ''} onclick="window.prevPage_${this.safeId}()">←</button>`;
-        html += `<span class="page-info">${translate('page', AppState.language)} ${this.currentPage} ${translate('of', AppState.language)} ${totalPages} (${totalItems} ${translate('records', AppState.language)})</span>`;
-        html += `<button ${this.currentPage === totalPages ? 'disabled' : ''} onclick="window.nextPage_${this.safeId}()">→</button>`;
-        html += '</div>';
-        
-        return html;
-    }
-
-    /**
-     * Métodos de control de paginación
-     */
-    nextPage() {
-        this.currentPage++;
-    }
-
-    prevPage() {
-        if (this.currentPage > 1) this.currentPage--;
-    }
-
-    /**
      * Métodos de control de ordenamiento
      */
     sort(column) {
@@ -269,6 +290,7 @@ export class BaseTable {
             this.sortColumn = column;
             this.sortDirection = 'asc';
         }
+        this.resetVisibleRows();
     }
 
     /**
@@ -303,7 +325,7 @@ export class BaseTable {
         } else {
             delete this.columnFilters[columnKey];
         }
-        this.currentPage = 1; // Reset a primera página al filtrar
+        this.resetVisibleRows();
     }
 
     /**
@@ -345,6 +367,10 @@ export class BaseTable {
             if (input) input.value = '';
             dropdown.style.display = 'none';
         }
-        this.currentPage = 1;
+        this.resetVisibleRows();
+    }
+
+    resetVisibleRows() {
+        this.visibleRows = this.initialRows;
     }
 }

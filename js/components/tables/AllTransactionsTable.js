@@ -5,17 +5,17 @@
  */
 
 import { BaseTable } from './BaseTable.js';
-import { AppState } from './state.js';
-import { translate } from './i18n.js';
-import { parseDate, parseAmount } from './utils.js';
-import { formatCurrency } from './formatters.js';
+import { AppState } from '../../state.js';
+import { translate } from '../../i18n.js';
+import { parseDate, parseAmount } from '../../utils.js';
+import { formatCurrency } from '../../formatters.js';
 
 export class AllTransactionsTable extends BaseTable {
     constructor() {
         super('all-transactions-table', {
             compact: true,
-            pagination: true,
-            itemsPerPage: 50,
+            initialRows: 20,
+            rowsIncrement: 20,
             sortColumn: 'F. Operativa',
             sortDirection: 'desc'
         });
@@ -160,15 +160,5 @@ window.toggleColumnFilter_all_transactions_table = (col, event) => {
 
 window.clearColumnFilter_all_transactions_table = (col, event) => {
     allTransactionsTable.clearColumnFilter(col, event);
-    allTransactionsTable.render(AppState.data.filtered);
-};
-
-window.nextPage_all_transactions_table = () => {
-    allTransactionsTable.nextPage();
-    allTransactionsTable.render(AppState.data.filtered);
-};
-
-window.prevPage_all_transactions_table = () => {
-    allTransactionsTable.prevPage();
     allTransactionsTable.render(AppState.data.filtered);
 };

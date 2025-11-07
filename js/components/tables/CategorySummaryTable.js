@@ -5,15 +5,16 @@
  */
 
 import { BaseTable } from './BaseTable.js';
-import { AppState } from './state.js';
-import { translate } from './i18n.js';
-import { formatCurrency, formatPercent } from './formatters.js';
+import { AppState } from '../../state.js';
+import { translate } from '../../i18n.js';
+import { formatCurrency } from '../../formatters.js';
 
 export class CategorySummaryTable extends BaseTable {
     constructor() {
         super('category-summary-table', {
             compact: true,
-            pagination: false
+            initialRows: 20,
+            rowsIncrement: 10
         });
         
         this.columns = [
@@ -63,13 +64,11 @@ export class CategorySummaryTable extends BaseTable {
     render(categoryStats, totalGastos) {
         this.totalGastos = totalGastos;
         
-        // Asignar sortColumn/sortDirection desde AppState.ui
         if (AppState.ui.categorySummarySortColumn) {
             this.sortColumn = AppState.ui.categorySummarySortColumn;
             this.sortDirection = AppState.ui.categorySummarySortDirection;
         }
         
-        // Convertir el objeto categoryStats a array
         const data = Object.entries(categoryStats).map(([category, stats]) => ({
             category,
             count: stats.count,

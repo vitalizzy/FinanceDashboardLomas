@@ -1,4 +1,4 @@
-import { destroyAllCharts, createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow } from '../charts.js';
+import { destroyAllCharts, createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow } from '../components/charts/index.js';
 
 const DEFAULT_CHARTS = [
     {

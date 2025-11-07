@@ -1,7 +1,7 @@
 import { parseAmount } from '../utils.js';
-import { allTransactionsTable } from '../AllTransactionsTable.js';
-import { topMovementsTable } from '../TopMovementsTable.js';
-import { categorySummaryTable } from '../CategorySummaryTable.js';
+import { allTransactionsTable } from '../components/tables/AllTransactionsTable.js';
+import { topMovementsTable } from '../components/tables/TopMovementsTable.js';
+import { categorySummaryTable } from '../components/tables/CategorySummaryTable.js';
 
 const DEFAULT_TABLES = [
     {

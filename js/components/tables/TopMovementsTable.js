@@ -5,16 +5,17 @@
  */
 
 import { BaseTable } from './BaseTable.js';
-import { AppState } from './state.js';
-import { translate } from './i18n.js';
-import { parseDate, parseAmount } from './utils.js';
-import { formatCurrency } from './formatters.js';
+import { AppState } from '../../state.js';
+import { translate } from '../../i18n.js';
+import { parseAmount } from '../../utils.js';
+import { formatCurrency } from '../../formatters.js';
 
 export class TopMovementsTable extends BaseTable {
     constructor() {
         super('top-movements-table', {
             compact: true,
-            pagination: false
+            initialRows: 20,
+            rowsIncrement: 10
         });
         
         this.columns = [
@@ -79,7 +80,6 @@ export class TopMovementsTable extends BaseTable {
 
     formatCellValue(value, column) {
         if (column.key === 'amount') {
-            // Es un número que ya viene calculado
             const amountClass = value >= 0 ? 'color-ingresos' : 'color-gastos';
             return `<span class="${amountClass} weight-medium">${formatCurrency(Math.abs(value))}</span>`;
         }
@@ -92,10 +92,11 @@ export class TopMovementsTable extends BaseTable {
     }
 
     renderRow(item, columns) {
-        const isPending = AppState.filters.pendingCategories.has(item.Categoria || 'Sin categoría');
+        const category = item.Categoria || 'Sin categoría';
+        const isPending = AppState.filters.pendingCategories.has(category);
         const pendingClass = isPending ? 'pending-selected' : '';
         
-        let html = `<tr class="${pendingClass}" onclick="window.selectPendingCategory(event, '${(item.Categoria||'Sin categoría').replace(/'/g, "\\'")}')">`;
+        let html = `<tr class="${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">`;
         
         columns.forEach(col => {
             let value;
