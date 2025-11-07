@@ -80,6 +80,11 @@ window.sortTable_all_transactions_table = (col) => {
     allTransactionsTable.render(AppState.data.filtered);
 };
 
+window.filterColumn_all_transactions_table = (col, value) => {
+    allTransactionsTable.filterColumn(col, value);
+    allTransactionsTable.render(AppState.data.filtered);
+};
+
 window.nextPage_all_transactions_table = () => {
     allTransactionsTable.nextPage();
     allTransactionsTable.render(AppState.data.filtered);

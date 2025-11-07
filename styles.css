@@ -404,8 +404,9 @@ body {
 /* Table Styles */
 .table-scroll-wrapper {
     width: 100%;
+    max-height: 600px; /* Altura máxima para activar scroll vertical */
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: auto; /* Scroll vertical también */
     -webkit-overflow-scrolling: touch;
     margin-bottom: 16px;
     position: relative;
@@ -415,6 +416,7 @@ body {
 .table-scroll-wrapper .db-table {
     width: 100%;
     min-width: 100%;
+    table-layout: auto; /* Auto-ajuste de columnas */
 }
 
 .table-scroll-wrapper::-webkit-scrollbar {
@@ -469,9 +471,10 @@ body {
     padding: 12px 8px;
     border-bottom: 1px solid var(--border-color);
     text-align: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal; /* Permitir saltos de línea */
     word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 200px; /* Ancho máximo antes de forzar salto */
 }
 
 .db-table th:first-child,
@@ -504,7 +507,13 @@ body {
     border-bottom-width: 2px;
     cursor: pointer;
     user-select: none;
-    position: relative;
+    position: sticky; /* Sticky header */
+    top: 0;
+    z-index: 10;
+    background-color: var(--color-header-bg);
+    white-space: normal; /* Permitir saltos de línea */
+    word-wrap: break-word;
+    padding: 12px 8px;
 }
 
 .db-table th:hover {
@@ -528,6 +537,47 @@ body {
 .db-table th.sort-desc::after {
     content: '↓';
     opacity: 1;
+}
+
+/* Filter row in table header */
+.db-table thead .filter-row th {
+    padding: 4px 8px;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.db-table .filter-cell {
+    position: sticky;
+    top: 48px; /* Justo debajo del primer encabezado */
+    z-index: 9;
+    background-color: #f8f9fa;
+}
+
+.column-filter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.column-search-input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: white;
+    transition: border-color 0.2s;
+}
+
+.column-search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.1);
+}
+
+.column-search-input::placeholder {
+    color: #999;
+    font-size: 14px;
 }
 
 .db-table .text-right { text-align: right; }

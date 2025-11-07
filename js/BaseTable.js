@@ -21,6 +21,7 @@ export class BaseTable {
         this.showPagination = options.pagination || false;
         this.itemsPerPage = options.itemsPerPage || 50;
         this.currentPage = 1;
+        this.columnFilters = {}; // Filtros por columna
     }
 
     /**
@@ -34,7 +35,9 @@ export class BaseTable {
             return;
         }
 
-        const sortedData = this.sortData(data);
+        // Aplicar filtros de columna
+        const filteredData = this.applyColumnFilters(data);
+        const sortedData = this.sortData(filteredData);
         const paginatedData = this.showPagination ? this.paginateData(sortedData) : sortedData;
         
         let tableHTML = '<div class="table-scroll-wrapper"><table class="db-table';
@@ -43,12 +46,12 @@ export class BaseTable {
         
         tableHTML += this.renderHeader(columns);
         tableHTML += this.renderBody(paginatedData, columns);
-        tableHTML += this.renderFooter(data, columns);
+        tableHTML += this.renderFooter(filteredData, columns);
         
         tableHTML += '</table></div>';
         
         if (this.showPagination) {
-            tableHTML += this.renderPagination(data.length);
+            tableHTML += this.renderPagination(filteredData.length);
         }
         
         this.container.innerHTML = tableHTML;
@@ -58,8 +61,10 @@ export class BaseTable {
      * Renderiza el encabezado de la tabla
      */
     renderHeader(columns) {
-        let html = '<thead><tr>';
+        let html = '<thead>';
         
+        // Primera fila: títulos y ordenamiento
+        html += '<tr>';
         columns.forEach(col => {
             const isSortable = col.sortable !== false; // Por defecto true, a menos que sea explícitamente false
             const sortClass = isSortable && this.sortColumn === col.key ? 
@@ -71,8 +76,31 @@ export class BaseTable {
             const onclick = isSortable ? `onclick="window.sortTable_${this.safeId}('${col.key}')"` : '';
             html += `<th class="${allClasses}" ${onclick} data-i18n="${col.labelKey}">${translate(col.labelKey, AppState.language)}</th>`;
         });
+        html += '</tr>';
         
-        html += '</tr></thead>';
+        // Segunda fila: filtros por columna
+        html += '<tr class="filter-row">';
+        columns.forEach((col, index) => {
+            const isSearchable = col.searchable !== false; // Por defecto true, a menos que sea explícitamente false
+            if (isSearchable) {
+                html += `<th class="filter-cell">
+                    <div class="column-filter">
+                        <input 
+                            type="text" 
+                            class="column-search-input" 
+                            placeholder="🔍"
+                            oninput="window.filterColumn_${this.safeId}('${col.key}', this.value)"
+                            onclick="event.stopPropagation()"
+                        />
+                    </div>
+                </th>`;
+            } else {
+                html += '<th class="filter-cell"></th>';
+            }
+        });
+        html += '</tr>';
+        
+        html += '</thead>';
         return html;
     }
 
@@ -210,5 +238,40 @@ export class BaseTable {
             this.sortColumn = column;
             this.sortDirection = 'asc';
         }
+    }
+
+    /**
+     * Aplica filtros por columna
+     */
+    applyColumnFilters(data) {
+        if (Object.keys(this.columnFilters).length === 0) {
+            return data;
+        }
+
+        return data.filter(item => {
+            for (const [columnKey, filterValue] of Object.entries(this.columnFilters)) {
+                if (!filterValue) continue;
+                
+                const cellValue = String(item[columnKey] || '').toLowerCase();
+                const searchValue = filterValue.toLowerCase();
+                
+                if (!cellValue.includes(searchValue)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+
+    /**
+     * Filtra por una columna específica
+     */
+    filterColumn(columnKey, filterValue) {
+        if (filterValue && filterValue.trim()) {
+            this.columnFilters[columnKey] = filterValue.trim();
+        } else {
+            delete this.columnFilters[columnKey];
+        }
+        this.currentPage = 1; // Reset a primera página al filtrar
     }
 }
