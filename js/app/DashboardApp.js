@@ -179,6 +179,21 @@ export class DashboardApp {
         }
     }
 
+    handleBarRaceStop() {
+        console.log('⏹️  handleBarRaceStop called');
+        try {
+            const barRaceChart = this.chartManager.getChart('bar-race-chart');
+            if (barRaceChart && barRaceChart.stop) {
+                console.log('  ✅ Stopping bar race animation');
+                barRaceChart.stop();
+            } else {
+                console.warn('  ⚠️  Bar race chart or stop() method not available');
+            }
+        } catch (error) {
+            console.error('  ❌ Error stopping bar race animation:', error);
+        }
+    }
+
     _registerUiInteractions() {
         const periodDropdown = new Dropdown({
             elementId: 'filter-select',

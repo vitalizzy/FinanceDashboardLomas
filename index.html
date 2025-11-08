@@ -229,7 +229,17 @@
                         <span>Evolución de categorías (Animada)</span>
                         <small style="font-size: 11px; font-weight: normal; opacity: 0.7;">(Ranking de categorías por fecha)</small>
                         <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
-                            <button id="bar-race-play-btn" class="icon-btn" title="Reproducir animación" style="background-color: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; border: none; font-size: 11px; font-weight: bold;" onclick="window.onBarRacePlay && window.onBarRacePlay()">▶ PLAY</button>
+                            <button id="bar-race-play-btn" class="icon-btn icon-play" title="Reproducir animación" onclick="window.onBarRacePlay && window.onBarRacePlay()">
+                                <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21"/>
+                                </svg>
+                            </button>
+                            <button id="bar-race-stop-btn" class="icon-btn icon-stop" title="Detener animación" onclick="window.onBarRaceStop && window.onBarRaceStop()">
+                                <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" fill="currentColor">
+                                    <rect x="6" y="4" width="4" height="16" rx="1"/>
+                                    <rect x="14" y="4" width="4" height="16" rx="1"/>
+                                </svg>
+                            </button>
                         </div>
                     </h3>
                     <div class="chart-wrapper" style="height: 350px;">

@@ -520,6 +520,31 @@ body {
     color: #962524;
 }
 
+/* Bar Race Animation Controls */
+.icon-play {
+    border-color: rgba(40,167,69,0.4);
+    color: #1f7e36;
+    font-size: 14px;
+}
+
+.icon-stop {
+    border-color: rgba(220,53,69,0.4);
+    color: #af2f2d;
+    font-size: 14px;
+}
+
+.icon-play:hover {
+    background: rgba(40,167,69,0.08);
+    border-color: rgba(40,167,69,0.6);
+    color: #1b6d2f;
+}
+
+.icon-stop:hover {
+    background: rgba(220,53,69,0.08);
+    border-color: rgba(220,53,69,0.6);
+    color: #962524;
+}
+
 #top-confirm-icon, #top-cancel-icon,
 #cat-confirm-icon, #cat-cancel-icon,
 #monthly-confirm-icon, #monthly-cancel-icon,
