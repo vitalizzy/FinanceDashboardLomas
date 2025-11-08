@@ -188,7 +188,7 @@
                     </div>
                 </h3>
                 <div class="chart-wrapper">
-                    <canvas id="monthly-flow-chart"></canvas>
+                    <div id="monthly-flow-chart"></div>
                 </div>
             </div>
             
@@ -236,7 +236,7 @@
                         </div>
                     </h3>
                     <div class="chart-wrapper">
-                        <canvas id="expenses-chart"></canvas>
+                        <div id="expenses-chart"></div>
                     </div>
                 </div>
             </div>
@@ -341,7 +341,20 @@
     </div>
 
     <!-- External Scripts -->
+    <!-- Chart.js (mantenido para compatibilidad, a eliminar en futuro) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- ECharts Library -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <!-- Core ECharts Classes -->
+    <script src="js/core/base_echarts.js"></script>
+    <script src="js/core/echarts_line_chart.js"></script>
+    <script src="js/core/echarts_bar_chart.js"></script>
+    <script src="js/core/echarts_pie_chart.js"></script>
+    <script src="js/core/echarts_migration_utils.js"></script>
+    
+    <!-- App Scripts -->
     <script type="module" src="js/core/icons.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
