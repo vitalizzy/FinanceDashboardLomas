@@ -78,6 +78,10 @@ class MonthlyFlowLineChart {
                 this.buildDataset('chart_label_min_balance', AppState.chartColors.saldoMinimo, values => values.minBalance),
                 this.buildDataset('chart_label_final_balance', AppState.chartColors.balance, values => values.finalBalance)
             ];
+            
+            // Add transactions data to the first dataset so it's available in render()
+            datasets[0].transactions = this.last12MonthsData.map(([, values]) => values.transactions || 0);
+            
             console.log('  📊 Datasets generated:', datasets.length, 'series');
             return datasets;
         } catch (e) {

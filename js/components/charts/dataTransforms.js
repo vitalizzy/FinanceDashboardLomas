@@ -61,6 +61,7 @@ export function getMonthlyFlow(data) {
                 ingresos: 0,
                 gastos: 0,
                 perHome: 0,
+                transactions: 0,
                 balances: []
             };
         }
@@ -68,6 +69,7 @@ export function getMonthlyFlow(data) {
         monthlyData[monthKey].gastos += parseAmount(item.Gastos || '0');
         monthlyData[monthKey].ingresos += parseAmount(item.Ingresos || '0');
         monthlyData[monthKey].perHome += parseAmount(item['per Home'] || '0');
+        monthlyData[monthKey].transactions += 1;
         monthlyData[monthKey].balances.push({
             date: date.getTime(),
             balance: parseAmount(item['Saldo'] || '0')

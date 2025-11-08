@@ -26,7 +26,8 @@ export const APP_CONFIG = {
         EXPENSES: '--color-gastos',
         PER_HOME: '--color-per-home',
         BALANCE: '--color-balance',
-        SALDO_MINIMO: '--color-saldo-minimo'
+        SALDO_MINIMO: '--color-saldo-minimo',
+        TRANSACTIONS: '--color-transacciones'
     },
     
     // Date formats

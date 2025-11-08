@@ -81,6 +81,37 @@ class EChartsLineChart extends BaseECharts {
             };
         });
 
+        // Add histogram for transactions if data contains transactions
+        if (this.data.length > 0 && this.data[0].transactions) {
+            series.push({
+                name: 'Transacciones',
+                type: 'bar',
+                data: this.data[0].transactions,
+                yAxisIndex: 2,
+                itemStyle: {
+                    color: this.colors.transacciones || '#FF9800',
+                    borderRadius: [4, 4, 0, 0],
+                    shadowColor: 'rgba(255, 152, 0, 0.2)',
+                    shadowBlur: 4
+                },
+                barWidth: '60%',
+                tooltip: {
+                    valueFormatter: (value) => value + ' transacciones'
+                },
+                emphasis: {
+                    focus: 'series',
+                    itemStyle: {
+                        color: this.colors.transacciones || '#FF9800',
+                        shadowColor: 'rgba(255, 152, 0, 0.4)',
+                        shadowBlur: 8
+                    }
+                },
+                animation: true,
+                animationDuration: 1000,
+                animationEasing: 'cubicOut'
+            });
+        }
+
         const options = this.mergeOptions({
             xAxis: {
                 type: 'category',
@@ -146,11 +177,27 @@ class EChartsLineChart extends BaseECharts {
                     splitArea: {
                         show: false
                     }
+                },
+                {
+                    type: 'value',
+                    show: false,
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        show: false
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    splitArea: {
+                        show: false
+                    }
                 }
             ],
             series: series,
             legend: {
-                data: this.data.map(d => d.label),
+                data: this.data.map(d => d.label).concat(['Transacciones']),
                 top: '0px',
                 textStyle: {
                     color: this.colors.text,

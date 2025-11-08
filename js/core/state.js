@@ -225,5 +225,6 @@ export const AppState = {
         this.chartColors.perHome = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.PER_HOME).trim();
         this.chartColors.saldoMinimo = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.SALDO_MINIMO).trim();
         this.chartColors.balance = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.BALANCE).trim();
+        this.chartColors.transacciones = styles.getPropertyValue(APP_CONFIG.CHART_COLORS.TRANSACTIONS).trim() || '#FF9800';
     }
 };
