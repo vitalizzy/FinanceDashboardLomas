@@ -6,7 +6,8 @@ const GLOBAL_METHODS = {
     applyPendingSelection: app => app.handleApplyPendingSelection(),
     clearPendingSelection: app => app.handleClearPendingSelection(),
     exportToCSV: app => app.handleExportToCSV(),
-    onCategoryKPIChange: (app, metric) => app.handleCategoryKPIChange(metric)
+    onCategoryKPIChange: (app, metric) => app.handleCategoryKPIChange(metric),
+    onBarRacePlay: (app) => app.handleBarRacePlay()
 };
 
 /**

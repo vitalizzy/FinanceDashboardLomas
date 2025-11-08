@@ -35,10 +35,19 @@ export class ChartManager {
     constructor({ charts = DEFAULT_CHARTS } = {}) {
         this.charts = charts;
         this.context = {}; // Store context like selectedCategoryKPI
+        this.chartInstances = {}; // Store chart instances for access
     }
 
     setContext(context) {
         this.context = context;
+    }
+
+    getChart(chartId) {
+        return this.chartInstances[chartId];
+    }
+
+    setChartInstance(chartId, instance) {
+        this.chartInstances[chartId] = instance;
     }
 
     renderAll(dataset) {
@@ -54,7 +63,11 @@ export class ChartManager {
                     console.warn('    ⚠️ No data for chart:', id);
                     return;
                 }
-                render(id, chartData, this.context);
+                const chartInstance = render(id, chartData, this.context);
+                // Store instance if returned (for animation control, etc.)
+                if (chartInstance) {
+                    this.setChartInstance(id, chartInstance);
+                }
                 console.log('    ✅ Chart rendered:', id);
             } catch (error) {
                 console.error(`[ChartManager] Failed to render chart ${id}:`, error);

@@ -164,6 +164,21 @@ export class DashboardApp {
         this.updateDashboard();
     }
 
+    handleBarRacePlay() {
+        console.log('▶️  handleBarRacePlay called');
+        try {
+            const barRaceChart = this.chartManager.getChart('bar-race-chart');
+            if (barRaceChart && barRaceChart.play) {
+                console.log('  ✅ Starting bar race animation');
+                barRaceChart.play();
+            } else {
+                console.warn('  ⚠️  Bar race chart or play() method not available');
+            }
+        } catch (error) {
+            console.error('  ❌ Error playing bar race animation:', error);
+        }
+    }
+
     _registerUiInteractions() {
         const periodDropdown = new Dropdown({
             elementId: 'filter-select',

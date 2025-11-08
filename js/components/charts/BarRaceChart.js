@@ -33,6 +33,9 @@ class CategoryBarRaceChart {
             console.error('❌ Invalid data passed to BarRaceChart. Expected array, got:', typeof data);
         }
         this.raceData = data || [];
+        this.currentFrame = 0;
+        this.isPlaying = false;
+        this._animationInterval = null;
         console.log('🏁 BarRaceChart created:', { canvasId, frameCount: this.raceData.length });
     }
 
@@ -56,61 +59,88 @@ class CategoryBarRaceChart {
             return;
         }
 
-        // Create animation frames
-        const maxValue = Math.max(...this.raceData.flatMap(frame => 
-            frame.categories.map(cat => cat.value)
-        ));
+        console.log('🏁 BarRaceChart rendering with', this.raceData.length, 'frames');
 
-        // Get all unique categories to maintain consistent colors
-        const allCategories = new Set();
-        this.raceData.forEach(frame => {
-            frame.categories.forEach(cat => allCategories.add(cat.name));
-        });
-        const categoryList = Array.from(allCategories);
+        // Initialize with first frame
+        this.showFrame(0);
+    }
 
-        // Create series data for animation
-        const series = [
-            {
-                name: translate('chart_label_expenses', AppState.language),
-                type: 'bar',
-                data: this.raceData[0]?.categories.map(cat => cat.value) || [],
-                label: {
-                    show: true,
-                    position: 'right',
-                    valueAnimation: true,
-                    formatter: (params) => formatCurrency(params.value)
-                },
-                itemStyle: {
-                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-                        { offset: 0, color: AppState.chartColors.gastos },
-                        { offset: 1, color: AppState.chartColors.ingresos }
-                    ])
-                }
-            }
-        ];
+    showFrame(frameIndex) {
+        if (frameIndex >= this.raceData.length) {
+            frameIndex = 0;
+        }
+
+        const frame = this.raceData[frameIndex];
+        if (!frame || !frame.categories) {
+            console.warn('⚠️ Invalid frame:', frameIndex);
+            return;
+        }
+
+        const chart = this._chart.getChart();
+        if (!chart) {
+            console.error('❌ Chart instance not available');
+            return;
+        }
+
+        console.log('🏁 Showing frame', frameIndex, 'with', frame.categories.length, 'categories');
 
         const options = {
             xAxis: {
                 type: 'value',
                 axisLabel: {
-                    formatter: (value) => formatCurrency(value)
+                    formatter: (value) => {
+                        if (value >= 1000) {
+                            return (value / 1000).toFixed(1) + 'k€';
+                        }
+                        return value + '€';
+                    }
                 }
             },
             yAxis: {
                 type: 'category',
                 inverse: true,
-                data: this.raceData[0]?.categories.map(cat => cat.name) || [],
+                data: frame.categories.map(cat => cat.name),
                 axisLabel: {
-                    fontSize: 12
+                    fontSize: 12,
+                    color: '#333'
                 }
             },
-            series: series,
-            animationDuration: 1000,
+            series: [
+                {
+                    name: translate('chart_label_expenses', AppState.language),
+                    type: 'bar',
+                    data: frame.categories.map(cat => cat.value),
+                    label: {
+                        show: true,
+                        position: 'right',
+                        valueAnimation: true,
+                        formatter: (params) => {
+                            if (params.value >= 1000) {
+                                return (params.value / 1000).toFixed(1) + 'k€';
+                            }
+                            return params.value + '€';
+                        }
+                    },
+                    itemStyle: {
+                        color: AppState.chartColors.gastos
+                    }
+                }
+            ],
+            title: {
+                text: frame.date,
+                left: 'center',
+                textStyle: {
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: '#333'
+                }
+            },
+            animationDuration: 500,
             animationEasing: 'cubicOut',
             grid: {
                 left: '150px',
                 right: '80px',
-                top: '40px',
+                top: '60px',
                 bottom: '40px'
             },
             tooltip: {
@@ -124,52 +154,46 @@ class CategoryBarRaceChart {
             }
         };
 
-        this.setOptions(options);
-
-        // Animate through frames
-        this.animateFrames();
+        chart.setOption(options, true);
+        this.currentFrame = frameIndex;
     }
 
-    animateFrames() {
-        let currentFrame = 0;
-        const frameInterval = setInterval(() => {
-            if (currentFrame >= this.raceData.length) {
-                currentFrame = 0; // Loop animation
+    play() {
+        console.log('🏁 Starting animation');
+        if (this.isPlaying) return;
+        
+        this.isPlaying = true;
+        this.currentFrame = 0;
+
+        this._animationInterval = setInterval(() => {
+            if (this.isPlaying) {
+                this.showFrame(this.currentFrame);
+                this.currentFrame++;
+                if (this.currentFrame >= this.raceData.length) {
+                    this.currentFrame = 0;
+                }
             }
+        }, 1500);
+    }
 
-            const frame = this.raceData[currentFrame];
-            const chart = this._chart.getChart();
+    pause() {
+        console.log('🏁 Pausing animation');
+        this.isPlaying = false;
+        if (this._animationInterval) {
+            clearInterval(this._animationInterval);
+            this._animationInterval = null;
+        }
+    }
 
-            if (chart) {
-                chart.setOption({
-                    yAxis: {
-                        data: frame.categories.map(cat => cat.name)
-                    },
-                    series: [
-                        {
-                            data: frame.categories.map(cat => cat.value)
-                        }
-                    ],
-                    title: {
-                        text: frame.date,
-                        left: 'center',
-                        textStyle: {
-                            fontSize: 14,
-                            fontWeight: 'bold',
-                            color: '#333'
-                        }
-                    }
-                }, false);
-            }
-
-            currentFrame++;
-        }, 2000); // 2 seconds per frame
-
-        // Store interval ID for cleanup if needed
-        this._animationInterval = frameInterval;
+    stop() {
+        console.log('🏁 Stopping animation');
+        this.pause();
+        this.showFrame(0);
     }
 }
 
 export function createBarRaceChart(canvasId, data) {
-    return new CategoryBarRaceChart({ canvasId, data }).render();
+    const chart = new CategoryBarRaceChart({ canvasId, data });
+    chart.render();
+    return chart;
 }
