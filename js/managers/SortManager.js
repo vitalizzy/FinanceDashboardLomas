@@ -105,6 +105,27 @@ export class SortManager {
     }
 
     /**
+     * Establece el estado de ordenamiento sin triggerar el callback onSortChange
+     * Útil para restaurar estado persistido sin causar loops infinitos
+     * @param {Array} sortState - Nuevo estado de ordenamiento
+     */
+    setSortStateDirectly(sortState = []) {
+        console.log(`[SortManager.setSortStateDirectly] Setting state without callback:`, JSON.stringify(sortState));
+        this.sortState = Array.isArray(sortState)
+            ? sortState
+                .filter(entry => entry && entry.key)
+                .map(entry => ({
+                    key: entry.key,
+                    direction: entry.direction === 'desc' ? 'desc' : 'asc'
+                }))
+            : [];
+        
+        this.sortColumn = this.sortState[0]?.key || null;
+        this.sortDirection = this.sortState[0]?.direction || 'asc';
+        // NO llamar a onSortChange() aquí - eso evita loops infinitos
+    }
+
+    /**
      * Obtiene información del ordenamiento para una columna específica
      * @param {string} columnKey - Clave de la columna
      * @returns {Object|null} {key, direction, priority} o null si no está ordenada

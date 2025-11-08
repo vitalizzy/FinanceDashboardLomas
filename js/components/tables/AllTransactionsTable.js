@@ -103,14 +103,6 @@ export class AllTransactionsTable extends BaseTable {
         ];
     }
 
-    render(data) {
-        const storedSort = AppState.ui.allTransactionsSortState;
-        if (Array.isArray(storedSort) && storedSort.length) {
-            this.setSortState(storedSort);
-        }
-        super.render(data, this.columns);
-    }
-
     getAmountClass(item) {
         const amount = parseAmount(item.Importe || '0');
         return amount >= 0 ? 'color-ingresos weight-medium' : 'color-gastos weight-medium';

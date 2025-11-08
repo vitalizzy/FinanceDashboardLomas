@@ -26,6 +26,10 @@ export class BaseTable {
         // Crear un ID seguro para funciones JavaScript (reemplazar guiones con guiones bajos)
         this.safeId = containerId.replace(/-/g, '_');
         const mergedOptions = { ...BASE_TABLE_DEFAULTS, ...options };
+        
+        // GUARDAR sortStateKey para restaurar estado en render()
+        this.sortStateKey = mergedOptions.sortStateKey || null;
+        
         this.isCompact = mergedOptions.compact;
         this.initialRows = mergedOptions.initialRows;
         this.rowsIncrement = mergedOptions.rowsIncrement ?? mergedOptions.initialRows;
@@ -49,9 +53,9 @@ export class BaseTable {
             onSortChange: (newState) => {
                 console.log(`[BaseTable.onSortChange] Callback fired with new state:`, JSON.stringify(newState));
                 // Guardar el estado en AppState si existe un stateKey
-                if (mergedOptions.sortStateKey) {
-                    console.log(`[BaseTable.onSortChange] Saving to AppState.ui.${mergedOptions.sortStateKey}`);
-                    AppState.ui[mergedOptions.sortStateKey] = newState;
+                if (this.sortStateKey) {
+                    console.log(`[BaseTable.onSortChange] Saving to AppState.ui.${this.sortStateKey}`);
+                    AppState.ui[this.sortStateKey] = newState;
                 }
                 // Luego hacer el re-render
                 console.log(`[BaseTable.onSortChange] Calling resetVisibleRows()`);
@@ -100,6 +104,14 @@ export class BaseTable {
      */
     render(data, columns) {
         console.log(`[BaseTable.render] Called with ${data?.length || 0} rows`);
+        
+        // RESTAURAR ESTADO PERSISTIDO al inicio (sin triggerar callbacks)
+        if (this.sortStateKey && AppState.ui[this.sortStateKey]) {
+            const persistedState = AppState.ui[this.sortStateKey];
+            console.log(`[BaseTable.render] Restoring persisted sort state from ${this.sortStateKey}:`, JSON.stringify(persistedState));
+            this.sortManager.setSortStateDirectly(persistedState);
+        }
+        
         if (!this.container) return;
         
         if (!data || data.length === 0) {

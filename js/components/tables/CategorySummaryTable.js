@@ -67,11 +67,6 @@ export class CategorySummaryTable extends BaseTable {
     render(categoryStats, totalGastos) {
         this.totalGastos = totalGastos;
         
-        const storedSort = AppState.ui.categorySummarySortState;
-        if (Array.isArray(storedSort) && storedSort.length) {
-            this.setSortState(storedSort);
-        }
-        
         const data = Object.entries(categoryStats).map(([category, stats]) => ({
             category,
             count: stats.count,

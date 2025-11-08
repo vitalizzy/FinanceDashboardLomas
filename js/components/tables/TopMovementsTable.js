@@ -70,26 +70,12 @@ export class TopMovementsTable extends BaseTable {
         ];
     }
 
-    render(data) {
-        const storedSort = AppState.ui.topMovementsSortState;
-        if (Array.isArray(storedSort) && storedSort.length) {
-            this.setSortState(storedSort);
-        }
-        
-        super.render(data, this.columns);
-    }
-
     formatCellValue(value, column) {
         if (column.key === 'amount') {
             const amountClass = value >= 0 ? 'color-ingresos' : 'color-gastos';
             return `<span class="${amountClass} weight-medium">${formatCurrency(Math.abs(value))}</span>`;
         }
         return super.formatCellValue(value, column);
-    }
-
-    getAmountClass(item) {
-        const amount = item.amount || 0;
-        return amount >= 0 ? 'color-ingresos weight-medium' : 'color-gastos weight-medium';
     }
 
     renderRow(item, columns) {
