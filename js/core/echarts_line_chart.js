@@ -92,46 +92,56 @@ class EChartsLineChart extends BaseECharts {
 
         // Add histogram for transactions if data contains transactions
         let maxTransactions = 0;
-        console.log('📊 this.data:', this.data);
-        console.log('📊 this.data[0]:', this.data[0]);
+        let transactionsData = [];
         
-        if (this.data.length > 0 && this.data[0].transactions) {
-            console.log('📊 Found transactions data:', this.data[0].transactions);
-            // Calculate max transactions for scaling the axis
-            maxTransactions = Math.max(...this.data[0].transactions);
-            console.log('📊 Max transactions:', maxTransactions);
+        console.log('📊 DEBUG - this.data:', this.data);
+        console.log('📊 DEBUG - this.data[0]:', this.data[0]);
+        
+        if (this.data.length > 0 && this.data[0].transactions && Array.isArray(this.data[0].transactions)) {
+            transactionsData = this.data[0].transactions;
+            console.log('📊 DEBUG - Found transactions data:', transactionsData);
             
-            series.push({
-                name: 'Transacciones',
-                type: 'bar',
-                data: this.data[0].transactions,
-                yAxisIndex: 2,
-                itemStyle: {
-                    color: this.colors.transacciones || '#FF9800',
-                    borderRadius: [4, 4, 0, 0],
-                    shadowColor: 'rgba(255, 152, 0, 0.2)',
-                    shadowBlur: 4
-                },
-                barWidth: '60%',
-                tooltip: {
-                    valueFormatter: (value) => value + ' transacciones'
-                },
-                emphasis: {
-                    focus: 'series',
+            // Calculate max transactions for scaling the axis
+            maxTransactions = Math.max(...transactionsData);
+            console.log('📊 DEBUG - Max transactions:', maxTransactions);
+            
+            // Only add series if we have transaction data
+            if (transactionsData.length > 0) {
+                series.push({
+                    name: 'Transacciones',
+                    type: 'bar',
+                    data: transactionsData,
+                    yAxisIndex: 2,
                     itemStyle: {
                         color: this.colors.transacciones || '#FF9800',
-                        shadowColor: 'rgba(255, 152, 0, 0.4)',
-                        shadowBlur: 8
-                    }
-                },
-                animation: true,
-                animationDuration: 1000,
-                animationEasing: 'cubicOut'
-            });
+                        borderRadius: [4, 4, 0, 0],
+                        shadowColor: 'rgba(255, 152, 0, 0.2)',
+                        shadowBlur: 4
+                    },
+                    barWidth: '60%',
+                    tooltip: {
+                        valueFormatter: (value) => value + ' transacciones'
+                    },
+                    emphasis: {
+                        focus: 'series',
+                        itemStyle: {
+                            color: this.colors.transacciones || '#FF9800',
+                            shadowColor: 'rgba(255, 152, 0, 0.4)',
+                            shadowBlur: 8
+                        }
+                    },
+                    animation: true,
+                    animationDuration: 1000,
+                    animationEasing: 'cubicOut'
+                });
+                console.log('📊 DEBUG - Transactions series added');
+            } else {
+                console.log('❌ DEBUG - Transactions data is empty array');
+            }
         } else {
-            console.log('❌ No transactions data found');
-            if (this.data.length === 0) console.log('❌ No data at all');
-            if (this.data[0]) console.log('❌ First dataset:', JSON.stringify(this.data[0]));
+            console.log('❌ DEBUG - No transactions data found or not an array');
+            if (this.data.length === 0) console.log('❌ DEBUG - No datasets at all');
+            if (this.data[0]) console.log('❌ DEBUG - First dataset structure:', Object.keys(this.data[0]));
         }
 
         const options = this.mergeOptions({
@@ -215,7 +225,7 @@ class EChartsLineChart extends BaseECharts {
                     splitArea: {
                         show: false
                     },
-                    max: maxTransactions * 2.5  // Scale to 40% of total height
+                    max: maxTransactions > 0 ? maxTransactions * 2.5 : 100  // Scale to 40% of total height, default to 100 if no data
                 }
             ],
             series: series,
