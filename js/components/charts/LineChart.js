@@ -17,26 +17,50 @@ if (!EChartsLineChart) {
 class MonthlyFlowLineChart extends EChartsLineChart {
     constructor({ canvasId, data }) {
         super(canvasId);
-        this.rawData = data;
-        this.last12MonthsData = data.slice(-12);
-        console.log('📊 LineChart created:', { canvasId, dataLength: data.length, last12: this.last12MonthsData.length });
+        console.log('📊 LineChart constructor - data:', data);
+        if (!data || !Array.isArray(data)) {
+            console.error('❌ Invalid data passed to LineChart. Expected array, got:', typeof data);
+        }
+        this.rawData = data || [];
+        this.last12MonthsData = this.rawData.slice(-12);
+        console.log('📊 LineChart created:', { canvasId, dataLength: this.rawData.length, last12: this.last12MonthsData.length });
     }
 
     getLabels() {
-        return this.last12MonthsData.map(([month]) => {
-            const [year, monthNum] = month.split('-');
-            return `${monthNum}/${year}`;
-        });
+        try {
+            const labels = this.last12MonthsData.map(([month]) => {
+                if (!month) {
+                    console.warn('⚠️ Month is undefined');
+                    return 'Unknown';
+                }
+                const parts = month.split('-');
+                const year = parts[0];
+                const monthNum = parts[1];
+                return `${monthNum}/${year}`;
+            });
+            console.log('  📍 Labels generated:', labels.length);
+            return labels;
+        } catch (e) {
+            console.error('❌ Error in getLabels():', e);
+            return [];
+        }
     }
 
     getDatasets() {
-        return [
-            this.buildDataset('chart_label_income', AppState.chartColors.ingresos, values => values.ingresos),
-            this.buildDataset('chart_label_expenses_only', AppState.chartColors.gastos, values => values.gastos),
-            this.buildDataset('chart_label_per_home', AppState.chartColors.perHome, values => values.perHome),
-            this.buildDataset('chart_label_min_balance', AppState.chartColors.saldoMinimo, values => values.minBalance),
-            this.buildDataset('chart_label_final_balance', AppState.chartColors.balance, values => values.finalBalance)
-        ];
+        try {
+            const datasets = [
+                this.buildDataset('chart_label_income', AppState.chartColors.ingresos, values => values.ingresos),
+                this.buildDataset('chart_label_expenses_only', AppState.chartColors.gastos, values => values.gastos),
+                this.buildDataset('chart_label_per_home', AppState.chartColors.perHome, values => values.perHome),
+                this.buildDataset('chart_label_min_balance', AppState.chartColors.saldoMinimo, values => values.minBalance),
+                this.buildDataset('chart_label_final_balance', AppState.chartColors.balance, values => values.finalBalance)
+            ];
+            console.log('  📊 Datasets generated:', datasets.length, 'series');
+            return datasets;
+        } catch (e) {
+            console.error('❌ Error in getDatasets():', e);
+            return [];
+        }
     }
 
     buildDataset(labelKey, color, selector) {

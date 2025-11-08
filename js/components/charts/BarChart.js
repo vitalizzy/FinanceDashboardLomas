@@ -17,20 +17,41 @@ if (!EChartsBarChart) {
 class ExpensesBarChart extends EChartsBarChart {
     constructor({ canvasId, data }) {
         super(canvasId);
-        this.data = data;
-        console.log('📊 BarChart created:', { canvasId, dataLength: data.length });
+        console.log('📊 BarChart constructor - data:', data);
+        if (!data || !Array.isArray(data)) {
+            console.error('❌ Invalid data passed to BarChart. Expected array, got:', typeof data);
+        }
+        this.data = data || [];
+        console.log('📊 BarChart created:', { canvasId, dataLength: this.data.length });
     }
 
     getLabels() {
-        return this.data.map(([label]) => label.length > 15 ? `${label.substring(0, 15)}...` : label);
+        try {
+            const labels = this.data.map(([label]) => {
+                if (!label) return 'Unknown';
+                return label.length > 15 ? `${label.substring(0, 15)}...` : label;
+            });
+            console.log('  📍 Labels generated:', labels.length);
+            return labels;
+        } catch (e) {
+            console.error('❌ Error in getLabels():', e);
+            return [];
+        }
     }
 
     getDatasets() {
-        return [{
-            label: translate('chart_label_expenses', AppState.language),
-            data: this.data.map(([, value]) => value),
-            backgroundColor: AppState.chartColors.gastos
-        }];
+        try {
+            const datasets = [{
+                label: translate('chart_label_expenses', AppState.language),
+                data: this.data.map(([, value]) => value),
+                backgroundColor: AppState.chartColors.gastos
+            }];
+            console.log('  📊 Datasets generated: 1 series with', datasets[0].data.length, 'points');
+            return datasets;
+        } catch (e) {
+            console.error('❌ Error in getDatasets():', e);
+            return [];
+        }
     }
 
     render() {
