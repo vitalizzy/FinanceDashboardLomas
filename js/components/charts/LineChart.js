@@ -19,6 +19,7 @@ class MonthlyFlowLineChart extends EChartsLineChart {
         super(canvasId);
         this.rawData = data;
         this.last12MonthsData = data.slice(-12);
+        console.log('📊 LineChart created:', { canvasId, dataLength: data.length, last12: this.last12MonthsData.length });
     }
 
     getLabels() {
@@ -48,6 +49,7 @@ class MonthlyFlowLineChart extends EChartsLineChart {
     }
 
     render() {
+        console.log('📈 LineChart.render() called');
         if (!this.init()) {
             console.error('Failed to initialize ECharts for monthly flow chart');
             return;
@@ -55,6 +57,7 @@ class MonthlyFlowLineChart extends EChartsLineChart {
 
         const labels = this.getLabels();
         const datasets = this.getDatasets();
+        console.log('📊 LineChart data:', { labelsCount: labels.length, datasetsCount: datasets.length });
 
         // Setup click handler
         this.on('click', (event) => {

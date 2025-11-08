@@ -24,15 +24,20 @@ export class ChartManager {
     }
 
     renderAll(dataset) {
-        destroyAllCharts();
+        console.log('📊 ChartManager.renderAll() called with', dataset.length, 'items');
+        window.destroyAllCharts();
 
         this.charts.forEach(({ id, prepare, render }) => {
             try {
+                console.log('  📈 Rendering chart:', id);
                 const chartData = prepare(dataset);
-                if (!chartData || chartData.length === 0) {
+                console.log('    ✅ Data prepared:', Array.isArray(chartData) ? chartData.length + ' items' : 'object');
+                if (!chartData || (Array.isArray(chartData) && chartData.length === 0)) {
+                    console.warn('    ⚠️ No data for chart:', id);
                     return;
                 }
                 render(id, chartData);
+                console.log('    ✅ Chart rendered:', id);
             } catch (error) {
                 console.error(`[ChartManager] Failed to render chart ${id}:`, error);
             }

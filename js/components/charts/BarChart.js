@@ -18,6 +18,7 @@ class ExpensesBarChart extends EChartsBarChart {
     constructor({ canvasId, data }) {
         super(canvasId);
         this.data = data;
+        console.log('📊 BarChart created:', { canvasId, dataLength: data.length });
     }
 
     getLabels() {
@@ -33,6 +34,7 @@ class ExpensesBarChart extends EChartsBarChart {
     }
 
     render() {
+        console.log('📊 BarChart.render() called');
         if (!this.init()) {
             console.error('Failed to initialize ECharts for expenses chart');
             return;
@@ -40,6 +42,7 @@ class ExpensesBarChart extends EChartsBarChart {
 
         const labels = this.getLabels();
         const datasets = this.getDatasets();
+        console.log('📊 BarChart data:', { labelsCount: labels.length, datasetsCount: datasets.length });
 
         // Setup click handler
         this.on('click', (event) => {
