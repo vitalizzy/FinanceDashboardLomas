@@ -116,6 +116,53 @@ handleBarRaceStop() {
 
 | Botón | Acción | Resultado |
 |-------|--------|-----------|
+| **PLAY** (▶) | Inicia la animación | Muestra frames en loop a velocidad seleccionada |
+| **STOP** (⏹) | Detiene la animación | Pausa y vuelve al frame 0 |
+
+## Control de Velocidad
+
+Se puede ajustar la velocidad de animación con el selector **Velocidad**:
+
+| Velocidad | Duración por Frame |
+|-----------|-------------------|
+| 1x (Normal) | 1500ms |
+| 2x (Rápido) | 750ms |
+| 3x (Muy Rápido) | 500ms |
+| 4x (Extremo) | 375ms |
+| 5x (Ultra) | 300ms |
+
+**Cálculo:** Duración = 1500ms ÷ Velocidad
+
+La velocidad se puede cambiar en cualquier momento, incluso durante la animación.
+
+## Sistema de Colores por Categoría
+
+Cada categoría tiene asignado un color único y persistente:
+
+### Paleta de Colores
+- Total de 20 colores distintos
+- Colores se asignan basándose en el nombre de la categoría
+- La misma categoría siempre tiene el mismo color en todos los frames
+- Facilita el seguimiento de movimientos y adelantamientos
+
+### Ventajas
+✅ Fácil identificación visual de categorías  
+✅ Seguimiento de movimientos en el ranking  
+✅ Detección rápida de adelantamientos  
+✅ Consistencia a lo largo de toda la animación  
+
+### Colores Utilizados
+```
+#FF6B6B, #4ECDC4, #45B7D1, #FFA07A, #98D8C8,
+#F7DC6F, #BB8FCE, #85C1E2, #F8B88B, #52C2E0,
+#FF6B9D, #C44569, #AA96DA, #FCBAD3, #A8E6CF,
+#FFD3B6, #FFAAA5, #FF8B94, #FF6E7F, #BDB2FF
+```
+
+## Comportamiento de los Botones
+
+| Botón | Acción | Resultado |
+|-------|--------|-----------|
 | **PLAY** (▶) | Inicia la animación | Muestra frames en loop cada 1.5s |
 | **STOP** (⏹) | Detiene la animación | Pausa y vuelve al frame 0 |
 
@@ -174,9 +221,11 @@ Para animación y vuelve a frame 0
 
 ## Métodos de BarRaceChart
 
-- `play()`: Inicia animación cíclica
+- `play()`: Inicia animación cíclica respetando velocidad configurada
 - `pause()`: Pausa manteniendo posición actual
 - `stop()`: Pausa y reinicia a frame 0
+- `setSpeed(multiplier)`: Cambia la velocidad (1-5)
+- `showFrame(index)`: Muestra un frame específico
 
 ## Patrón de Diseño Utilizado
 
@@ -190,9 +239,10 @@ Sigue el patrón existente del proyecto:
 ## Archivos Modificados
 
 - ✅ `assets/styles/main.css` - Agregadas clases icon-play e icon-stop
-- ✅ `js/app/globalActions.js` - Agregados onBarRacePlay y onBarRaceStop
-- ✅ `js/app/DashboardApp.js` - Implementados handleBarRacePlay() y handleBarRaceStop()
-- ✅ `index.html` - Actualizado HTML de botones PLAY y STOP
+- ✅ `js/app/globalActions.js` - Agregados onBarRacePlay, onBarRaceStop y onBarRaceSpeedChange
+- ✅ `js/app/DashboardApp.js` - Implementados handleBarRacePlay(), handleBarRaceStop() y handleBarRaceSpeedChange()
+- ✅ `js/components/charts/BarRaceChart.js` - Agregados colores por categoría y control de velocidad
+- ✅ `index.html` - Actualizado HTML con botones PLAY, STOP y selector de velocidad
 
 ## Commits
 
@@ -202,3 +252,5 @@ Sigue el patrón existente del proyecto:
 - `166be8b` - Add STOP button and improve button styling for bar race controls
 - `1112099` - Update animation controls documentation
 - `e89c49f` - Fix bar race chart to accumulate expenses over time
+- `7f98865` - Update documentation with cumulative data explanation
+- `0e57f83` - Add speed control and unique colors for bar race chart
