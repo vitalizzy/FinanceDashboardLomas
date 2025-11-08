@@ -208,3 +208,13 @@ class EChartsBarChart extends BaseECharts {
         }
     }
 }
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { EChartsBarChart };
+}
+
+// Make globally available for script tags
+if (typeof window !== 'undefined') {
+    window.EChartsBarChart = EChartsBarChart;
+}

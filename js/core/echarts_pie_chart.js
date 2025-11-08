@@ -149,3 +149,13 @@ class EChartsPieChart extends BaseECharts {
         }
     }
 }
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { EChartsPieChart };
+}
+
+// Make globally available for script tags
+if (typeof window !== 'undefined') {
+    window.EChartsPieChart = EChartsPieChart;
+}

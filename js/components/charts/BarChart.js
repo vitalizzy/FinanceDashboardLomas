@@ -7,6 +7,13 @@ import { AppState } from '../../core/state.js';
 import { translate } from '../../core/i18n.js';
 import { formatCurrency } from '../../core/formatters.js';
 
+// Access global EChartsBarChart that was loaded via script tag
+const EChartsBarChart = window.EChartsBarChart;
+
+if (!EChartsBarChart) {
+    console.error('EChartsBarChart not found. Ensure base_echarts.js and echarts_bar_chart.js are loaded.');
+}
+
 class ExpensesBarChart extends EChartsBarChart {
     constructor({ canvasId, data }) {
         super(canvasId);

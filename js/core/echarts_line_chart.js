@@ -231,3 +231,13 @@ class EChartsLineChart extends BaseECharts {
         }
     }
 }
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { EChartsLineChart };
+}
+
+// Make globally available for script tags
+if (typeof window !== 'undefined') {
+    window.EChartsLineChart = EChartsLineChart;
+}

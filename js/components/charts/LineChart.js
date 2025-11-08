@@ -7,6 +7,13 @@ import { AppState } from '../../core/state.js';
 import { translate } from '../../core/i18n.js';
 import { formatCurrency } from '../../core/formatters.js';
 
+// Access global EChartsLineChart that was loaded via script tag
+const EChartsLineChart = window.EChartsLineChart;
+
+if (!EChartsLineChart) {
+    console.error('EChartsLineChart not found. Ensure base_echarts.js and echarts_line_chart.js are loaded.');
+}
+
 class MonthlyFlowLineChart extends EChartsLineChart {
     constructor({ canvasId, data }) {
         super(canvasId);

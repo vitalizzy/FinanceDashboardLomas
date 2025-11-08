@@ -3,6 +3,23 @@
  * Provides common configuration and utilities for all ECharts charts
  */
 
+// Global chart instances tracker
+window._echartsInstances = window._echartsInstances || new Map();
+
+/**
+ * Function to destroy all ECharts instances
+ */
+window.destroyAllCharts = function() {
+    if (window._echartsInstances) {
+        window._echartsInstances.forEach((chart, key) => {
+            if (chart && typeof chart.dispose === 'function') {
+                chart.dispose();
+            }
+        });
+        window._echartsInstances.clear();
+    }
+};
+
 class BaseECharts {
     constructor(containerId, theme = 'light') {
         this.container = document.getElementById(containerId);
@@ -44,7 +61,18 @@ class BaseECharts {
             return false;
         }
         
+        // Destroy existing chart if it exists
+        if (this.chart) {
+            this.chart.dispose();
+        }
+        
         this.chart = window.echarts.init(this.container, this.theme);
+        
+        // Register chart instance
+        if (!window._echartsInstances) {
+            window._echartsInstances = new Map();
+        }
+        window._echartsInstances.set(this.containerId, this.chart);
         
         // Handle resize
         window.addEventListener('resize', () => {
@@ -239,4 +267,15 @@ class BaseECharts {
     _isObject(item) {
         return item && typeof item === 'object' && !Array.isArray(item);
     }
+}
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { BaseECharts, destroyAllCharts };
+}
+
+// Make globally available for script tags
+if (typeof window !== 'undefined') {
+    window.BaseECharts = BaseECharts;
+    window.destroyAllCharts = destroyAllCharts;
 }
