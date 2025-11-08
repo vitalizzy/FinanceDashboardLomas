@@ -297,13 +297,20 @@ export class BaseTable {
 
     /**
      * Métodos de control de ordenamiento
+     * Sistema de tres estados por columna:
+     * 1. Sin ordenamiento → DESC (mayor a menor)
+     * 2. DESC → ASC (menor a mayor)
+     * 3. ASC → Sin ordenamiento
+     * 
+     * Si otra columna tiene ordenamiento activo, se mantiene con mayor prioridad
      */
     sort(column) {
         const index = this.sortState.findIndex(entry => entry.key === column);
 
         if (index === -1) {
-            // Primer click: ordenar descendentemente (DESC)
-            this.sortState = [{ key: column, direction: 'desc' }];
+            // Primer click: ordenar descendentemente (DESC) - Nueva columna
+            // Se agrega a la lista manteniendo otras columnas activas
+            this.sortState.push({ key: column, direction: 'desc' });
         } else {
             const currentDirection = this.sortState[index].direction;
             if (currentDirection === 'desc') {
