@@ -29,49 +29,57 @@ class EChartsLineChart extends BaseECharts {
             return;
         }
 
-        const series = this.data.map((dataset, index) => ({
-            name: dataset.label,
-            type: 'line',
-            data: dataset.data,
-            smooth: 0.4,
-            lineStyle: {
-                width: 2.5,
-                shadowColor: 'rgba(0, 0, 0, 0.1)',
-                shadowBlur: 6,
-                shadowOffsetY: 2
-            },
-            itemStyle: {
-                borderWidth: 2,
-                borderColor: '#fff',
-                shadowColor: 'rgba(0, 0, 0, 0.15)',
-                shadowBlur: 8
-            },
-            areaStyle: {
-                opacity: 0.25,
-                color: this.getDatasetColor(dataset, index)
-            },
-            symbol: 'circle',
-            symbolSize: [5, 8],
-            tooltip: {
-                valueFormatter: (value) => this.formatValue(value)
-            },
-            color: this.getDatasetColor(dataset, index),
-            emphasis: {
-                focus: 'series',
-                scale: 1.1,
+        const series = this.data.map((dataset, index) => {
+            // Determine if this series should use the secondary Y-axis (right side)
+            // Only "Per Home" uses the secondary axis
+            const isPerHome = dataset.label && dataset.label.toLowerCase().includes('per home');
+            const yAxisIndex = isPerHome ? 1 : 0;
+
+            return {
+                name: dataset.label,
+                type: 'line',
+                data: dataset.data,
+                smooth: 0.4,
+                yAxisIndex: yAxisIndex,
                 lineStyle: {
-                    width: 3,
-                    shadowBlur: 10
+                    width: 2.5,
+                    shadowColor: 'rgba(0, 0, 0, 0.1)',
+                    shadowBlur: 6,
+                    shadowOffsetY: 2
                 },
                 itemStyle: {
-                    borderWidth: 2.5,
-                    shadowBlur: 12
-                }
-            },
-            animation: true,
-            animationDuration: 1000,
-            animationEasing: 'cubicOut'
-        }));
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    shadowColor: 'rgba(0, 0, 0, 0.15)',
+                    shadowBlur: 8
+                },
+                areaStyle: {
+                    opacity: 0.25,
+                    color: this.getDatasetColor(dataset, index)
+                },
+                symbol: 'circle',
+                symbolSize: [5, 8],
+                tooltip: {
+                    valueFormatter: (value) => this.formatValue(value)
+                },
+                color: this.getDatasetColor(dataset, index),
+                emphasis: {
+                    focus: 'series',
+                    scale: 1.1,
+                    lineStyle: {
+                        width: 3,
+                        shadowBlur: 10
+                    },
+                    itemStyle: {
+                        borderWidth: 2.5,
+                        shadowBlur: 12
+                    }
+                },
+                animation: true,
+                animationDuration: 1000,
+                animationEasing: 'cubicOut'
+            };
+        });
 
         const options = this.mergeOptions({
             xAxis: {
@@ -98,27 +106,48 @@ class EChartsLineChart extends BaseECharts {
                     }
                 }
             },
-            yAxis: {
-                type: 'value',
-                axisLine: {
-                    show: false
-                },
-                axisLabel: {
-                    color: this.colors.textSecondary,
-                    fontSize: 12,
-                    formatter: (value) => this.formatValue(value)
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#f0f0f0',
-                        type: 'dashed',
-                        width: 0.5
+            yAxis: [
+                {
+                    type: 'value',
+                    position: 'left',
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: this.colors.textSecondary,
+                        fontSize: 12,
+                        formatter: (value) => this.formatValue(value)
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#f0f0f0',
+                            type: 'dashed',
+                            width: 0.5
+                        }
+                    },
+                    splitArea: {
+                        show: false
                     }
                 },
-                splitArea: {
-                    show: false
+                {
+                    type: 'value',
+                    position: 'right',
+                    axisLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        color: this.colors.perHome,
+                        fontSize: 12,
+                        formatter: (value) => this.formatValue(value)
+                    },
+                    splitLine: {
+                        show: false
+                    },
+                    splitArea: {
+                        show: false
+                    }
                 }
-            },
+            ],
             series: series,
             legend: {
                 data: this.data.map(d => d.label),
@@ -135,10 +164,10 @@ class EChartsLineChart extends BaseECharts {
             },
             grid: {
                 left: '60px',
-                right: '20px',
+                right: '80px',
                 top: '50px',
                 bottom: '50px',
-                containLabel: true
+                containLabel: false
             },
             tooltip: {
                 trigger: 'axis',
