@@ -7,22 +7,45 @@ import { AppState } from '../../core/state.js';
 import { translate } from '../../core/i18n.js';
 import { formatCurrency } from '../../core/formatters.js';
 
-// Access global EChartsBarChart that was loaded via script tag
-const EChartsBarChart = window.EChartsBarChart;
+// Will be resolved at runtime when createBarChart is called
+let EChartsBarChart = null;
 
-if (!EChartsBarChart) {
-    console.error('EChartsBarChart not found. Ensure base_echarts.js and echarts_bar_chart.js are loaded.');
+function getEChartsBarChart() {
+    if (!EChartsBarChart) {
+        EChartsBarChart = window.EChartsBarChart;
+        if (!EChartsBarChart) {
+            console.error('❌ EChartsBarChart not found. Ensure base_echarts.js and echarts_bar_chart.js are loaded.');
+            throw new Error('EChartsBarChart not available');
+        }
+    }
+    return EChartsBarChart;
 }
 
-class ExpensesBarChart extends EChartsBarChart {
+class ExpensesBarChart {
     constructor({ canvasId, data }) {
-        super(canvasId);
+        const ChartClass = getEChartsBarChart();
+        
+        // Delegate to ECharts instance
+        this._chart = new ChartClass(canvasId);
+        
         console.log('📊 BarChart constructor - data:', data);
         if (!data || !Array.isArray(data)) {
             console.error('❌ Invalid data passed to BarChart. Expected array, got:', typeof data);
         }
         this.data = data || [];
         console.log('📊 BarChart created:', { canvasId, dataLength: this.data.length });
+    }
+
+    init() {
+        return this._chart.init();
+    }
+
+    setData(labels, datasets) {
+        return this._chart.setData(labels, datasets);
+    }
+
+    on(eventName, handler) {
+        return this._chart.on(eventName, handler);
     }
 
     getLabels() {
@@ -75,7 +98,7 @@ class ExpensesBarChart extends EChartsBarChart {
             }
         });
 
-        // Render using parent class
+        // Render using instance
         this.setData(labels, datasets);
     }
 }

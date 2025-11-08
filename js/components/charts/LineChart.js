@@ -7,16 +7,27 @@ import { AppState } from '../../core/state.js';
 import { translate } from '../../core/i18n.js';
 import { formatCurrency } from '../../core/formatters.js';
 
-// Access global EChartsLineChart that was loaded via script tag
-const EChartsLineChart = window.EChartsLineChart;
+// Will be resolved at runtime when createLineChart is called
+let EChartsLineChart = null;
 
-if (!EChartsLineChart) {
-    console.error('EChartsLineChart not found. Ensure base_echarts.js and echarts_line_chart.js are loaded.');
+function getEChartsLineChart() {
+    if (!EChartsLineChart) {
+        EChartsLineChart = window.EChartsLineChart;
+        if (!EChartsLineChart) {
+            console.error('❌ EChartsLineChart not found. Ensure base_echarts.js and echarts_line_chart.js are loaded.');
+            throw new Error('EChartsLineChart not available');
+        }
+    }
+    return EChartsLineChart;
 }
 
-class MonthlyFlowLineChart extends EChartsLineChart {
+class MonthlyFlowLineChart {
     constructor({ canvasId, data }) {
-        super(canvasId);
+        const ChartClass = getEChartsLineChart();
+        
+        // Delegate to ECharts instance
+        this._chart = new ChartClass(canvasId);
+        
         console.log('📊 LineChart constructor - data:', data);
         if (!data || !Array.isArray(data)) {
             console.error('❌ Invalid data passed to LineChart. Expected array, got:', typeof data);
@@ -24,6 +35,18 @@ class MonthlyFlowLineChart extends EChartsLineChart {
         this.rawData = data || [];
         this.last12MonthsData = this.rawData.slice(-12);
         console.log('📊 LineChart created:', { canvasId, dataLength: this.rawData.length, last12: this.last12MonthsData.length });
+    }
+
+    init() {
+        return this._chart.init();
+    }
+
+    setData(labels, datasets) {
+        return this._chart.setData(labels, datasets);
+    }
+
+    on(eventName, handler) {
+        return this._chart.on(eventName, handler);
     }
 
     getLabels() {
