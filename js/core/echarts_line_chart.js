@@ -33,26 +33,44 @@ class EChartsLineChart extends BaseECharts {
             name: dataset.label,
             type: 'line',
             data: dataset.data,
-            smooth: true,
+            smooth: 0.4,
             lineStyle: {
-                width: 2.5
+                width: 2.5,
+                shadowColor: 'rgba(0, 0, 0, 0.1)',
+                shadowBlur: 6,
+                shadowOffsetY: 2
             },
             itemStyle: {
                 borderWidth: 2,
-                borderColor: '#fff'
+                borderColor: '#fff',
+                shadowColor: 'rgba(0, 0, 0, 0.15)',
+                shadowBlur: 8
             },
             areaStyle: {
-                opacity: 0.3
+                opacity: 0.25,
+                color: this.getDatasetColor(dataset, index)
             },
             symbol: 'circle',
-            symbolSize: 6,
+            symbolSize: [5, 8],
             tooltip: {
                 valueFormatter: (value) => this.formatValue(value)
             },
             color: this.getDatasetColor(dataset, index),
             emphasis: {
-                focus: 'series'
-            }
+                focus: 'series',
+                scale: 1.1,
+                lineStyle: {
+                    width: 3,
+                    shadowBlur: 10
+                },
+                itemStyle: {
+                    borderWidth: 2.5,
+                    shadowBlur: 12
+                }
+            },
+            animation: true,
+            animationDuration: 1000,
+            animationEasing: 'cubicOut'
         }));
 
         const options = this.mergeOptions({
@@ -62,15 +80,22 @@ class EChartsLineChart extends BaseECharts {
                 boundaryGap: false,
                 axisLine: {
                     lineStyle: {
-                        color: this.colors.border
+                        color: this.colors.border,
+                        width: 1
                     }
                 },
                 axisLabel: {
                     color: this.colors.textSecondary,
-                    fontSize: 12
+                    fontSize: 12,
+                    margin: 8
                 },
                 splitLine: {
-                    show: false
+                    show: true,
+                    lineStyle: {
+                        color: '#f0f0f0',
+                        type: 'dashed',
+                        width: 0.5
+                    }
                 }
             },
             yAxis: {
@@ -86,8 +111,12 @@ class EChartsLineChart extends BaseECharts {
                 splitLine: {
                     lineStyle: {
                         color: '#f0f0f0',
-                        type: 'dashed'
+                        type: 'dashed',
+                        width: 0.5
                     }
+                },
+                splitArea: {
+                    show: false
                 }
             },
             series: series,
@@ -96,10 +125,45 @@ class EChartsLineChart extends BaseECharts {
                 top: '0px',
                 textStyle: {
                     color: this.colors.text,
-                    fontSize: 12
+                    fontSize: 12,
+                    fontWeight: 500
                 },
-                itemGap: 20
-            }
+                itemGap: 20,
+                icon: 'circle',
+                padding: [0, 0, 10, 0],
+                backgroundColor: 'transparent'
+            },
+            grid: {
+                left: '60px',
+                right: '20px',
+                top: '50px',
+                bottom: '50px',
+                containLabel: true
+            },
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                borderColor: '#333',
+                borderWidth: 0,
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 12,
+                    fontWeight: 500
+                },
+                padding: [10, 15],
+                borderRadius: 6,
+                axisPointer: {
+                    type: 'cross',
+                    lineStyle: {
+                        color: 'rgba(127, 140, 141, 0.5)',
+                        width: 1,
+                        type: 'dashed'
+                    }
+                }
+            },
+            animation: true,
+            animationDuration: 1200,
+            animationEasing: 'cubicOut'
         });
 
         this.setOptions(options);

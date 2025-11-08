@@ -34,16 +34,27 @@ class EChartsBarChart extends BaseECharts {
             type: 'bar',
             data: dataset.data,
             itemStyle: {
-                borderRadius: [4, 4, 0, 0],
-                color: this.getDatasetColor(dataset, index)
+                borderRadius: [6, 6, 0, 0],
+                color: this.getDatasetColor(dataset, index),
+                shadowColor: 'rgba(0, 0, 0, 0.1)',
+                shadowBlur: 4,
+                shadowOffsetY: 2
             },
             tooltip: {
                 valueFormatter: (value) => this.formatValue(value)
             },
             emphasis: {
-                focus: 'series'
+                focus: 'series',
+                itemStyle: {
+                    shadowBlur: 12,
+                    shadowColor: 'rgba(0, 0, 0, 0.2)',
+                    borderRadius: [6, 6, 0, 0]
+                }
             },
-            barGap: '30%'
+            barGap: '30%',
+            animation: true,
+            animationDuration: 1000,
+            animationEasing: 'cubicOut'
         }));
 
         const options = this.mergeOptions({
@@ -52,14 +63,16 @@ class EChartsBarChart extends BaseECharts {
                 data: this.labels,
                 axisLine: {
                     lineStyle: {
-                        color: this.colors.border
+                        color: this.colors.border,
+                        width: 1
                     }
                 },
                 axisLabel: {
                     color: this.colors.textSecondary,
                     fontSize: 12,
                     interval: 0,
-                    rotate: this.labels.length > 8 ? 45 : 0
+                    rotate: this.labels.length > 8 ? 45 : 0,
+                    margin: 8
                 },
                 splitLine: {
                     show: false
@@ -78,8 +91,12 @@ class EChartsBarChart extends BaseECharts {
                 splitLine: {
                     lineStyle: {
                         color: '#f0f0f0',
-                        type: 'dashed'
+                        type: 'dashed',
+                        width: 0.5
                     }
+                },
+                splitArea: {
+                    show: false
                 }
             },
             series: series,
@@ -88,10 +105,42 @@ class EChartsBarChart extends BaseECharts {
                 top: '0px',
                 textStyle: {
                     color: this.colors.text,
-                    fontSize: 12
+                    fontSize: 12,
+                    fontWeight: 500
                 },
-                itemGap: 20
-            }
+                itemGap: 20,
+                icon: 'rect',
+                padding: [0, 0, 10, 0]
+            },
+            grid: {
+                left: '60px',
+                right: '20px',
+                top: '50px',
+                bottom: '50px',
+                containLabel: true
+            },
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                borderColor: '#333',
+                borderWidth: 0,
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 12,
+                    fontWeight: 500
+                },
+                padding: [10, 15],
+                borderRadius: 6,
+                axisPointer: {
+                    type: 'shadow',
+                    shadowStyle: {
+                        color: 'rgba(127, 140, 141, 0.1)'
+                    }
+                }
+            },
+            animation: true,
+            animationDuration: 1200,
+            animationEasing: 'cubicOut'
         });
 
         this.setOptions(options);
