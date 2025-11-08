@@ -129,9 +129,12 @@ class EChartsLineChart extends BaseECharts {
                         color: this.colors.transacciones || '#FF9800',
                         borderRadius: [4, 4, 0, 0],
                         shadowColor: 'rgba(255, 152, 0, 0.2)',
-                        shadowBlur: 4
+                        shadowBlur: 4,
+                        opacity: 0.8
                     },
-                    barWidth: '60%',
+                    barWidth: '80%',  // Aumentado de 60% a 80% para mejor visibilidad
+                    barGap: '0%',     // Sin espacios entre barras
+                    barCategoryGap: '20%',  // Espacio entre categorías
                     tooltip: {
                         valueFormatter: (value) => value + ' transacciones'
                     },
@@ -140,9 +143,11 @@ class EChartsLineChart extends BaseECharts {
                         itemStyle: {
                             color: this.colors.transacciones || '#FF9800',
                             shadowColor: 'rgba(255, 152, 0, 0.4)',
-                            shadowBlur: 8
+                            shadowBlur: 8,
+                            opacity: 1
                         }
                     },
+                    zlevel: 1,  // Asegurar que esté por encima
                     animation: true,
                     animationDuration: 1000,
                     animationEasing: 'cubicOut'
@@ -245,7 +250,7 @@ class EChartsLineChart extends BaseECharts {
                     splitArea: {
                         show: false
                     },
-                    max: maxTransactions > 0 ? maxTransactions * 1.0 : 100  // TEMPORALMENTE SIN ESCALAR PARA VER SI APARECEN
+                    max: maxTransactions > 0 ? maxTransactions * 2.5 : 100  // Scale to 40% of total height (¡AHORA SÍ CORRECTO!)
                 }
             ],
             series: series,
