@@ -105,6 +105,9 @@ export class BaseTable {
     render(data, columns) {
         console.log(`[BaseTable.render] Called with ${data?.length || 0} rows`);
         
+        // Usar columns del parámetro, o fallback a this.columns
+        const colsToUse = columns || this.columns;
+        
         // RESTAURAR ESTADO PERSISTIDO al inicio (sin triggerar callbacks)
         if (this.sortStateKey && AppState.ui[this.sortStateKey]) {
             const persistedState = AppState.ui[this.sortStateKey];
@@ -121,7 +124,7 @@ export class BaseTable {
 
         this.isRendering = true;
         this.lastData = data;
-        this.lastColumns = columns;
+        this.lastColumns = colsToUse;
 
         // Aplicar filtros de columna
     const filteredData = this.applyColumnFilters(data);
@@ -140,9 +143,9 @@ export class BaseTable {
         if (this.isCompact) tableHTML += ' compact';
         tableHTML += '">';
         
-        tableHTML += this.renderHeader(columns);
-        tableHTML += this.renderBody(visibleData, columns);
-        tableHTML += this.renderFooter(filteredData, columns);
+        tableHTML += this.renderHeader(colsToUse);
+        tableHTML += this.renderBody(visibleData, colsToUse);
+        tableHTML += this.renderFooter(filteredData, colsToUse);
         
         tableHTML += '</table></div>';
         
