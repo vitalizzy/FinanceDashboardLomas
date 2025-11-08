@@ -193,6 +193,18 @@ class BaseECharts {
     }
 
     /**
+     * Register event listener on chart
+     */
+    on(eventName, handler) {
+        if (this.chart && typeof handler === 'function') {
+            this.chart.on(eventName, handler);
+            console.log(`  📡 Event listener registered: ${eventName}`);
+        } else {
+            console.warn('⚠️ Chart not initialized or handler is not a function');
+        }
+    }
+
+    /**
      * Get current options
      */
     getOptions() {
