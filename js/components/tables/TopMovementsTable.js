@@ -78,6 +78,11 @@ export class TopMovementsTable extends BaseTable {
         return super.formatCellValue(value, column);
     }
 
+    getAmountClass(item) {
+        const amount = item.amount || 0;
+        return amount >= 0 ? 'color-ingresos weight-medium' : 'color-gastos weight-medium';
+    }
+
     renderRow(item, columns) {
         const category = item.Categoria || 'Sin categoría';
         const isPending = AppState.filters.pendingCategories.has(category);
