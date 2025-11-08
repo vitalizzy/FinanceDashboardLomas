@@ -75,10 +75,14 @@ class CategoryBarRaceChart {
 
     refresh() {
         console.log('🔄 BarRaceChart.refresh called - restarting animation from beginning');
-        // Reinicia desde frame 0 siempre, sea corriendo o pausado
+        // Stop any ongoing animation
+        this.pause();
+        // Reset to frame 0
         this.currentFrame = 0;
-        this.isRunning = false;
-        this.showFrame();
+        this.isPlaying = false;
+        // Show first frame
+        this.showFrame(0);
+        // Start animation from the beginning
         this.play();
     }
 
@@ -101,7 +105,11 @@ class CategoryBarRaceChart {
     }
 
     showFrame(frameIndex) {
+        // Don't loop - stay within bounds or use the last frame
         if (frameIndex >= this.raceData.length) {
+            frameIndex = this.raceData.length - 1;
+        }
+        if (frameIndex < 0) {
             frameIndex = 0;
         }
 
@@ -128,16 +136,25 @@ class CategoryBarRaceChart {
             return this.categoryColorMap[cat.name];
         });
 
+        // Helper function to format numbers without excessive decimals
+        const formatNumber = (value) => {
+            if (typeof value !== 'number' || !isFinite(value)) {
+                return '0€';
+            }
+            // Round to 2 decimal places for consistency
+            const rounded = Math.round(value * 100) / 100;
+            if (rounded >= 1000) {
+                return (rounded / 1000).toFixed(1) + 'k€';
+            }
+            // Only show decimals if they exist, otherwise show as integer
+            return rounded % 1 === 0 ? rounded + '€' : rounded.toFixed(2) + '€';
+        };
+
         const options = {
             xAxis: {
                 type: 'value',
                 axisLabel: {
-                    formatter: (value) => {
-                        if (value >= 1000) {
-                            return (value / 1000).toFixed(1) + 'k€';
-                        }
-                        return value + '€';
-                    }
+                    formatter: (value) => formatNumber(value)
                 }
             },
             yAxis: {
@@ -153,16 +170,17 @@ class CategoryBarRaceChart {
                 {
                     name: translate('chart_label_expenses', AppState.language),
                     type: 'bar',
-                    data: frame.categories.map(cat => cat.value),
+                    data: frame.categories.map(cat => {
+                        // Ensure values are properly formatted numbers
+                        const value = typeof cat.value === 'number' ? cat.value : parseFloat(cat.value || 0);
+                        return isFinite(value) ? value : 0;
+                    }),
                     label: {
                         show: true,
                         position: 'right',
                         valueAnimation: true,
                         formatter: (params) => {
-                            if (params.value >= 1000) {
-                                return (params.value / 1000).toFixed(1) + 'k€';
-                            }
-                            return params.value + '€';
+                            return formatNumber(params.value);
                         }
                     },
                     itemStyle: {
@@ -209,18 +227,24 @@ class CategoryBarRaceChart {
         if (this.isPlaying) return;
         
         this.isPlaying = true;
-        this.currentFrame = 0;
 
         // Calculate frame duration based on speed (1500ms / speed)
         const frameDuration = 1500 / this.speed;
         console.log(`  ⚡ Animation speed: ${this.speed}x (${frameDuration.toFixed(0)}ms per frame)`);
 
         this._animationInterval = setInterval(() => {
-            if (this.isPlaying) {
+            if (this.isPlaying && this.currentFrame < this.raceData.length) {
                 this.showFrame(this.currentFrame);
                 this.currentFrame++;
+                
+                // Animation stops when reaching the last frame
                 if (this.currentFrame >= this.raceData.length) {
-                    this.currentFrame = 0;
+                    console.log('🏁 Animation finished - staying on last frame');
+                    this.isPlaying = false;
+                    if (this._animationInterval) {
+                        clearInterval(this._animationInterval);
+                        this._animationInterval = null;
+                    }
                 }
             }
         }, frameDuration);
