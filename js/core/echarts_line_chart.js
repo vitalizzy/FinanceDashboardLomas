@@ -34,9 +34,6 @@ class EChartsLineChart extends BaseECharts {
             // Only "Per Home" uses the secondary axis
             const isPerHome = dataset.label && dataset.label.toLowerCase().includes('per home');
             const yAxisIndex = isPerHome ? 1 : 0;
-            
-            // Only first series (Ingresos) has area style; others are simple lines
-            const hasArea = index === 0;
 
             const config = {
                 name: dataset.label,
@@ -79,13 +76,7 @@ class EChartsLineChart extends BaseECharts {
                 animationEasing: 'cubicOut'
             };
             
-            // Add area style only for first series
-            if (hasArea) {
-                config.areaStyle = {
-                    opacity: 0.25,
-                    color: this.getDatasetColor(dataset, index)
-                };
-            }
+            // All lines are simple - no area style (modularization of line charts)
             
             return config;
         });
