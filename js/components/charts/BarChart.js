@@ -90,10 +90,15 @@ class ExpensesBarChart {
 
         // Setup click handler
         this.on('click', (event) => {
+            console.log('🖱️ BarChart click event:', event);
             if (event.dataIndex !== undefined) {
                 const category = this.data[event.dataIndex][0];
+                console.log('✅ Category selected:', category);
                 if (typeof window.selectPendingCategory === 'function') {
+                    console.log('📞 Calling selectPendingCategory with:', category);
                     window.selectPendingCategory(null, category);
+                } else {
+                    console.error('❌ selectPendingCategory function not found on window');
                 }
             }
         });

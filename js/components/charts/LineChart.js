@@ -108,10 +108,15 @@ class MonthlyFlowLineChart {
 
         // Setup click handler
         this.on('click', (event) => {
+            console.log('🖱️ LineChart click event:', event);
             if (event.dataIndex !== undefined) {
                 const monthKey = this.last12MonthsData[event.dataIndex][0];
+                console.log('✅ Month selected:', monthKey);
                 if (typeof window.selectPendingMonth === 'function') {
+                    console.log('📞 Calling selectPendingMonth with:', monthKey);
                     window.selectPendingMonth(null, monthKey);
+                } else {
+                    console.error('❌ selectPendingMonth function not found on window');
                 }
             }
         });

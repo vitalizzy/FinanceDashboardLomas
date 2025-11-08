@@ -46,11 +46,15 @@ export class FilterManager {
     }
 
     toggleCategory(category, isPending = false) {
+        console.log('  📊 FilterManager.toggleCategory:', { category, isPending });
         this.state.toggleCategory(category, isPending);
+        console.log('  ✅ Categories now:', isPending ? Array.from(this.state.filters.pendingCategories) : Array.from(this.state.filters.categories));
     }
 
     toggleMonth(month, isPending = false) {
+        console.log('  📊 FilterManager.toggleMonth:', { month, isPending });
         this.state.toggleMonth(month, isPending);
+        console.log('  ✅ Months now:', isPending ? Array.from(this.state.filters.pendingMonths) : Array.from(this.state.filters.months));
     }
 
     setDateRange(start, end) {

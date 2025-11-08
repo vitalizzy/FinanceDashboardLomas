@@ -108,7 +108,9 @@ export class DashboardApp {
         if (event && typeof event.stopPropagation === 'function') {
             event.stopPropagation();
         }
+        console.log('🎯 handleSelectPendingCategory called with:', category);
         this.filterManager.toggleCategory(category, true);
+        console.log('✅ Category toggled. Pending selections:', this.filterManager.hasPendingSelections());
         this.filterPanel.togglePendingControls(this.filterManager.hasPendingSelections());
         this.updateDashboard();
     }
@@ -117,7 +119,9 @@ export class DashboardApp {
         if (event && typeof event.stopPropagation === 'function') {
             event.stopPropagation();
         }
+        console.log('🎯 handleSelectPendingMonth called with:', monthKey);
         this.filterManager.toggleMonth(monthKey, true);
+        console.log('✅ Month toggled. Pending selections:', this.filterManager.hasPendingSelections());
         this.filterPanel.togglePendingControls(this.filterManager.hasPendingSelections());
         this.updateDashboard();
     }
