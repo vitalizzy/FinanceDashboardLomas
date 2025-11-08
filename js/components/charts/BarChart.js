@@ -22,7 +22,7 @@ function getEChartsBarChart() {
 }
 
 class ExpensesBarChart {
-    constructor({ canvasId, data }) {
+    constructor({ canvasId, data, metric = 'gastos' }) {
         const ChartClass = getEChartsBarChart();
         
         // Delegate to ECharts instance
@@ -33,7 +33,8 @@ class ExpensesBarChart {
             console.error('❌ Invalid data passed to BarChart. Expected array, got:', typeof data);
         }
         this.data = data || [];
-        console.log('📊 BarChart created:', { canvasId, dataLength: this.data.length });
+        this.metric = metric;
+        console.log('📊 BarChart created:', { canvasId, dataLength: this.data.length, metric });
     }
 
     init() {
@@ -64,12 +65,22 @@ class ExpensesBarChart {
 
     getDatasets() {
         try {
+            // Map metric to label key and color
+            const metricConfig = {
+                'gastos': { labelKey: 'chart_label_expenses', color: AppState.chartColors.gastos },
+                'ingresos': { labelKey: 'chart_label_income', color: AppState.chartColors.ingresos },
+                'perHome': { labelKey: 'chart_label_per_home', color: AppState.chartColors.perHome },
+                'saldo': { labelKey: 'chart_label_final_balance', color: AppState.chartColors.balance }
+            };
+            
+            const config = metricConfig[this.metric] || metricConfig['gastos'];
+            
             const datasets = [{
-                label: translate('chart_label_expenses', AppState.language),
+                label: translate(config.labelKey, AppState.language),
                 data: this.data.map(([, value]) => value),
-                backgroundColor: AppState.chartColors.gastos
+                backgroundColor: config.color
             }];
-            console.log('  📊 Datasets generated: 1 series with', datasets[0].data.length, 'points');
+            console.log('  📊 Datasets generated: 1 series with', datasets[0].data.length, 'points for metric:', this.metric);
             return datasets;
         } catch (e) {
             console.error('❌ Error in getDatasets():', e);
@@ -108,6 +119,6 @@ class ExpensesBarChart {
     }
 }
 
-export function createBarChart(canvasId, data) {
-    return new ExpensesBarChart({ canvasId, data }).render();
+export function createBarChart(canvasId, data, metric = 'gastos') {
+    return new ExpensesBarChart({ canvasId, data, metric }).render();
 }

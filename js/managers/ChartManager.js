@@ -1,11 +1,18 @@
-import { destroyAllCharts, createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow } from '../components/charts/index.js';
+import { destroyAllCharts, createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow, getByCategoryByMetric } from '../components/charts/index.js';
 
 const DEFAULT_CHARTS = [
     {
         id: 'expenses-chart',
         type: 'bar',
-        prepare: data => getExpensesByCategory(data),
-        render: (canvasId, chartData) => createBarChart(canvasId, chartData)
+        prepare: (data, context) => {
+            // Use the selected KPI metric from the dashboard context
+            const metric = context?.selectedCategoryKPI || 'gastos';
+            return getByCategoryByMetric(data, metric);
+        },
+        render: (canvasId, chartData, context) => {
+            const metric = context?.selectedCategoryKPI || 'gastos';
+            createBarChart(canvasId, chartData, metric);
+        }
     },
     {
         id: 'monthly-flow-chart',
@@ -21,6 +28,11 @@ const DEFAULT_CHARTS = [
 export class ChartManager {
     constructor({ charts = DEFAULT_CHARTS } = {}) {
         this.charts = charts;
+        this.context = {}; // Store context like selectedCategoryKPI
+    }
+
+    setContext(context) {
+        this.context = context;
     }
 
     renderAll(dataset) {
@@ -30,13 +42,13 @@ export class ChartManager {
         this.charts.forEach(({ id, prepare, render }) => {
             try {
                 console.log('  📈 Rendering chart:', id);
-                const chartData = prepare(dataset);
+                const chartData = prepare(dataset, this.context);
                 console.log('    ✅ Data prepared:', Array.isArray(chartData) ? chartData.length + ' items' : 'object');
                 if (!chartData || (Array.isArray(chartData) && chartData.length === 0)) {
                     console.warn('    ⚠️ No data for chart:', id);
                     return;
                 }
-                render(id, chartData);
+                render(id, chartData, this.context);
                 console.log('    ✅ Chart rendered:', id);
             } catch (error) {
                 console.error(`[ChartManager] Failed to render chart ${id}:`, error);

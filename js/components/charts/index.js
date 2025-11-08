@@ -8,4 +8,4 @@ const destroyAllCharts = window.destroyAllCharts;
 export { destroyAllCharts };
 export { createBarChart } from './BarChart.js';
 export { createLineChart } from './LineChart.js';
-export { getExpensesByCategory, getMonthlyFlow } from './dataTransforms.js';
+export { getExpensesByCategory, getMonthlyFlow, getByCategoryByMetric } from './dataTransforms.js';

@@ -5,7 +5,8 @@ const GLOBAL_METHODS = {
     selectPendingMonth: (app, event, month) => app.handleSelectPendingMonth(event, month),
     applyPendingSelection: app => app.handleApplyPendingSelection(),
     clearPendingSelection: app => app.handleClearPendingSelection(),
-    exportToCSV: app => app.handleExportToCSV()
+    exportToCSV: app => app.handleExportToCSV(),
+    onCategoryKPIChange: (app, metric) => app.handleCategoryKPIChange(metric)
 };
 
 /**

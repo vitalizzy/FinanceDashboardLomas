@@ -37,6 +37,7 @@ export class DashboardApp {
         this.filterPanel = filterPanel;
         this.loadingOverlay = loadingOverlay;
         this.lastUpdateBanner = lastUpdateBanner;
+        this.selectedCategoryKPI = 'gastos'; // Default KPI for category chart
     }
 
     async init() {
@@ -83,6 +84,8 @@ export class DashboardApp {
             this.kpiManager.render(filteredData);
             console.log('  ✅ KPI rendered');
             
+            // Pass context with selected KPI to chart manager
+            this.chartManager.setContext({ selectedCategoryKPI: this.selectedCategoryKPI });
             this.chartManager.renderAll(filteredData);
             console.log('  ✅ Charts rendered');
             
@@ -152,6 +155,13 @@ export class DashboardApp {
         }
 
         console.log('CSV export pending implementation');
+    }
+
+    handleCategoryKPIChange(metric) {
+        console.log('🎯 handleCategoryKPIChange called with metric:', metric);
+        this.selectedCategoryKPI = metric;
+        console.log('  ✅ Selected category KPI changed to:', metric);
+        this.updateDashboard();
     }
 
     _registerUiInteractions() {

@@ -235,6 +235,15 @@
                             </button>
                         </div>
                     </h3>
+                    <div style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <label style="font-size: 12px; font-weight: 500; color: #666;">KPI:</label>
+                        <select id="expenses-kpi-selector" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; cursor: pointer; background-color: white;" onchange="window.onCategoryKPIChange && window.onCategoryKPIChange(this.value)">
+                            <option value="gastos" selected>Gastos</option>
+                            <option value="ingresos">Ingresos</option>
+                            <option value="perHome">Per Home</option>
+                            <option value="saldo">Saldo</option>
+                        </select>
+                    </div>
                     <div class="chart-wrapper">
                         <div id="expenses-chart"></div>
                     </div>

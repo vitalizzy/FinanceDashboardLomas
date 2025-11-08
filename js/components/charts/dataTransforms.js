@@ -4,20 +4,38 @@
 
 import { parseAmount, parseDate } from '../../core/utils.js';
 
-export function getExpensesByCategory(data) {
+/**
+ * Get data by category for a specific KPI metric
+ * @param {Array} data - Financial data
+ * @param {string} metric - Metric key: 'gastos', 'ingresos', 'perHome'
+ * @returns {Array} Array of [category, value] pairs sorted by value descending
+ */
+export function getByCategoryByMetric(data, metric = 'gastos') {
     const categories = {};
+    const fieldMap = {
+        'gastos': 'Gastos',
+        'ingresos': 'Ingresos',
+        'perHome': 'per Home',
+        'saldo': 'Saldo'
+    };
+    
+    const field = fieldMap[metric] || 'Gastos';
     
     data.forEach(item => {
-        const gastos = parseAmount(item.Gastos || '0');
-        if (gastos > 0) {
+        const amount = parseAmount(item[field] || '0');
+        if (amount > 0) {
             const category = item.Categoria || 'Sin categoría';
-            categories[category] = (categories[category] || 0) + gastos;
+            categories[category] = (categories[category] || 0) + amount;
         }
     });
     
     return Object.entries(categories)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 10);
+}
+
+export function getExpensesByCategory(data) {
+    return getByCategoryByMetric(data, 'gastos');
 }
 
 export function getMonthlyFlow(data) {
