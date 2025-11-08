@@ -45,6 +45,7 @@ export class CategorySummaryTable extends BaseTable {
                 align: 'text-right',
                 headerAlign: 'text-right',
                 cssClass: 'color-gastos weight-medium',
+                headerClass: 'weight-medium',
                 sortable: true,
                 searchable: false
             },
