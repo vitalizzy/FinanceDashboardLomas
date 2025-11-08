@@ -194,6 +194,21 @@ export class DashboardApp {
         }
     }
 
+    handleBarRaceSpeedChange(speed) {
+        console.log('⚡ handleBarRaceSpeedChange called with speed:', speed);
+        try {
+            const barRaceChart = this.chartManager.getChart('bar-race-chart');
+            if (barRaceChart && barRaceChart.setSpeed) {
+                console.log('  ✅ Setting bar race animation speed');
+                barRaceChart.setSpeed(speed);
+            } else {
+                console.warn('  ⚠️  Bar race chart or setSpeed() method not available');
+            }
+        } catch (error) {
+            console.error('  ❌ Error changing bar race animation speed:', error);
+        }
+    }
+
     _registerUiInteractions() {
         const periodDropdown = new Dropdown({
             elementId: 'filter-select',

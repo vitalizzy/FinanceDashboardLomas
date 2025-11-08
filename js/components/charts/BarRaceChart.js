@@ -7,6 +7,24 @@ import { AppState } from '../../core/state.js';
 import { translate } from '../../core/i18n.js';
 import { formatCurrency } from '../../core/formatters.js';
 
+// Color palette for categories - provides consistent colors for bar race
+const CATEGORY_COLORS = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+    '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B88B', '#52C2E0',
+    '#FF6B9D', '#C44569', '#AA96DA', '#FCBAD3', '#A8E6CF',
+    '#FFD3B6', '#FFAAA5', '#FF8B94', '#FF6E7F', '#BDB2FF'
+];
+
+function getCategoryColor(categoryName, categoryIndex) {
+    // Generate consistent color based on category name to ensure same category
+    // gets same color across different frames
+    const hash = categoryName.split('').reduce((acc, char) => {
+        return ((acc << 5) - acc) + char.charCodeAt(0);
+    }, 0);
+    const colorIndex = Math.abs(hash) % CATEGORY_COLORS.length;
+    return CATEGORY_COLORS[colorIndex];
+}
+
 // Will be resolved at runtime
 let EChartsBarChart = null;
 
@@ -36,6 +54,8 @@ class CategoryBarRaceChart {
         this.currentFrame = 0;
         this.isPlaying = false;
         this._animationInterval = null;
+        this.speed = 1; // Animation speed multiplier (1x to 5x)
+        this.categoryColorMap = {}; // Cache color assignments for categories
         console.log('🏁 BarRaceChart created:', { canvasId, frameCount: this.raceData.length });
     }
 
@@ -45,6 +65,12 @@ class CategoryBarRaceChart {
 
     setOptions(options) {
         return this._chart.setOptions(options);
+    }
+
+    setSpeed(speedMultiplier) {
+        console.log('⚡ BarRaceChart.setSpeed called:', speedMultiplier);
+        this.speed = Math.max(1, Math.min(5, parseFloat(speedMultiplier)));
+        console.log('  ✅ Speed set to:', this.speed + 'x');
     }
 
     render() {
@@ -84,6 +110,15 @@ class CategoryBarRaceChart {
 
         console.log('🏁 Showing frame', frameIndex, 'with', frame.categories.length, 'categories');
 
+        // Build color array - assign unique color to each category based on its name
+        const categoryColors = frame.categories.map(cat => {
+            // Cache color for this category to ensure consistency across frames
+            if (!this.categoryColorMap[cat.name]) {
+                this.categoryColorMap[cat.name] = getCategoryColor(cat.name);
+            }
+            return this.categoryColorMap[cat.name];
+        });
+
         const options = {
             xAxis: {
                 type: 'value',
@@ -122,7 +157,9 @@ class CategoryBarRaceChart {
                         }
                     },
                     itemStyle: {
-                        color: AppState.chartColors.gastos
+                        color: function(params) {
+                            return categoryColors[params.dataIndex] || AppState.chartColors.gastos;
+                        }
                     }
                 }
             ],
@@ -165,6 +202,10 @@ class CategoryBarRaceChart {
         this.isPlaying = true;
         this.currentFrame = 0;
 
+        // Calculate frame duration based on speed (1500ms / speed)
+        const frameDuration = 1500 / this.speed;
+        console.log(`  ⚡ Animation speed: ${this.speed}x (${frameDuration.toFixed(0)}ms per frame)`);
+
         this._animationInterval = setInterval(() => {
             if (this.isPlaying) {
                 this.showFrame(this.currentFrame);
@@ -173,7 +214,7 @@ class CategoryBarRaceChart {
                     this.currentFrame = 0;
                 }
             }
-        }, 1500);
+        }, frameDuration);
     }
 
     pause() {

@@ -8,7 +8,8 @@ const GLOBAL_METHODS = {
     exportToCSV: app => app.handleExportToCSV(),
     onCategoryKPIChange: (app, metric) => app.handleCategoryKPIChange(metric),
     onBarRacePlay: (app) => app.handleBarRacePlay(),
-    onBarRaceStop: (app) => app.handleBarRaceStop()
+    onBarRaceStop: (app) => app.handleBarRaceStop(),
+    onBarRaceSpeedChange: (app, speed) => app.handleBarRaceSpeedChange(speed)
 };
 
 /**
