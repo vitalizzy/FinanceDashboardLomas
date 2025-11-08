@@ -34,8 +34,11 @@ class EChartsLineChart extends BaseECharts {
             // Only "Per Home" uses the secondary axis
             const isPerHome = dataset.label && dataset.label.toLowerCase().includes('per home');
             const yAxisIndex = isPerHome ? 1 : 0;
+            
+            // Only first series (Ingresos) has area style; others are simple lines
+            const hasArea = index === 0;
 
-            return {
+            const config = {
                 name: dataset.label,
                 type: 'line',
                 data: dataset.data,
@@ -52,10 +55,6 @@ class EChartsLineChart extends BaseECharts {
                     borderColor: '#fff',
                     shadowColor: 'rgba(0, 0, 0, 0.15)',
                     shadowBlur: 8
-                },
-                areaStyle: {
-                    opacity: 0.25,
-                    color: this.getDatasetColor(dataset, index)
                 },
                 symbol: 'circle',
                 symbolSize: [5, 8],
@@ -79,14 +78,28 @@ class EChartsLineChart extends BaseECharts {
                 animationDuration: 1000,
                 animationEasing: 'cubicOut'
             };
+            
+            // Add area style only for first series
+            if (hasArea) {
+                config.areaStyle = {
+                    opacity: 0.25,
+                    color: this.getDatasetColor(dataset, index)
+                };
+            }
+            
+            return config;
         });
 
         // Add histogram for transactions if data contains transactions
+        let maxTransactions = 0;
         if (this.data.length > 0 && this.data[0].transactions) {
+            // Calculate max transactions for scaling the axis
+            maxTransactions = Math.max(...this.data.map(d => d.transactions || 0));
+            
             series.push({
                 name: 'Transacciones',
                 type: 'bar',
-                data: this.data[0].transactions,
+                data: this.data.map(d => d.transactions || 0),
                 yAxisIndex: 2,
                 itemStyle: {
                     color: this.colors.transacciones || '#FF9800',
@@ -192,7 +205,8 @@ class EChartsLineChart extends BaseECharts {
                     },
                     splitArea: {
                         show: false
-                    }
+                    },
+                    max: maxTransactions * 2.5  // Scale to 40% of total height
                 }
             ],
             series: series,
