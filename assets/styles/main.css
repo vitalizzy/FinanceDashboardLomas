@@ -216,6 +216,7 @@ body {
 .kpi-card.ingresos .value { color: var(--color-ingresos); }
 .kpi-card.gastos { border-left: 3px solid var(--color-gastos); }
 .kpi-card.gastos .value { color: var(--color-gastos); }
+.kpi-card.gastos small { color: var(--text-secondary) !important; }
 .kpi-card.per-home { border-left: 3px solid var(--color-per-home); }
 .kpi-card.per-home .value { color: var(--color-per-home); }
 .kpi-card.balance { border-left: 3px solid var(--color-balance); }
