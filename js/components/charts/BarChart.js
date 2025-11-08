@@ -70,7 +70,8 @@ class ExpensesBarChart {
                 'gastos': { labelKey: 'chart_label_expenses', color: AppState.chartColors.gastos },
                 'ingresos': { labelKey: 'chart_label_income', color: AppState.chartColors.ingresos },
                 'perHome': { labelKey: 'chart_label_per_home', color: AppState.chartColors.perHome },
-                'saldo': { labelKey: 'chart_label_final_balance', color: AppState.chartColors.balance }
+                'saldo': { labelKey: 'chart_label_final_balance', color: AppState.chartColors.balance },
+                'transacciones': { labelKey: 'kpi_transacciones', color: AppState.chartColors.transacciones }
             };
             
             const config = metricConfig[this.metric] || metricConfig['gastos'];
