@@ -119,6 +119,31 @@ handleBarRaceStop() {
 | **PLAY** (▶) | Inicia la animación | Muestra frames en loop cada 1.5s |
 | **STOP** (⏹) | Detiene la animación | Pausa y vuelve al frame 0 |
 
+## Acumulación de Datos de Gastos
+
+El gráfico bar race utiliza **valores acumulados** de gastos:
+
+- **Cada frame** muestra el total acumulado de gastos por categoría desde el inicio hasta esa fecha
+- **Solo incluye Gastos (Gastos)**, excluye Ingresos
+- **Top 10 categorías** por monto acumulado en cada frame
+- **Valores siempre incrementales**: los valores nunca disminuyen, solo se acumulan
+
+### Ejemplo:
+
+```
+Día 1: Categoría A: 100€, Categoría B: 50€
+Día 2: Categoría A: 80€, Categoría C: 30€
+
+Frame Día 1:
+  - Categoría A: 100€ (acumulado)
+  - Categoría B: 50€ (acumulado)
+
+Frame Día 2:
+  - Categoría A: 180€ (100 + 80)
+  - Categoría B: 50€ (sin cambios)
+  - Categoría C: 30€ (acumulado)
+```
+
 ## Diseño Visual
 
 - **Botones circulares** (28x28px) siguiendo patrón del proyecto
@@ -175,3 +200,5 @@ Sigue el patrón existente del proyecto:
 - `074d92d` - Add test page for bar race play button  
 - `3d9fb59` - Add PLAY button implementation documentation
 - `166be8b` - Add STOP button and improve button styling for bar race controls
+- `1112099` - Update animation controls documentation
+- `e89c49f` - Fix bar race chart to accumulate expenses over time
