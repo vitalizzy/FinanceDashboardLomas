@@ -56,8 +56,9 @@ class BaseECharts {
      * Initialize ECharts instance
      */
     init() {
+        console.log('🎨 BaseECharts.init() called for container:', this.containerId);
         if (!window.echarts) {
-            console.error('ECharts library not loaded');
+            console.error('❌ ECharts library not loaded');
             return false;
         }
         
@@ -66,7 +67,9 @@ class BaseECharts {
             this.chart.dispose();
         }
         
+        console.log('  📦 Container element:', this.container ? 'found ✅' : 'NOT FOUND ❌');
         this.chart = window.echarts.init(this.container, this.theme);
+        console.log('  📊 ECharts instance created:', this.chart ? '✅' : '❌');
         
         // Register chart instance
         if (!window._echartsInstances) {
@@ -151,13 +154,16 @@ class BaseECharts {
      * Set chart options and render
      */
     setOptions(options) {
+        console.log('🎨 BaseECharts.setOptions() called');
         if (!this.chart) {
-            console.error('Chart not initialized');
+            console.error('❌ Chart not initialized');
             return;
         }
         
+        console.log('  📊 Setting options with', Object.keys(options).length, 'top-level keys');
         this.options = options;
         this.chart.setOption(options);
+        console.log('  ✅ Options set successfully');
     }
 
     /**
