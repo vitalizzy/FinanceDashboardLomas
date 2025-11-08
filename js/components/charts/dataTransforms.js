@@ -91,9 +91,11 @@ export function getMonthlyFlow(data) {
 }
 
 export function getCategoryRaceData(data) {
-    // Group by date and sum category amounts
-    const raceData = {};
+    // Group by date and sum category amounts (CUMULATIVE)
+    const dailyData = {};
+    const accumulatedData = {};
     
+    // First pass: collect daily totals by category
     data.forEach(item => {
         const date = parseDate(item['F. Operativa']);
         if (!date) return;
@@ -101,26 +103,47 @@ export function getCategoryRaceData(data) {
         // Format date as YYYY-MM-DD
         const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         
-        if (!raceData[dateKey]) {
-            raceData[dateKey] = {};
+        if (!dailyData[dateKey]) {
+            dailyData[dateKey] = {};
         }
         
         const category = item.Categoria || 'Sin categoría';
         const amount = parseAmount(item.Gastos || '0');
         
+        // Only include gastos (expenses), exclude ingresos (income)
         if (amount > 0) {
-            raceData[dateKey][category] = (raceData[dateKey][category] || 0) + amount;
+            dailyData[dateKey][category] = (dailyData[dateKey][category] || 0) + amount;
         }
     });
     
+    // Second pass: accumulate values over time
+    const sortedDates = Object.keys(dailyData).sort((a, b) => a.localeCompare(b));
+    
+    sortedDates.forEach(dateKey => {
+        if (!accumulatedData[dateKey]) {
+            accumulatedData[dateKey] = {};
+        }
+        
+        // Copy previous day's accumulated totals
+        if (sortedDates.indexOf(dateKey) > 0) {
+            const prevDateKey = sortedDates[sortedDates.indexOf(dateKey) - 1];
+            Object.entries(accumulatedData[prevDateKey]).forEach(([category, value]) => {
+                accumulatedData[dateKey][category] = value;
+            });
+        }
+        
+        // Add today's amounts to accumulated totals
+        Object.entries(dailyData[dateKey]).forEach(([category, dailyAmount]) => {
+            accumulatedData[dateKey][category] = (accumulatedData[dateKey][category] || 0) + dailyAmount;
+        });
+    });
+    
     // Convert to timeline format: array of {date, categories}
-    return Object.entries(raceData)
-        .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
-        .map(([date, categories]) => ({
-            date,
-            categories: Object.entries(categories)
-                .sort(([, a], [, b]) => b - a)
-                .slice(0, 10)
-                .map(([name, value]) => ({ name, value }))
-        }));
+    return sortedDates.map(date => ({
+        date,
+        categories: Object.entries(accumulatedData[date])
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 10)
+            .map(([name, value]) => ({ name, value }))
+    }));
 }
