@@ -94,12 +94,25 @@ class EChartsLineChart extends BaseECharts {
         let maxTransactions = 0;
         let transactionsData = [];
         
-        console.log('📊 DEBUG - this.data:', this.data);
-        console.log('📊 DEBUG - this.data[0]:', this.data[0]);
+        console.log('📊 DEBUG - render() called');
+        console.log('📊 DEBUG - this.data length:', this.data.length);
+        console.log('📊 DEBUG - this.labels:', this.labels);
+        console.table(this.data.map(d => ({
+            label: d.label,
+            dataLength: d.data.length,
+            hasTransactions: !!d.transactions,
+            transactionsLength: d.transactions ? d.transactions.length : 0
+        })));
+        
+        if (this.data.length > 0) {
+            console.log('📊 DEBUG - this.data[0] full object:', this.data[0]);
+            console.log('📊 DEBUG - this.data[0].transactions:', this.data[0].transactions);
+        }
         
         if (this.data.length > 0 && this.data[0].transactions && Array.isArray(this.data[0].transactions)) {
             transactionsData = this.data[0].transactions;
-            console.log('📊 DEBUG - Found transactions data:', transactionsData);
+            console.log('✅ DEBUG - Found transactions data with', transactionsData.length, 'months');
+            console.log('📊 DEBUG - Transactions array:', transactionsData);
             
             // Calculate max transactions for scaling the axis
             maxTransactions = Math.max(...transactionsData);
@@ -134,14 +147,21 @@ class EChartsLineChart extends BaseECharts {
                     animationDuration: 1000,
                     animationEasing: 'cubicOut'
                 });
-                console.log('📊 DEBUG - Transactions series added');
+                console.log('✅ DEBUG - Transactions series added successfully!');
             } else {
                 console.log('❌ DEBUG - Transactions data is empty array');
             }
         } else {
-            console.log('❌ DEBUG - No transactions data found or not an array');
-            if (this.data.length === 0) console.log('❌ DEBUG - No datasets at all');
-            if (this.data[0]) console.log('❌ DEBUG - First dataset structure:', Object.keys(this.data[0]));
+            console.log('❌ DEBUG - No transactions data found');
+            if (this.data.length === 0) {
+                console.log('❌ DEBUG - No datasets at all (this.data.length === 0)');
+            } else if (!this.data[0]) {
+                console.log('❌ DEBUG - this.data[0] is undefined');
+            } else if (!this.data[0].transactions) {
+                console.log('❌ DEBUG - this.data[0].transactions is undefined. Available keys:', Object.keys(this.data[0]));
+            } else if (!Array.isArray(this.data[0].transactions)) {
+                console.log('❌ DEBUG - this.data[0].transactions is not an array:', typeof this.data[0].transactions);
+            }
         }
 
         const options = this.mergeOptions({

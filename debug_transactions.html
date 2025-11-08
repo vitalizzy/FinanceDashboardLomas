@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug - Transactions Histogram</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        h1 { color: #333; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-left: 4px solid #007bff; }
+        .error { border-left-color: #dc3545; }
+        .success { border-left-color: #28a745; }
+        pre { background: #222; color: #0f0; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug - Transactions Histogram</h1>
+        
+        <p>Abre la consola del navegador (F12) y verás los logs de debug.</p>
+        <p>Los logs te mostrarán:</p>
+        <ul>
+            <li>Si los datos de transacciones se están pasando correctamente</li>
+            <li>El máximo de transacciones encontrado</li>
+            <li>Si la serie se agregó al gráfico</li>
+            <li>Cualquier error en la estructura de datos</li>
+        </ul>
+        
+        <h2>Pasos:</h2>
+        <ol>
+            <li>Presiona F12 para abrir DevTools</li>
+            <li>Vé a la pestaña "Console"</li>
+            <li>Recarga la página (Ctrl+R)</li>
+            <li>Busca los logs que empiezan con "📊 DEBUG"</li>
+            <li>Verifica que dice "📊 DEBUG - Transactions series added"</li>
+        </ol>
+        
+        <h2>Esperado Ver:</h2>
+        <pre>
+📊 DEBUG - this.data: [...]
+📊 DEBUG - this.data[0]: { label: 'Ingresos', data: [...], transactions: [45, 48, 52, ...], ... }
+📊 DEBUG - Found transactions data: [45, 48, 52, 50, 49, 51, ...]
+📊 DEBUG - Max transactions: 52
+📊 DEBUG - Transactions series added
+        </pre>
+        
+        <h2>Si ves esto significa:</h2>
+        <div class="log success">✅ Los datos se están pasando correctamente</div>
+        <div class="log success">✅ Se encontraron transacciones por mes</div>
+        <div class="log success">✅ La serie se agregó al gráfico</div>
+        <div class="log success">✅ Las barras deberían aparecer visibles en el gráfico</div>
+        
+        <h2>Si ves errores:</h2>
+        <div class="log error">❌ No transactions data found</div>
+        <p>Significa que transactions no se está pasando desde LineChart</p>
+        
+        <div class="log error">❌ First dataset structure: ...</div>
+        <p>Muestra qué propiedades tiene el primer dataset</p>
+        
+        <a href="/">Volver al Dashboard</a>
+    </div>
+</body>
+</html>
