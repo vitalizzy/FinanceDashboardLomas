@@ -89,3 +89,38 @@ export function getMonthlyFlow(data) {
     
     return Object.entries(monthlyData).sort(([a], [b]) => a.localeCompare(b));
 }
+
+export function getCategoryRaceData(data) {
+    // Group by date and sum category amounts
+    const raceData = {};
+    
+    data.forEach(item => {
+        const date = parseDate(item['F. Operativa']);
+        if (!date) return;
+        
+        // Format date as YYYY-MM-DD
+        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        
+        if (!raceData[dateKey]) {
+            raceData[dateKey] = {};
+        }
+        
+        const category = item.Categoria || 'Sin categoría';
+        const amount = parseAmount(item.Gastos || '0');
+        
+        if (amount > 0) {
+            raceData[dateKey][category] = (raceData[dateKey][category] || 0) + amount;
+        }
+    });
+    
+    // Convert to timeline format: array of {date, categories}
+    return Object.entries(raceData)
+        .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
+        .map(([date, categories]) => ({
+            date,
+            categories: Object.entries(categories)
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, 10)
+                .map(([name, value]) => ({ name, value }))
+        }));
+}

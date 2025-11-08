@@ -1,4 +1,4 @@
-import { destroyAllCharts, createBarChart, createLineChart, getExpensesByCategory, getMonthlyFlow, getByCategoryByMetric } from '../components/charts/index.js';
+import { destroyAllCharts, createBarChart, createLineChart, createBarRaceChart, getExpensesByCategory, getMonthlyFlow, getByCategoryByMetric, getCategoryRaceData } from '../components/charts/index.js';
 
 const DEFAULT_CHARTS = [
     {
@@ -19,6 +19,12 @@ const DEFAULT_CHARTS = [
         type: 'line',
         prepare: data => getMonthlyFlow(data),
         render: (canvasId, chartData) => createLineChart(canvasId, chartData)
+    },
+    {
+        id: 'bar-race-chart',
+        type: 'bar-race',
+        prepare: data => getCategoryRaceData(data),
+        render: (canvasId, chartData) => createBarRaceChart(canvasId, chartData)
     }
 ];
 
