@@ -83,27 +83,21 @@ export class TopMovementsTable extends BaseTable {
         return amount >= 0 ? 'color-ingresos weight-medium' : 'color-gastos weight-medium';
     }
 
-    renderRow(item, columns) {
+    /**
+     * Hook: Personalizar clase de fila (pending status)
+     */
+    getRowClass(item) {
         const category = item.Categoria || 'Sin categoría';
         const isPending = AppState.filters.pendingCategories.has(category);
-        const pendingClass = isPending ? 'pending-selected' : '';
-        
-        let html = `<tr class="${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">`;
-        
-        columns.forEach(col => {
-            let value;
-            if (col.key === 'amount') {
-                value = formatCurrency(Math.abs(item.amount || 0));
-            } else {
-                value = this.formatCellValue(item[col.key], col);
-            }
-            const classes = col.cellClass ? (typeof col.cellClass === 'function' ? col.cellClass(item) : col.cellClass) : '';
-            const align = col.align || '';
-            html += `<td class="${classes} ${align}">${value}</td>`;
-        });
-        
-        html += '</tr>';
-        return html;
+        return isPending ? 'pending-selected' : '';
+    }
+
+    /**
+     * Hook: Personalizar atributos de fila (onclick handler)
+     */
+    getRowAttributes(item) {
+        const category = item.Categoria || 'Sin categoría';
+        return `onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')"`;
     }
 }
 

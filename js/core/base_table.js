@@ -293,10 +293,15 @@ export class BaseTable {
     }
 
     /**
-     * Renderiza una fila individual (puede ser sobrescrito)
+     * Renderiza una fila individual
+     * Puede ser sobrescrito, pero preferiblemente implementar getRowClass() y getRowAttributes()
      */
     renderRow(item, columns) {
-        let html = '<tr>';
+        // Permitir que subclases personalicen atributos de fila
+        const rowClass = this.getRowClass ? this.getRowClass(item) : '';
+        const rowAttrs = this.getRowAttributes ? this.getRowAttributes(item) : '';
+        
+        let html = `<tr${rowClass ? ` class="${rowClass}"` : ''}${rowAttrs ? ` ${rowAttrs}` : ''}>`;
         
         columns.forEach(col => {
             const value = this.formatCellValue(item[col.key], col);
@@ -309,6 +314,22 @@ export class BaseTable {
         
         html += '</tr>';
         return html;
+    }
+
+    /**
+     * Hook: Devolver clase CSS para la fila (ej: pending-selected, highlighted)
+     * Sobrescribir en subclases si se necesita lógica especial
+     */
+    getRowClass(item) {
+        return '';
+    }
+
+    /**
+     * Hook: Devolver atributos adicionales para la fila (ej: onclick)
+     * Sobrescribir en subclases si se necesita lógica especial
+     */
+    getRowAttributes(item) {
+        return '';
     }
 
     /**

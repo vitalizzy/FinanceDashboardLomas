@@ -113,28 +113,25 @@ export class AllTransactionsTable extends BaseTable {
         return tipo === 'Ingreso' ? 'color-ingresos' : 'color-gastos';
     }
 
-    renderRow(item, columns) {
+    /**
+     * Hook: Personalizar clase de fila (pending status)
+     */
+    getRowClass(item) {
         const category = item.Categoria || 'Sin categoría';
         const itemDate = parseDate(item['F. Operativa']);
         const monthKey = itemDate ? `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}` : '';
         
         const isPendingCategory = AppState.filters.pendingCategories.has(category);
         const isPendingMonth = monthKey && AppState.filters.pendingMonths.has(monthKey);
-        const pendingClass = (isPendingCategory || isPendingMonth) ? 'pending-selected' : '';
-        
-        let html = `<tr class="${pendingClass}" onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')">`;
-        
-        columns.forEach(col => {
-            const value = this.formatCellValue(item[col.key], col);
-            const classes = col.cellClass ? (typeof col.cellClass === 'function' ? col.cellClass(item) : col.cellClass) : '';
-            const cssClass = col.cssClass || '';
-            const align = col.align || '';
-            const allClasses = [classes, cssClass, align].filter(c => c).join(' ');
-            html += `<td class="${allClasses}">${value}</td>`;
-        });
-        
-        html += '</tr>';
-        return html;
+        return (isPendingCategory || isPendingMonth) ? 'pending-selected' : '';
+    }
+
+    /**
+     * Hook: Personalizar atributos de fila (onclick handler)
+     */
+    getRowAttributes(item) {
+        const category = item.Categoria || 'Sin categoría';
+        return `onclick="window.selectPendingCategory(event, '${category.replace(/'/g, "\\'")}')"`;
     }
 }
 

@@ -77,20 +77,19 @@ export class CategorySummaryTable extends BaseTable {
         super.render(data, this.columns);
     }
 
-    renderRow(item, columns) {
+    /**
+     * Hook: Personalizar clase de fila (pending status)
+     */
+    getRowClass(item) {
         const isPending = AppState.filters.pendingCategories.has(item.category);
-        const pendingClass = isPending ? 'pending-selected' : '';
-        
-        let html = `<tr class="${pendingClass}" onclick="window.selectPendingCategory(event, '${item.category.replace(/'/g, "\\'")}')">`;
-        
-        columns.forEach(col => {
-            const value = this.formatCellValue(item[col.key], col);
-            const align = col.align || '';
-            html += `<td class="${align}">${value}</td>`;
-        });
-        
-        html += '</tr>';
-        return html;
+        return isPending ? 'pending-selected' : '';
+    }
+
+    /**
+     * Hook: Personalizar atributos de fila (onclick handler)
+     */
+    getRowAttributes(item) {
+        return `onclick="window.selectPendingCategory(event, '${item.category.replace(/'/g, "\\'")}')"`;
     }
 
     renderFooter(data, columns) {
