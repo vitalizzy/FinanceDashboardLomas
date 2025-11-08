@@ -92,14 +92,19 @@ class EChartsLineChart extends BaseECharts {
 
         // Add histogram for transactions if data contains transactions
         let maxTransactions = 0;
+        console.log('📊 this.data:', this.data);
+        console.log('📊 this.data[0]:', this.data[0]);
+        
         if (this.data.length > 0 && this.data[0].transactions) {
+            console.log('📊 Found transactions data:', this.data[0].transactions);
             // Calculate max transactions for scaling the axis
-            maxTransactions = Math.max(...this.data.map(d => d.transactions || 0));
+            maxTransactions = Math.max(...this.data[0].transactions);
+            console.log('📊 Max transactions:', maxTransactions);
             
             series.push({
                 name: 'Transacciones',
                 type: 'bar',
-                data: this.data.map(d => d.transactions || 0),
+                data: this.data[0].transactions,
                 yAxisIndex: 2,
                 itemStyle: {
                     color: this.colors.transacciones || '#FF9800',
@@ -123,6 +128,10 @@ class EChartsLineChart extends BaseECharts {
                 animationDuration: 1000,
                 animationEasing: 'cubicOut'
             });
+        } else {
+            console.log('❌ No transactions data found');
+            if (this.data.length === 0) console.log('❌ No data at all');
+            if (this.data[0]) console.log('❌ First dataset:', JSON.stringify(this.data[0]));
         }
 
         const options = this.mergeOptions({
