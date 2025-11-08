@@ -93,7 +93,29 @@ class BaseECharts {
                 lineStyle: {
                     color: '#f0f0f0'
                 }
-            }
+            },
+            // Enable zoom and data zoom
+            dataZoom: [
+                {
+                    type: 'slider',
+                    show: true,
+                    start: 0,
+                    end: 100,
+                    handleSize: '100%',
+                    handleStyle: {
+                        color: this.colors.balance,
+                        opacity: 0.8
+                    },
+                    borderColor: this.colors.border,
+                    backgroundColor: 'rgba(0, 0, 0, 0.05)'
+                },
+                {
+                    type: 'inside',
+                    start: 0,
+                    end: 100,
+                    zoomOnMouseWheel: true
+                }
+            ]
         };
     }
 
