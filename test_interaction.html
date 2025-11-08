@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Chart Interaction</title>
+    <script>
+        // Simple test to verify the complete flow
+        window.testChartInteraction = function() {
+            console.log('🧪 Starting chart interaction test...');
+            
+            // Check if global methods exist
+            console.log('✅ window.selectPendingMonth:', typeof window.selectPendingMonth);
+            console.log('✅ window.selectPendingCategory:', typeof window.selectPendingCategory);
+            console.log('✅ window.applyPendingSelection:', typeof window.applyPendingSelection);
+            
+            // Simulate clicking on a month (e.g., "2024-01")
+            console.log('\n🖱️ Simulating month selection...');
+            if (typeof window.selectPendingMonth === 'function') {
+                window.selectPendingMonth(null, '2024-01');
+                console.log('✅ selectPendingMonth called with 2024-01');
+            }
+            
+            // Wait a bit and then confirm
+            setTimeout(() => {
+                console.log('\n🔘 Applying pending selection...');
+                if (typeof window.applyPendingSelection === 'function') {
+                    window.applyPendingSelection();
+                    console.log('✅ applyPendingSelection called');
+                }
+            }, 500);
+        };
+        
+        // Auto-run test when ready
+        window.addEventListener('load', () => {
+            console.log('📄 Page loaded, running interaction test in 2 seconds...');
+            setTimeout(() => window.testChartInteraction(), 2000);
+        });
+    </script>
+</head>
+<body>
+    <h1>Chart Interaction Test</h1>
+    <p>Check the browser console for test output.</p>
+    <p>The test will auto-run 2 seconds after page load.</p>
+    <button onclick="window.testChartInteraction()">Run Test Again</button>
+</body>
+</html>
