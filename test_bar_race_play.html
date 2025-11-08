@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Bar Race Play Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test: Bar Race Play Button Functionality</h1>
+    
+    <div class="test-container">
+        <h2>1. Global Methods Registration</h2>
+        <button onclick="testGlobalMethods()">Test Global Methods</button>
+        <div id="test-global-methods-result"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>2. PLAY Button Handler</h2>
+        <button onclick="testPlayButtonHandler()">Test PLAY Button Handler</button>
+        <div id="test-play-button-result"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>3. Full Flow Simulation</h2>
+        <button onclick="testFullFlow()">Test Full Flow</button>
+        <div id="test-full-flow-result"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>4. Dashboard App Instance</h2>
+        <button onclick="testDashboardApp()">Check Dashboard App</button>
+        <div id="test-dashboard-app-result"></div>
+    </div>
+
+    <script>
+        function addResult(elementId, message, type = 'info') {
+            const elem = document.getElementById(elementId);
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${type}`;
+            resultDiv.innerHTML = message;
+            elem.appendChild(resultDiv);
+        }
+
+        function testGlobalMethods() {
+            const resultId = 'test-global-methods-result';
+            document.getElementById(resultId).innerHTML = '';
+
+            const methods = ['onBarRacePlay', 'onCategoryKPIChange', 'updateDashboard', 'clearAllFilters'];
+            
+            methods.forEach(methodName => {
+                if (typeof window[methodName] === 'function') {
+                    addResult(resultId, `✅ <code>${methodName}()</code> is available globally`, 'success');
+                } else {
+                    addResult(resultId, `❌ <code>${methodName}()</code> is NOT available globally`, 'error');
+                }
+            });
+        }
+
+        function testPlayButtonHandler() {
+            const resultId = 'test-play-button-result';
+            document.getElementById(resultId).innerHTML = '';
+
+            // Check if button exists
+            const button = document.getElementById('bar-race-play-btn');
+            if (!button) {
+                addResult(resultId, '⚠️ Bar Race PLAY button not found in HTML', 'warning');
+                return;
+            }
+            addResult(resultId, '✅ Bar Race PLAY button found in HTML', 'success');
+
+            // Check onclick handler
+            const onclick = button.getAttribute('onclick');
+            if (onclick && onclick.includes('onBarRacePlay')) {
+                addResult(resultId, `✅ PLAY button has correct onclick handler: <code>${onclick}</code>`, 'success');
+            } else {
+                addResult(resultId, '❌ PLAY button onclick handler is incorrect', 'error');
+            }
+
+            // Simulate click
+            try {
+                console.log('Simulating PLAY button click...');
+                button.click();
+                addResult(resultId, '✅ PLAY button click executed without errors', 'success');
+            } catch (error) {
+                addResult(resultId, `❌ PLAY button click failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testFullFlow() {
+            const resultId = 'test-full-flow-result';
+            document.getElementById(resultId).innerHTML = '';
+
+            try {
+                // Test 1: Check if onBarRacePlay is available
+                if (typeof window.onBarRacePlay !== 'function') {
+                    throw new Error('onBarRacePlay is not a function');
+                }
+                addResult(resultId, '✅ Step 1: onBarRacePlay function is available', 'success');
+
+                // Test 2: Simulate calling onBarRacePlay
+                window.onBarRacePlay();
+                addResult(resultId, '✅ Step 2: onBarRacePlay() executed without throwing', 'success');
+
+                // Test 3: Check ChartManager
+                if (window.dashboardApp && window.dashboardApp.chartManager) {
+                    addResult(resultId, '✅ Step 3: Dashboard app and ChartManager are available', 'success');
+                    
+                    const barRaceChart = window.dashboardApp.chartManager.getChart('bar-race-chart');
+                    if (barRaceChart) {
+                        addResult(resultId, '✅ Step 4: Bar Race chart instance found', 'success');
+                        
+                        if (typeof barRaceChart.play === 'function') {
+                            addResult(resultId, '✅ Step 5: Bar Race chart has play() method', 'success');
+                        } else {
+                            addResult(resultId, '⚠️ Step 5: Bar Race chart does not have play() method yet (will be available after rendering)', 'warning');
+                        }
+                    } else {
+                        addResult(resultId, '⚠️ Step 4: Bar Race chart instance not found yet (will be available after dashboard renders)', 'warning');
+                    }
+                } else {
+                    addResult(resultId, '⚠️ Step 3: Dashboard app not fully initialized yet (will be ready after page load)', 'warning');
+                }
+
+            } catch (error) {
+                addResult(resultId, `❌ Error in flow: ${error.message}`, 'error');
+            }
+        }
+
+        function testDashboardApp() {
+            const resultId = 'test-dashboard-app-result';
+            document.getElementById(resultId).innerHTML = '';
+
+            if (window.dashboardApp) {
+                addResult(resultId, '✅ Dashboard app instance exists', 'success');
+                
+                if (typeof window.dashboardApp.handleBarRacePlay === 'function') {
+                    addResult(resultId, '✅ handleBarRacePlay() method exists on dashboard app', 'success');
+                } else {
+                    addResult(resultId, '❌ handleBarRacePlay() method NOT found on dashboard app', 'error');
+                }
+
+                if (window.dashboardApp.chartManager) {
+                    addResult(resultId, '✅ ChartManager is available', 'success');
+                    
+                    if (typeof window.dashboardApp.chartManager.getChart === 'function') {
+                        addResult(resultId, '✅ ChartManager.getChart() method exists', 'success');
+                    } else {
+                        addResult(resultId, '❌ ChartManager.getChart() method NOT found', 'error');
+                    }
+                } else {
+                    addResult(resultId, '❌ ChartManager NOT found', 'error');
+                }
+            } else {
+                addResult(resultId, '⚠️ Dashboard app not yet initialized (wait for page to load)', 'warning');
+            }
+        }
+
+        // Auto-run tests when page loads
+        window.addEventListener('load', () => {
+            console.log('Test page loaded. Running auto-tests...');
+            setTimeout(() => {
+                testGlobalMethods();
+                testDashboardApp();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
