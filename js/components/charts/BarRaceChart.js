@@ -74,8 +74,11 @@ class CategoryBarRaceChart {
     }
 
     refresh() {
-        console.log('🔄 BarRaceChart.refresh called - restarting animation');
-        this.stop();
+        console.log('🔄 BarRaceChart.refresh called - restarting animation from beginning');
+        // Reinicia desde frame 0 siempre, sea corriendo o pausado
+        this.currentFrame = 0;
+        this.isRunning = false;
+        this.showFrame();
         this.play();
     }
 

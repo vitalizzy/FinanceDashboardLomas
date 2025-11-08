@@ -228,7 +228,15 @@
                         </svg>
                         <span>Evolución de categorías (Animada)</span>
                         <small style="font-size: 11px; font-weight: normal; opacity: 0.7;">(Ranking de categorías por fecha)</small>
-                        <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                        <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                            <label style="font-size: 12px; font-weight: 500; color: #666;">Velocidad:</label>
+                            <select id="bar-race-speed-selector" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; cursor: pointer; background-color: white;" onchange="window.onBarRaceSpeedChange && window.onBarRaceSpeedChange(this.value)">
+                                <option value="1">1x (Normal)</option>
+                                <option value="2">2x (Rápido)</option>
+                                <option value="3">3x (Muy Rápido)</option>
+                                <option value="4">4x (Extremo)</option>
+                                <option value="5">5x (Ultra)</option>
+                            </select>
                             <button id="bar-race-refresh-btn" class="icon-btn icon-refresh" title="Reiniciar animación" onclick="window.onBarRaceRefresh && window.onBarRaceRefresh()">
                                 <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
@@ -239,16 +247,6 @@
                             </button>
                         </div>
                     </h3>
-                    <div style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <label style="font-size: 12px; font-weight: 500; color: #666;">Velocidad:</label>
-                        <select id="bar-race-speed-selector" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; cursor: pointer; background-color: white;" onchange="window.onBarRaceSpeedChange && window.onBarRaceSpeedChange(this.value)">
-                            <option value="1">1x (Normal)</option>
-                            <option value="2">2x (Rápido)</option>
-                            <option value="3">3x (Muy Rápido)</option>
-                            <option value="4">4x (Extremo)</option>
-                            <option value="5">5x (Ultra)</option>
-                        </select>
-                    </div>
                     <div class="chart-wrapper" style="height: 350px;">
                         <div id="bar-race-chart" style="width: 100%; height: 100%;"></div>
                     </div>
@@ -264,7 +262,14 @@
                         </svg>
                         <span data-i18n="expenses_by_category">Gastos por categoría</span>
                         <small style="font-size: 11px; font-weight: normal; opacity: 0.7;" data-i18n="click_to_filter">(Click para filtrar)</small>
-                        <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+                        <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                            <label style="font-size: 12px; font-weight: 500; color: #666;">KPI:</label>
+                            <select id="expenses-kpi-selector" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; cursor: pointer; background-color: white;" onchange="window.onCategoryKPIChange && window.onCategoryKPIChange(this.value)">
+                                <option value="gastos" selected>Gastos</option>
+                                <option value="ingresos">Ingresos</option>
+                                <option value="perHome">Per Home</option>
+                                <option value="transacciones">Transacciones</option>
+                            </select>
                             <button id="expenses-confirm-icon" class="icon-btn icon-confirm" title="Confirmar selección" onclick="window.applyPendingSelection()" aria-label="Confirmar selección">
                                 <svg viewBox="0 0 24 24" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" stroke="currentColor" stroke-width="2" fill="none">
                                     <polyline points="20 6 9 17 4 12"/>
@@ -275,15 +280,6 @@
                             </button>
                         </div>
                     </h3>
-                    <div style="padding: 12px 0; border-bottom: 1px solid #e0e0e0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <label style="font-size: 12px; font-weight: 500; color: #666;">KPI:</label>
-                        <select id="expenses-kpi-selector" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; cursor: pointer; background-color: white;" onchange="window.onCategoryKPIChange && window.onCategoryKPIChange(this.value)">
-                            <option value="gastos" selected>Gastos</option>
-                            <option value="ingresos">Ingresos</option>
-                            <option value="perHome">Per Home</option>
-                            <option value="transacciones">Transacciones</option>
-                        </select>
-                    </div>
                     <div class="chart-wrapper">
                         <div id="expenses-chart"></div>
                     </div>
