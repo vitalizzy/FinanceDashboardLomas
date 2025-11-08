@@ -7,7 +7,7 @@ import { parseAmount, parseDate } from '../../core/utils.js';
 /**
  * Get data by category for a specific KPI metric
  * @param {Array} data - Financial data
- * @param {string} metric - Metric key: 'gastos', 'ingresos', 'perHome', 'saldo', 'transacciones'
+ * @param {string} metric - Metric key: 'gastos', 'ingresos', 'perHome', 'transacciones'
  * @returns {Array} Array of [category, value] pairs sorted by value descending
  */
 export function getByCategoryByMetric(data, metric = 'gastos') {
@@ -16,7 +16,6 @@ export function getByCategoryByMetric(data, metric = 'gastos') {
         'gastos': 'Gastos',
         'ingresos': 'Ingresos',
         'perHome': 'per Home',
-        'saldo': 'Saldo',
         'transacciones': null // Special case: count transactions
     };
     

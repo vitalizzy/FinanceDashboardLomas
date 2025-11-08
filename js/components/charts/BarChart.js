@@ -70,7 +70,6 @@ class ExpensesBarChart {
                 'gastos': { labelKey: 'chart_label_expenses', color: AppState.chartColors.gastos },
                 'ingresos': { labelKey: 'chart_label_income', color: AppState.chartColors.ingresos },
                 'perHome': { labelKey: 'chart_label_per_home', color: AppState.chartColors.perHome },
-                'saldo': { labelKey: 'chart_label_final_balance', color: AppState.chartColors.balance },
                 'transacciones': { labelKey: 'kpi_transacciones', color: AppState.chartColors.transacciones }
             };
             
@@ -99,12 +98,15 @@ class ExpensesBarChart {
         const labels = this.getLabels();
         const datasets = this.getDatasets();
         console.log('📊 BarChart data:', { labelsCount: labels.length, datasetsCount: datasets.length });
+        console.log('  📊 BarChart this.data:', this.data);
 
-        // Setup click handler
+        // Setup click handler with proper data reference
+        const chartData = this.data; // Capture data in closure
         this.on('click', (event) => {
             console.log('🖱️ BarChart click event:', event);
-            if (event.dataIndex !== undefined) {
-                const category = this.data[event.dataIndex][0];
+            console.log('  📊 chartData available:', chartData ? chartData.length + ' items' : 'null');
+            if (event.dataIndex !== undefined && chartData && chartData[event.dataIndex]) {
+                const category = chartData[event.dataIndex][0];
                 console.log('✅ Category selected:', category);
                 if (typeof window.selectPendingCategory === 'function') {
                     console.log('📞 Calling selectPendingCategory with:', category);
@@ -112,6 +114,8 @@ class ExpensesBarChart {
                 } else {
                     console.error('❌ selectPendingCategory function not found on window');
                 }
+            } else {
+                console.warn('⚠️ Invalid dataIndex or no data available. dataIndex:', event.dataIndex, 'chartData length:', chartData ? chartData.length : 'null');
             }
         });
 
