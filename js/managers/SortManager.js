@@ -44,18 +44,23 @@ export class SortManager {
      * @returns {Object} Nuevo estado de ordenamiento
      */
     toggleSort(column) {
+        console.log(`[SortManager.toggleSort] Column: ${column}, Current state:`, JSON.stringify(this.sortState));
+        
         const index = this.sortState.findIndex(entry => entry.key === column);
 
         if (index === -1) {
             // Primer click: ordenar descendentemente (DESC)
+            console.log(`[SortManager] First click - adding ${column} as DESC`);
             this.sortState.push({ key: column, direction: 'desc' });
         } else {
             const currentDirection = this.sortState[index].direction;
             if (currentDirection === 'desc') {
                 // Segundo click: cambiar a ascendentemente (ASC)
+                console.log(`[SortManager] Second click - changing ${column} to ASC`);
                 this.sortState[index].direction = 'asc';
             } else if (currentDirection === 'asc') {
                 // Tercer click: remover ordenamiento
+                console.log(`[SortManager] Third click - removing ${column}`);
                 this.sortState.splice(index, 1);
             }
         }
@@ -63,6 +68,8 @@ export class SortManager {
         // Actualizar referencias a la columna principal
         this.sortColumn = this.sortState[0]?.key || null;
         this.sortDirection = this.sortState[0]?.direction || 'asc';
+
+        console.log(`[SortManager.toggleSort] New state:`, JSON.stringify(this.sortState));
 
         // Notificar cambio
         this.onSortChange(this.getSortState());
@@ -129,11 +136,15 @@ export class SortManager {
      * @returns {Array} Datos ordenados
      */
     applySortToData(data, getSortableValue) {
+        console.log(`[SortManager.applySortToData] Called with ${data?.length || 0} rows, sortState:`, JSON.stringify(this.sortState));
+        
         if (!Array.isArray(data) || data.length === 0) {
+            console.log(`[SortManager.applySortToData] No data to sort`);
             return data;
         }
 
         if (this.sortState.length === 0) {
+            console.log(`[SortManager.applySortToData] No sort state, returning unsorted data`);
             return data;
         }
 
@@ -178,6 +189,7 @@ export class SortManager {
             return 0;
         });
 
+        console.log(`[SortManager.applySortToData] Returning ${sorted.length} sorted rows`);
         return sorted;
     }
 

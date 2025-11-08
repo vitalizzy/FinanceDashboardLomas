@@ -47,11 +47,14 @@ export class BaseTable {
         this.sortManager = new SortManager({
             initialSortState,
             onSortChange: (newState) => {
+                console.log(`[BaseTable.onSortChange] Callback fired with new state:`, JSON.stringify(newState));
                 // Guardar el estado en AppState si existe un stateKey
                 if (mergedOptions.sortStateKey) {
+                    console.log(`[BaseTable.onSortChange] Saving to AppState.ui.${mergedOptions.sortStateKey}`);
                     AppState.ui[mergedOptions.sortStateKey] = newState;
                 }
                 // Luego hacer el re-render
+                console.log(`[BaseTable.onSortChange] Calling resetVisibleRows()`);
                 this.resetVisibleRows();
             }
         });
@@ -69,7 +72,9 @@ export class BaseTable {
         
         // Función para manejar clicks en headers de ordenamiento
         window[`sortTable_${this.safeId}`] = (columnKey) => {
+            console.log(`[BaseTable.sortTable_${this.safeId}] Click on column: ${columnKey}`);
             self.sortManager.toggleSort(columnKey);
+            console.log(`[BaseTable.sortTable_${this.safeId}] After toggleSort, about to call render`);
             // El callback onSortChange dispara resetVisibleRows() que hace el render automáticamente
         };
 
@@ -94,6 +99,7 @@ export class BaseTable {
      * Método principal para renderizar la tabla
      */
     render(data, columns) {
+        console.log(`[BaseTable.render] Called with ${data?.length || 0} rows`);
         if (!this.container) return;
         
         if (!data || data.length === 0) {
@@ -107,7 +113,9 @@ export class BaseTable {
 
         // Aplicar filtros de columna
     const filteredData = this.applyColumnFilters(data);
+    console.log(`[BaseTable.render] After filters: ${filteredData.length} rows`);
     const sortedData = this.sortData(filteredData);
+    console.log(`[BaseTable.render] After sorting: ${sortedData.length} rows, Sort state:`, JSON.stringify(this.sortManager.getSortState()));
 
         this.currentData = sortedData;
         this.totalRows = sortedData.length;
@@ -320,12 +328,15 @@ export class BaseTable {
      * Ordena los datos según la columna y dirección actuales
      */
     sortData(data) {
+        console.log(`[BaseTable.sortData] Called with ${data?.length || 0} rows, Sort state:`, JSON.stringify(this.sortManager.getSortState()));
         const columnsByKey = Object.fromEntries((this.lastColumns || []).map(col => [col.key, col]));
         
-        return this.sortManager.applySortToData(data, (row, key) => {
+        const result = this.sortManager.applySortToData(data, (row, key) => {
             const column = columnsByKey[key] || {};
             return this.getSortableValue(row, key, column);
         });
+        console.log(`[BaseTable.sortData] Returning ${result?.length || 0} sorted rows`);
+        return result;
     }
 
     /**
@@ -453,8 +464,10 @@ export class BaseTable {
      * Restablecer el número de filas visibles y re-renderizar
      */
     resetVisibleRows() {
+        console.log(`[BaseTable.resetVisibleRows] Called, about to render`);
         this.visibleRows = this.initialRows;
         this.render(this.lastData, this.lastColumns);
+        console.log(`[BaseTable.resetVisibleRows] Render complete`);
     }
 
     setSortState(sortState = []) {
