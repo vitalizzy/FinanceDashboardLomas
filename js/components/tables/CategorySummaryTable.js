@@ -15,7 +15,8 @@ export class CategorySummaryTable extends BaseTable {
         super('category-summary-table', {
             compact: true,
             initialRows: 20,
-            rowsIncrement: 10
+            rowsIncrement: 10,
+            sortStateKey: 'categorySummarySortState'
         });
         
         this.columns = [
@@ -115,22 +116,9 @@ export class CategorySummaryTable extends BaseTable {
 // Instancia global
 export const categorySummaryTable = new CategorySummaryTable();
 
-// Exponer funciones globalmente (usando safeId)
-window.sortTable_category_summary_table = (col) => {
-    categorySummaryTable.sort(col);
-    AppState.ui.categorySummarySortState = categorySummaryTable.getSortState();
-};
-
-window.toggleColumnFilter_category_summary_table = (col, event) => {
-    categorySummaryTable.toggleColumnFilter(col, event);
-};
-
-window.applyColumnFilter_category_summary_table = (col, event) => {
-    if (event) event.stopPropagation();
-    categorySummaryTable.applyColumnFilterFromDropdown(col);
-};
-
-window.cancelColumnFilter_category_summary_table = (col, event) => {
-    if (event) event.stopPropagation();
-    categorySummaryTable.cancelColumnFilter(col);
-};
+/**
+ * NOTA: Los handlers window.sortTable_*, toggleColumnFilter_*, applyColumnFilter_*,
+ * y cancelColumnFilter_* se registran automáticamente en BaseTable.registerWindowHandlers(),
+ * no es necesario registrarlos aquí manualmente. Los handlers en BaseTable hacen render
+ * automáticamente después de cambiar el estado de sorting/filtrado.
+ */

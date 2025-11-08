@@ -16,7 +16,8 @@ export class TopMovementsTable extends BaseTable {
         super('top-movements-table', {
             compact: true,
             initialRows: 20,
-            rowsIncrement: 10
+            rowsIncrement: 10,
+            sortStateKey: 'topMovementsSortState'
         });
         
         this.columns = [
@@ -118,22 +119,9 @@ export class TopMovementsTable extends BaseTable {
 // Instancia global
 export const topMovementsTable = new TopMovementsTable();
 
-// Exponer funciones globalmente (usando safeId)
-window.sortTable_top_movements_table = (col) => {
-    topMovementsTable.sort(col);
-    AppState.ui.topMovementsSortState = topMovementsTable.getSortState();
-};
-
-window.toggleColumnFilter_top_movements_table = (col, event) => {
-    topMovementsTable.toggleColumnFilter(col, event);
-};
-
-window.applyColumnFilter_top_movements_table = (col, event) => {
-    if (event) event.stopPropagation();
-    topMovementsTable.applyColumnFilterFromDropdown(col);
-};
-
-window.cancelColumnFilter_top_movements_table = (col, event) => {
-    if (event) event.stopPropagation();
-    topMovementsTable.cancelColumnFilter(col);
-};
+/**
+ * NOTA: Los handlers window.sortTable_*, toggleColumnFilter_*, applyColumnFilter_*,
+ * y cancelColumnFilter_* se registran automáticamente en BaseTable.registerWindowHandlers(),
+ * no es necesario registrarlos aquí manualmente. Los handlers en BaseTable hacen render
+ * automáticamente después de cambiar el estado de sorting/filtrado.
+ */

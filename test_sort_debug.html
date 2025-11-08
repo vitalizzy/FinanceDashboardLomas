@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sorting Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .log {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            padding: 3px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .log-entry.success { color: green; }
+        .log-entry.error { color: red; }
+        .log-entry.info { color: blue; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #f9f9f9;
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover {
+            background: #e0e0e0;
+        }
+        th.sorted-asc::after {
+            content: " ↑";
+            color: blue;
+        }
+        th.sorted-desc::after {
+            content: " ↓";
+            color: red;
+        }
+        .state-box {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug de Sorting - Test Manual</h1>
+    
+    <div class="test-section">
+        <h2>1. Test del SortManager (Standalone)</h2>
+        <button onclick="testSortManager()">Test SortManager</button>
+        <div id="test1-log" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test de Window Handlers</h2>
+        <button onclick="testWindowHandlers()">Test Window Handlers</button>
+        <button onclick="testClickSequence()">Test Sequence: Click 1, 2, 3</button>
+        <div id="test2-log" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test de Tabla Interactiva</h2>
+        <table id="test-table">
+            <thead>
+                <tr>
+                    <th onclick="simulateTableClick('name')">Nombre</th>
+                    <th onclick="simulateTableClick('age')">Edad</th>
+                    <th onclick="simulateTableClick('score')">Puntuación</th>
+                </tr>
+            </thead>
+            <tbody id="test-tbody">
+                <tr><td>Alice</td><td>25</td><td>95</td></tr>
+                <tr><td>Bob</td><td>30</td><td>87</td></tr>
+                <tr><td>Charlie</td><td>22</td><td>92</td></tr>
+            </tbody>
+        </table>
+        <div id="test3-log" class="log"></div>
+        <div class="state-box" id="sort-state">Estado del Sorting: {}</div>
+    </div>
+
+    <script type="module">
+        import { SortManager } from './js/managers/SortManager.js';
+
+        // ============ TEST 1: SortManager Standalone ============
+        window.testSortManager = function() {
+            const log = document.getElementById('test1-log');
+            log.innerHTML = '';
+            
+            const addLog = (msg, type = 'info') => {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = msg;
+                log.appendChild(entry);
+            };
+
+            try {
+                addLog('✓ Inicializando SortManager...', 'success');
+                const sortManager = new SortManager();
+                addLog(`✓ SortManager creado: ${sortManager.constructor.name}`, 'success');
+
+                addLog('\n--- PRIMER CLICK en "name" ---');
+                const state1 = sortManager.toggleSort('name');
+                addLog(`✓ After click 1: ${JSON.stringify(state1)}`, 'info');
+                addLog(`✓ getSortInfoForColumn('name'): ${JSON.stringify(sortManager.getSortInfoForColumn('name'))}`, 'info');
+
+                addLog('\n--- SEGUNDO CLICK en "name" (debe cambiar a ASC) ---');
+                const state2 = sortManager.toggleSort('name');
+                addLog(`✓ After click 2: ${JSON.stringify(state2)}`, 'info');
+                addLog(`✓ getSortInfoForColumn('name'): ${JSON.stringify(sortManager.getSortInfoForColumn('name'))}`, 'info');
+
+                addLog('\n--- TERCER CLICK en "name" (debe remover) ---');
+                const state3 = sortManager.toggleSort('name');
+                addLog(`✓ After click 3: ${JSON.stringify(state3)}`, 'info');
+                addLog(`✓ getSortInfoForColumn('name'): ${JSON.stringify(sortManager.getSortInfoForColumn('name'))}`, 'info');
+
+                addLog('\n--- CUARTO CLICK en "name" (debe volver a DESC) ---');
+                const state4 = sortManager.toggleSort('name');
+                addLog(`✓ After click 4: ${JSON.stringify(state4)}`, 'info');
+                addLog(`✓ getSortInfoForColumn('name'): ${JSON.stringify(sortManager.getSortInfoForColumn('name'))}`, 'info');
+
+                addLog('\n✓ Test SortManager: PASSED', 'success');
+            } catch (error) {
+                addLog(`✗ Error: ${error.message}`, 'error');
+                addLog(error.stack, 'error');
+            }
+        };
+
+        // ============ TEST 2: Window Handlers ============
+        window.testWindowHandlers = function() {
+            const log = document.getElementById('test2-log');
+            log.innerHTML = '';
+            
+            const addLog = (msg, type = 'info') => {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = msg;
+                log.appendChild(entry);
+            };
+
+            try {
+                addLog('✓ Verificando window.sortTable_test_table...', 'info');
+                if (window.sortTable_test_table) {
+                    addLog(`✓ Función encontrada: ${window.sortTable_test_table.toString().substring(0, 50)}...`, 'success');
+                } else {
+                    addLog(`✗ Función NO encontrada`, 'error');
+                }
+            } catch (error) {
+                addLog(`✗ Error: ${error.message}`, 'error');
+            }
+        };
+
+        // ============ TEST 3: Tabla Simulada ============
+        window.simulateTableClick = function(columnKey) {
+            const log = document.getElementById('test3-log');
+            const stateBox = document.getElementById('sort-state');
+            const addLog = (msg) => {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry info';
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+            };
+
+            addLog(`Click en columna: ${columnKey}`);
+            if (window.sortTable_test_table) {
+                window.sortTable_test_table(columnKey);
+                addLog(`✓ Handler ejecutado`);
+            } else {
+                addLog(`✗ Handler NO disponible`);
+            }
+        };
+
+        // ============ TEST 4: Sequence Test ============
+        window.testClickSequence = async function() {
+            const log = document.getElementById('test2-log');
+            log.innerHTML = '';
+            const addLog = (msg, type = 'info') => {
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = msg;
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+            };
+
+            try {
+                addLog('🎬 Iniciando secuencia de clicks...', 'info');
+                
+                addLog('\n1️⃣ CLICK 1 en "name"...', 'info');
+                if (window.sortTable_test_table) {
+                    window.sortTable_test_table('name');
+                    addLog('✓ Click 1 ejecutado', 'success');
+                    await new Promise(r => setTimeout(r, 500));
+                } else {
+                    addLog('✗ Handler NO disponible', 'error');
+                }
+
+                addLog('\n2️⃣ CLICK 2 en "name"...', 'info');
+                if (window.sortTable_test_table) {
+                    window.sortTable_test_table('name');
+                    addLog('✓ Click 2 ejecutado', 'success');
+                    await new Promise(r => setTimeout(r, 500));
+                } else {
+                    addLog('✗ Handler NO disponible', 'error');
+                }
+
+                addLog('\n3️⃣ CLICK 3 en "name"...', 'info');
+                if (window.sortTable_test_table) {
+                    window.sortTable_test_table('name');
+                    addLog('✓ Click 3 ejecutado', 'success');
+                    await new Promise(r => setTimeout(r, 500));
+                } else {
+                    addLog('✗ Handler NO disponible', 'error');
+                }
+
+                addLog('\n✓ Secuencia completada', 'success');
+            } catch (error) {
+                addLog(`✗ Error en secuencia: ${error.message}`, 'error');
+            }
+        };
+
+        // ============ Setup Tabla de Test ============
+        const sortManager = new SortManager();
+        
+        // Registrar handlers en window (simula lo que hace BaseTable)
+        window.sortTable_test_table = (columnKey) => {
+            console.log(`[DEBUG] Sorting click: ${columnKey}`);
+            sortManager.toggleSort(columnKey);
+            const sortInfo = sortManager.getSortInfoForColumn(columnKey);
+            console.log(`[DEBUG] New sort state for ${columnKey}:`, sortInfo);
+            
+            // Actualizar headers
+            const ths = document.querySelectorAll('#test-table th');
+            ths.forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+            });
+            
+            sortManager.getSortState().forEach(entry => {
+                const colName = entry.key;
+                const ths = document.querySelectorAll('#test-table th');
+                ths.forEach(th => {
+                    if (th.textContent.includes(colName.charAt(0).toUpperCase() + colName.slice(1))) {
+                        th.classList.add(`sorted-${entry.direction}`);
+                    }
+                });
+            });
+            
+            // Actualizar estado visual
+            document.getElementById('sort-state').textContent = 
+                'Estado del Sorting: ' + JSON.stringify(sortManager.getSortState(), null, 2);
+        };
+
+        console.log('✓ Test page loaded');
+        addLog = (msg) => console.log(msg);
+        addLog('✓ Scripts loaded. Puedes ejecutar tests manualmente.');
+    </script>
+</body>
+</html>

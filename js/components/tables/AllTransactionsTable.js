@@ -18,7 +18,8 @@ export class AllTransactionsTable extends BaseTable {
             initialRows: 20,
             rowsIncrement: 20,
             sortColumn: 'F. Operativa',
-            sortDirection: 'desc'
+            sortDirection: 'desc',
+            sortStateKey: 'allTransactionsSortState'
         });
         
         this.columns = [
@@ -148,15 +149,12 @@ export class AllTransactionsTable extends BaseTable {
 // Instancia global
 export const allTransactionsTable = new AllTransactionsTable();
 
-// Exponer funciones globalmente para onclick (usando safeId)
-window.sortTable_all_transactions_table = (col) => {
-    allTransactionsTable.sort(col);
-    AppState.ui.allTransactionsSortState = allTransactionsTable.getSortState();
-};
-
-window.toggleColumnFilter_all_transactions_table = (col, event) => {
-    allTransactionsTable.toggleColumnFilter(col, event);
-};
+/**
+ * NOTA: Los handlers window.sortTable_* y toggleColumnFilter_* se registran
+ * automáticamente en BaseTable.registerWindowHandlers(), no es necesario
+ * registrarlos aquí manualmente. Los handlers en BaseTable hacen render
+ * automáticamente después de cambiar el estado de sorting/filtrado.
+ */
 
 window.applyColumnFilter_all_transactions_table = (col, event) => {
     if (event) event.stopPropagation();

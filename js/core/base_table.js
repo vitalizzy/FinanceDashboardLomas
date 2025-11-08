@@ -46,7 +46,14 @@ export class BaseTable {
         
         this.sortManager = new SortManager({
             initialSortState,
-            onSortChange: () => this.resetVisibleRows()
+            onSortChange: (newState) => {
+                // Guardar el estado en AppState si existe un stateKey
+                if (mergedOptions.sortStateKey) {
+                    AppState.ui[mergedOptions.sortStateKey] = newState;
+                }
+                // Luego hacer el re-render
+                this.resetVisibleRows();
+            }
         });
 
         // Exponer funciones en window para handlers onclick en el HTML
@@ -63,7 +70,7 @@ export class BaseTable {
         // Función para manejar clicks en headers de ordenamiento
         window[`sortTable_${this.safeId}`] = (columnKey) => {
             self.sortManager.toggleSort(columnKey);
-            self.render(self.lastData, self.lastColumns);
+            // El callback onSortChange dispara resetVisibleRows() que hace el render automáticamente
         };
 
         // Funciones para filtros por columna
