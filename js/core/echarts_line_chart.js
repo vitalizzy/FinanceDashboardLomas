@@ -245,7 +245,7 @@ class EChartsLineChart extends BaseECharts {
                     splitArea: {
                         show: false
                     },
-                    max: maxTransactions > 0 ? maxTransactions * 2.5 : 100  // Scale to 40% of total height, default to 100 if no data
+                    max: maxTransactions > 0 ? maxTransactions * 1.0 : 100  // TEMPORALMENTE SIN ESCALAR PARA VER SI APARECEN
                 }
             ],
             series: series,
