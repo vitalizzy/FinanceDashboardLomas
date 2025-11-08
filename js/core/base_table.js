@@ -302,12 +302,15 @@ export class BaseTable {
         const index = this.sortState.findIndex(entry => entry.key === column);
 
         if (index === -1) {
-            this.sortState.push({ key: column, direction: 'asc' });
+            // Primer click: ordenar descendentemente (DESC)
+            this.sortState = [{ key: column, direction: 'desc' }];
         } else {
             const currentDirection = this.sortState[index].direction;
-            if (currentDirection === 'asc') {
-                this.sortState[index].direction = 'desc';
-            } else if (currentDirection === 'desc') {
+            if (currentDirection === 'desc') {
+                // Segundo click: cambiar a ascendentemente (ASC)
+                this.sortState[index].direction = 'asc';
+            } else if (currentDirection === 'asc') {
+                // Tercer click: remover ordenamiento (sin orden)
                 this.sortState.splice(index, 1);
             }
         }
