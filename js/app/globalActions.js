@@ -9,7 +9,8 @@ const GLOBAL_METHODS = {
     onCategoryKPIChange: (app, metric) => app.handleCategoryKPIChange(metric),
     onBarRacePlay: (app) => app.handleBarRacePlay(),
     onBarRaceStop: (app) => app.handleBarRaceStop(),
-    onBarRaceSpeedChange: (app, speed) => app.handleBarRaceSpeedChange(speed)
+    onBarRaceSpeedChange: (app, speed) => app.handleBarRaceSpeedChange(speed),
+    onBarRaceRefresh: (app) => app.handleBarRaceRefresh()
 };
 
 /**

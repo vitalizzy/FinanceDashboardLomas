@@ -545,6 +545,19 @@ body {
     color: #962524;
 }
 
+/* Bar Race Refresh Button */
+.icon-refresh {
+    border-color: rgba(13,110,253,0.4);
+    color: #0d6efd;
+    font-size: 14px;
+}
+
+.icon-refresh:hover {
+    background: rgba(13,110,253,0.08);
+    border-color: rgba(13,110,253,0.6);
+    color: #0854ca;
+}
+
 #top-confirm-icon, #top-cancel-icon,
 #cat-confirm-icon, #cat-cancel-icon,
 #monthly-confirm-icon, #monthly-cancel-icon,

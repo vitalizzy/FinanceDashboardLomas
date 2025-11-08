@@ -209,6 +209,21 @@ export class DashboardApp {
         }
     }
 
+    handleBarRaceRefresh() {
+        console.log('🔄 handleBarRaceRefresh called');
+        try {
+            const barRaceChart = this.chartManager.getChart('bar-race-chart');
+            if (barRaceChart && barRaceChart.refresh) {
+                console.log('  ✅ Restarting bar race animation');
+                barRaceChart.refresh();
+            } else {
+                console.warn('  ⚠️  Bar race chart or refresh() method not available');
+            }
+        } catch (error) {
+            console.error('  ❌ Error refreshing bar race animation:', error);
+        }
+    }
+
     _registerUiInteractions() {
         const periodDropdown = new Dropdown({
             elementId: 'filter-select',

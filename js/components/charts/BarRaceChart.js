@@ -73,6 +73,12 @@ class CategoryBarRaceChart {
         console.log('  ✅ Speed set to:', this.speed + 'x');
     }
 
+    refresh() {
+        console.log('🔄 BarRaceChart.refresh called - restarting animation');
+        this.stop();
+        this.play();
+    }
+
     render() {
         console.log('🏁 BarRaceChart.render() called');
         if (!this.init()) {
