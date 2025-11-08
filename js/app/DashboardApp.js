@@ -41,19 +41,30 @@ export class DashboardApp {
 
     async init() {
         try {
+            console.log('🚀 DashboardApp.init() starting');
             this.loadingOverlay.show();
 
             AppState.loadChartColors();
+            console.log('  ✅ Chart colors loaded');
 
             const { data, lastUpdate } = await this.dataService.loadFinancialData();
+            console.log('  ✅ Financial data loaded:', data ? data.length + ' rows' : 'null');
             AppState.setFinancialData(data);
             this.lastUpdateBanner.render(lastUpdate);
+            console.log('  ✅ App state initialized');
 
             this._setupLanguage();
+            console.log('  ✅ Language setup');
+            
             this._registerUiInteractions();
+            console.log('  ✅ UI interactions registered');
+            
             this._registerGlobalListeners();
+            console.log('  ✅ Global listeners registered');
 
+            console.log('🔄 Calling updateDashboard...');
             this.updateDashboard();
+            console.log('✅ Dashboard initialization complete');
         } catch (error) {
             console.error('❌ Initialization error:', error);
             throw error;
@@ -64,13 +75,22 @@ export class DashboardApp {
 
     updateDashboard() {
         try {
+            console.log('🔄 DashboardApp.updateDashboard() called');
             const filteredData = this.filterManager.getFilteredData();
+            console.log('  📊 Filtered data obtained:', filteredData ? filteredData.length + ' rows' : 'null');
             AppState.data.filtered = filteredData;
 
             this.kpiManager.render(filteredData);
+            console.log('  ✅ KPI rendered');
+            
             this.chartManager.renderAll(filteredData);
+            console.log('  ✅ Charts rendered');
+            
             this.tableManager.renderAll(filteredData);
+            console.log('  ✅ Tables rendered');
+            
             this.filterPanel.render();
+            console.log('  ✅ Filter panel rendered');
         } catch (error) {
             console.error('❌ Dashboard update error:', error);
             ErrorHandler.handle(error);
