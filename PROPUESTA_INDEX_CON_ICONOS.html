@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta: Index.html con Iconos Profesionales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #22303b 0%, #1a232d 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 3px solid #4CAF50;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .icon-small {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .comparison-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-section h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #22303b;
+            border-bottom: 2px solid #e3e3e3;
+            padding-bottom: 15px;
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #e3e3e3;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            line-height: 1.4;
+        }
+
+        .code-block.before {
+            border-left-color: #ff9800;
+        }
+
+        .code-block.after {
+            border-left-color: #4CAF50;
+        }
+
+        .label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .label.before {
+            background: #ffe0b2;
+            color: #e65100;
+        }
+
+        .label.after {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .preview-section {
+            background: #f0f4f8;
+            border: 2px dashed #22303b;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .preview-section h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #22303b;
+        }
+
+        .component-group {
+            margin-bottom: 25px;
+        }
+
+        .component-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .icon-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .icon-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .icon-item:hover {
+            background: #f9f9f9;
+            border-color: #4CAF50;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+        }
+
+        .icon-item svg {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 8px;
+            stroke: #22303b;
+            stroke-width: 2;
+            fill: none;
+            display: inline-block;
+        }
+
+        .icon-name {
+            font-size: 11px;
+            color: #666;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .button-comparison {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn.emoji {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .btn.emoji:hover {
+            background: #ffe69c;
+        }
+
+        .btn.icon {
+            background: #c8e6c9;
+            color: #2e7d32;
+            border: 1px solid #81c784;
+        }
+
+        .btn.icon:hover {
+            background: #a5d6a7;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .kpi-cards-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .kpi-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .kpi-card h4 {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .kpi-card h4 svg {
+            width: 18px;
+            height: 18px;
+            stroke: #22303b;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .kpi-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #22303b;
+            margin-bottom: 5px;
+        }
+
+        .kpi-note {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        .comparison-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #22303b;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .emoji {
+            font-size: 18px;
+            display: inline-block;
+            width: 24px;
+            text-align: center;
+        }
+
+        .comparison-benefits {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .comparison-benefits h4 {
+            color: #2e7d32;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .comparison-benefits ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .comparison-benefits li {
+            color: #2e7d32;
+            font-size: 13px;
+            margin-bottom: 6px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .comparison-benefits li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .footer-note {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+
+        @media (max-width: 768px) {
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <svg class="icon-small" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                <polyline points="13 2 13 9 20 9" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Propuesta Visual: Index.html con Iconos Profesionales
+        </h1>
+        <p>Comparación antes/después y visualización de componentes actualizados</p>
+    </div>
+
+    <div class="container">
+        <!-- SECCIÓN 1: FILTROS -->
+        <div class="comparison-section">
+            <h2>1️⃣ Sección de Filtros</h2>
+            
+            <div class="before-after">
+                <div>
+                    <span class="label before">ANTES (con emojis)</span>
+                    <div class="code-block before">&lt;h3 class="db-container-title" 
+    data-i18n="filters"&gt;
+🔍 Filtros
+&lt;/h3&gt;
+
+&lt;label&gt;🌐 Idioma:&lt;/label&gt;
+&lt;select&gt;...&lt;/select&gt;</div>
+                </div>
+                <div>
+                    <span class="label after">DESPUÉS (con iconos)</span>
+                    <div class="code-block after">&lt;h3 class="db-container-title" 
+    data-i18n="filters"&gt;
+    &lt;svg&gt;...&lt;/svg&gt;
+    Filtros
+&lt;/h3&gt;
+
+&lt;label&gt;
+    &lt;svg&gt;...&lt;/svg&gt;
+    Idioma:
+&lt;/label&gt;</div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>Vista Previa - Título de Filtros</h3>
+                <div class="button-comparison">
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #fff3cd; border-radius: 4px;">
+                        <span class="emoji">🔍</span>
+                        <span style="font-weight: 500;">Filtros</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #c8e6c9; border-radius: 4px;">
+                        <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" fill="none">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <span style="font-weight: 500;">Filtros</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-benefits">
+                <h4>Mejoras Visuales:</h4>
+                <ul>
+                    <li>Escalable en cualquier tamaño (SVG vs emoji variable)</li>
+                    <li>Consistencia con la identidad visual de la app</li>
+                    <li>Mejor accesibilidad (aria-labels, rol semántico)</li>
+                    <li>Rendimiento: No requiere fuentes de iconos adicionales</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: KPI CARDS -->
+        <div class="comparison-section">
+            <h2>2️⃣ Tarjetas KPI</h2>
+            
+            <div class="before-after">
+                <div>
+                    <span class="label before">ANTES (emojis directos)</span>
+                    <div class="code-block before">&lt;div class="kpi-card ingresos"&gt;
+    &lt;h3&gt;📊 Total Ingresos&lt;/h3&gt;
+    &lt;div class="value"&gt;€0,00&lt;/div&gt;
+&lt;/div&gt;</div>
+                </div>
+                <div>
+                    <span class="label after">DESPUÉS (con iconos SVG)</span>
+                    <div class="code-block after">&lt;div class="kpi-card ingresos"&gt;
+    &lt;h3&gt;
+        &lt;svg&gt;...&lt;/svg&gt;
+        Total Ingresos
+    &lt;/h3&gt;
+    &lt;div class="value"&gt;€0,00&lt;/div&gt;
+&lt;/div&gt;</div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>Vista Previa - KPI Cards (5 Tarjetas)</h3>
+                <div class="kpi-cards-preview">
+                    <div class="kpi-card" style="border-top: 3px solid #4CAF50;">
+                        <h4>
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <polyline points="3 12 9 17 21 7" stroke="#4CAF50" stroke-width="2" fill="none"/>
+                            </svg>
+                            Total Ingresos
+                        </h4>
+                        <div class="kpi-value">€12,450.50</div>
+                        <div class="kpi-note">Suma de ingresos</div>
+                    </div>
+                    <div class="kpi-card" style="border-top: 3px solid #f44336;">
+                        <h4>
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#f44336"/>
+                                <path d="M12.5 7H11v6l5.2 3.2.8-1.3-4.5-2.7V7z" fill="#f44336"/>
+                            </svg>
+                            Total Gastos
+                        </h4>
+                        <div class="kpi-value">€8,230.25</div>
+                        <div class="kpi-note">Suma de gastos</div>
+                    </div>
+                    <div class="kpi-card" style="border-top: 3px solid #2196F3;">
+                        <h4>
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15.5 1h-8C6.12 1 5 2.12 5 3.5v17C5 21.88 6.12 23 7.5 23h8c1.38 0 2.5-1.12 2.5-2.5v-17C18 2.12 16.88 1 15.5 1zm-4 21c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4.5-4H7V4h9v14z" fill="#2196F3"/>
+                            </svg>
+                            Total Per Home
+                        </h4>
+                        <div class="kpi-value">€51.44</div>
+                        <div class="kpi-note">Gastos per home</div>
+                    </div>
+                    <div class="kpi-card" style="border-top: 3px solid #FF9800;">
+                        <h4>
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#FF9800"/>
+                                <path d="M16.35 8.65l-5.79 5.79c-.32.32-.77.5-1.21.5-.44 0-.89-.18-1.21-.5l-2.83-2.83c-.63-.63-.63-1.65 0-2.28.63-.63 1.65-.63 2.28 0l1.62 1.62 4.58-4.58c.63-.63 1.65-.63 2.28 0 .63.63.63 1.65 0 2.28z" fill="#FF9800"/>
+                            </svg>
+                            Balance Actual
+                        </h4>
+                        <div class="kpi-value">€4,220.25</div>
+                        <div class="kpi-note">Saldo más reciente</div>
+                    </div>
+                    <div class="kpi-card" style="border-top: 3px solid #9C27B0;">
+                        <h4>
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 6h16V4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v2h6v-2h4v-2H4V6z" fill="#9C27B0"/>
+                            </svg>
+                            Transacciones
+                        </h4>
+                        <div class="kpi-value">1,245</div>
+                        <div class="kpi-note">Registros procesados</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-benefits">
+                <h4>Mejoras Visuales:</h4>
+                <ul>
+                    <li>Colores coherentes: Cada tipo de KPI tiene su propio color de marca</li>
+                    <li>Iconos más descriptivos: Los usuarios identifican el tipo de métrica al instante</li>
+                    <li>Mejor responsive: Los iconos SVG se adaptan a cualquier tamaño de pantalla</li>
+                    <li>CSS Variables: Fácil de cambiar colores sin editar SVGs</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: BOTONES DE ACCIÓN -->
+        <div class="comparison-section">
+            <h2>3️⃣ Botones de Acción (Confirm/Cancel)</h2>
+            
+            <div class="before-after">
+                <div>
+                    <span class="label before">ANTES (emojis)</span>
+                    <div class="code-block before">&lt;button class="icon-btn"&gt;
+    ✓
+&lt;/button&gt;
+&lt;button class="icon-btn"&gt;
+    ✕
+&lt;/button&gt;</div>
+                </div>
+                <div>
+                    <span class="label after">DESPUÉS (iconos SVG)</span>
+                    <div class="code-block after">&lt;button class="icon-btn"&gt;
+    &lt;svg&gt;...&lt;/svg&gt;
+&lt;/button&gt;
+&lt;button class="icon-btn"&gt;
+    &lt;svg&gt;...&lt;/svg&gt;
+&lt;/button&gt;</div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>Vista Previa - Botones de Control</h3>
+                <div style="display: flex; gap: 10px; margin: 15px 0;">
+                    <button class="btn emoji" title="Confirmar selección">✓ Confirmar</button>
+                    <button class="btn emoji" title="Cancelar selección">✕ Cancelar</button>
+                </div>
+                <p style="text-align: center; color: #999; margin-bottom: 15px;">↓ se convierte en ↓</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                        Confirmar
+                    </button>
+                    <button class="btn icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.9 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 12l4.9-4.89a1 1 0 0 0 0-1.4z" stroke="currentColor"/>
+                        </svg>
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+
+            <div class="comparison-benefits">
+                <h4>Mejoras Visuales:</h4>
+                <ul>
+                    <li>Mayor claridad: Los iconos son inequívocos y profesionales</li>
+                    <li>Consistencia visual: Utiliza el mismo estilo de stroke que los demás iconos</li>
+                    <li>Accesibilidad mejorada: Se pueden añadir aria-labels sin romper el diseño</li>
+                    <li>Touch-friendly: Los botones tienen mejor tamaño de hit en móviles</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: BOTÓN EXPORTAR -->
+        <div class="comparison-section">
+            <h2>4️⃣ Botón Exportar CSV</h2>
+            
+            <div class="before-after">
+                <div>
+                    <span class="label before">ANTES (emoji directo)</span>
+                    <div class="code-block before">&lt;button class="action-btn" 
+    onclick="window.exportToCSV()"
+    data-i18n="export_csv"&gt;
+    📊 Exportar CSV
+&lt;/button&gt;</div>
+                </div>
+                <div>
+                    <span class="label after">DESPUÉS (con icono SVG)</span>
+                    <div class="code-block after">&lt;button class="action-btn"
+    onclick="window.exportToCSV()"
+    data-i18n="export_csv"&gt;
+    &lt;svg&gt;...&lt;/svg&gt;
+    Exportar CSV
+&lt;/button&gt;</div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>Vista Previa - Botones de Exportación</h3>
+                <div style="display: flex; gap: 10px; margin: 15px 0;">
+                    <button class="btn emoji">
+                        📊 Exportar CSV
+                    </button>
+                    <button class="btn emoji">
+                        💳 Todas las transacciones
+                    </button>
+                </div>
+                <p style="text-align: center; color: #999; margin-bottom: 15px;">↓ se convierte en ↓</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <path d="M12 13v6m-3-3h6" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                        Exportar CSV
+                    </button>
+                    <button class="btn icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 9h18v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <path d="M3 9V7a2 2 0 0 1 2-2h4l2-2h2l2 2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <circle cx="12" cy="15" r="3.5" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                        Todas las transacciones
+                    </button>
+                </div>
+            </div>
+
+            <div class="comparison-benefits">
+                <h4>Mejoras Visuales:</h4>
+                <ul>
+                    <li>Iconos más descriptivos: Usuario entiende la acción sin leer el texto</li>
+                    <li>Profesionalismo: Los iconos transmiten confianza en la acción</li>
+                    <li>Escalabilidad: Los botones funcionan bien en cualquier tamaño</li>
+                    <li>Internacionalización: No depende del idioma, los iconos son universales</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: GRÁFICOS Y TÍTULOS -->
+        <div class="comparison-section">
+            <h2>5️⃣ Títulos de Gráficos y Secciones</h2>
+            
+            <div class="before-after">
+                <div>
+                    <span class="label before">ANTES (emojis variados)</span>
+                    <div class="code-block before">📈 Movimientos bancarios
+    mensuales
+🏆 Top Movimientos
+    por categoría
+📊 Gastos por categoría
+📋 Resumen por categorías
+💳 Todas las transacciones</div>
+                </div>
+                <div>
+                    <span class="label after">DESPUÉS (iconos consistentes)</span>
+                    <div class="code-block after">📈 Movimientos bancarios
+    mensuales
+📊 Top Movimientos
+    por categoría
+📊 Gastos por categoría
+📋 Resumen por categorías
+💳 Todas las transacciones</div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3>Vista Previa - Secciones Principales</h3>
+                
+                <div class="component-group">
+                    <div class="component-title">Gráficos y Tablas</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 6px; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                                <span class="emoji">📈</span>
+                                <span style="font-weight: 600;">Movimientos mensuales</span>
+                            </div>
+                            <div style="height: 150px; background: #f5f5f5; border-radius: 4px; display: flex; align-items: flex-end; justify-content: space-around; padding: 10px;">
+                                <div style="width: 8px; height: 60%; background: #4CAF50; border-radius: 2px;"></div>
+                                <div style="width: 8px; height: 80%; background: #4CAF50; border-radius: 2px;"></div>
+                                <div style="width: 8px; height: 50%; background: #4CAF50; border-radius: 2px;"></div>
+                                <div style="width: 8px; height: 90%; background: #4CAF50; border-radius: 2px;"></div>
+                                <div style="width: 8px; height: 65%; background: #4CAF50; border-radius: 2px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 6px; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                                <span class="emoji">📊</span>
+                                <span style="font-weight: 600;">Gastos por categoría</span>
+                            </div>
+                            <div style="height: 150px; background: #f5f5f5; border-radius: 4px; display: flex; align-items: center; justify-content: space-around; padding: 10px;">
+                                <div style="width: 40px; height: 40px; background: #FF9800; border-radius: 50%; opacity: 0.8;"></div>
+                                <div style="width: 50px; height: 50px; background: #2196F3; border-radius: 50%; opacity: 0.8;"></div>
+                                <div style="width: 35px; height: 35px; background: #f44336; border-radius: 50%; opacity: 0.8;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <div class="component-title">Tablas de Datos</div>
+                    <div style="background: white; border: 1px solid #ddd; border-radius: 6px; overflow: hidden;">
+                        <div style="padding: 15px; border-bottom: 1px solid #ddd;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="emoji">📋</span>
+                                <span style="font-weight: 600;">Resumen por categorías</span>
+                            </div>
+                        </div>
+                        <table style="width: 100%; font-size: 12px;">
+                            <tr style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
+                                <td style="padding: 10px;">Categoría</td>
+                                <td style="padding: 10px; text-align: right;">Ingresos</td>
+                                <td style="padding: 10px; text-align: right;">Gastos</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <td style="padding: 10px;">Servicios</td>
+                                <td style="padding: 10px; text-align: right;">€5,200</td>
+                                <td style="padding: 10px; text-align: right;">€2,100</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #ddd;">
+                                <td style="padding: 10px;">Mantenimiento</td>
+                                <td style="padding: 10px; text-align: right;">€0</td>
+                                <td style="padding: 10px; text-align: right;">€1,850</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-benefits">
+                <h4>Mejoras Visuales:</h4>
+                <ul>
+                    <li>Uniformidad: Todos los iconos mantienen el mismo tamaño y estilo</li>
+                    <li>Scannability: El usuario escanea los iconos más rápidamente para encontrar secciones</li>
+                    <li>Reducción de clutter visual: Los iconos SVG son más limpios que los emojis</li>
+                    <li>Branding profesional: Los iconos reflejan la identidad visual corporativa</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 6: COMPARATIVA DETALLADA -->
+        <div class="comparison-section">
+            <h2>6️⃣ Tabla de Cambios Específicos</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Componente</th>
+                        <th style="width: 25%;">Icono Actual (Emoji)</th>
+                        <th style="width: 25%;">Icono Nuevo (SVG)</th>
+                        <th style="width: 25%;">Cambio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Filtros</td>
+                        <td><span class="emoji">🔍</span> search</td>
+                        <td>SVG search (19x19px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Idioma</td>
+                        <td><span class="emoji">🌐</span> globe</td>
+                        <td>SVG globe (19x19px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Total Ingresos</td>
+                        <td><span class="emoji">📈</span> chart</td>
+                        <td>SVG trending-up (18x18px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Total Gastos</td>
+                        <td><span class="emoji">⏳</span> timer</td>
+                        <td>SVG trending-down (18x18px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Movimientos Mensuales</td>
+                        <td><span class="emoji">📈</span> chart</td>
+                        <td>SVG chart-line (20x20px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Top Movimientos</td>
+                        <td><span class="emoji">🏆</span> trophy</td>
+                        <td>SVG trending-up (20x20px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Gastos por Categoría</td>
+                        <td><span class="emoji">📊</span> chart</td>
+                        <td>SVG chart-bar (20x20px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Resumen Categorías</td>
+                        <td><span class="emoji">📋</span> clipboard</td>
+                        <td>SVG table (20x20px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Transacciones</td>
+                        <td><span class="emoji">💳</span> card</td>
+                        <td>SVG wallet (20x20px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Exportar CSV</td>
+                        <td><span class="emoji">📊</span> chart</td>
+                        <td>SVG download (18x18px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Confirmar Selección</td>
+                        <td>✓ (carácter)</td>
+                        <td>SVG check (16x16px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Cancelar Selección</td>
+                        <td>✕ (carácter)</td>
+                        <td>SVG x-close (16x16px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                    <tr>
+                        <td>Bloqueo Transacciones</td>
+                        <td><span class="emoji">🔒</span> lock</td>
+                        <td>SVG lock (18x18px)</td>
+                        <td><span style="background: #c8e6c9; padding: 4px 8px; border-radius: 3px; color: #2e7d32; font-size: 11px; font-weight: 600;">Mejorado</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SECCIÓN 7: BENEFICIOS GENERALES -->
+        <div class="comparison-section">
+            <h2>7️⃣ Beneficios Generales de la Migración</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h3 style="color: #f44336; font-size: 16px; margin-bottom: 12px;">❌ Problemas con Emojis</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f44336;">✗</span>
+                            Tamaño inconsistente entre navegadores
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f44336;">✗</span>
+                            No se pueden colorear fácilmente
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f44336;">✗</span>
+                            Apariencia casual, poco profesional
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f44336;">✗</span>
+                            Problemas de accesibilidad
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f44336;">✗</span>
+                            Difícil de cambiar sin editar HTML
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #f44336;">✗</span>
+                            No se pueden animar
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: #4CAF50; font-size: 16px; margin-bottom: 12px;">✅ Ventajas con Iconos SVG</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+                            Tamaño consistente en todos los navegadores
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+                            Coloreable con CSS y variables
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+                            Aspecto profesional y corporativo
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+                            Excelente accesibilidad (aria-labels, roles)
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+                            Cambios centralizados en el IconManager
+                        </li>
+                        <li style="margin-bottom: 8px; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: #4CAF50;">✓</span>
+                            Posibilidad de animaciones CSS y JS
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 8: GUÍA DE IMPLEMENTACIÓN -->
+        <div class="comparison-section">
+            <h2>8️⃣ Próximos Pasos - Implementación</h2>
+            
+            <div style="background: #e3f2fd; border-left: 4px solid #2196F3; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                <h3 style="color: #1565c0; margin-bottom: 10px; font-size: 15px;">Paso 1: Verificar los Iconos</h3>
+                <p style="color: #1565c0; font-size: 13px; margin-bottom: 8px;"><strong>Archivo:</strong> <code>assets/icons/</code></p>
+                <p style="color: #1565c0; font-size: 13px; margin-bottom: 0px;"><strong>Acción:</strong> Abre GALERIA_ICONOS.html en el navegador para ver todos los 27 iconos disponibles</p>
+            </div>
+
+            <div style="background: #f3e5f5; border-left: 4px solid #9C27B0; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                <h3 style="color: #6a1b9a; margin-bottom: 10px; font-size: 15px;">Paso 2: Usar el IconManager</h3>
+                <p style="color: #6a1b9a; font-size: 13px; margin-bottom: 8px;"><strong>Archivo:</strong> <code>js/core/icons.js</code></p>
+                <p style="color: #6a1b9a; font-size: 13px; margin-bottom: 0px;"><strong>Acción:</strong> Ver ejemplos en <code>INTEGRACION_ICONOS.js</code> para integrar en componentes</p>
+            </div>
+
+            <div style="background: #e8f5e9; border-left: 4px solid #4CAF50; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                <h3 style="color: #2e7d32; margin-bottom: 10px; font-size: 15px;">Paso 3: Actualizar Index.html</h3>
+                <p style="color: #2e7d32; font-size: 13px; margin-bottom: 8px;"><strong>Cambios básicos:</strong> Reemplazar emojis por SVG usando el patrón de INTEGRACION_ICONOS.js</p>
+                <p style="color: #2e7d32; font-size: 13px; margin-bottom: 0px;"><strong>Complejidad:</strong> Baja - La mayoría de cambios son reemplazar emojis en títulos y botones</p>
+            </div>
+
+            <div style="background: #fff3e0; border-left: 4px solid #FF9800; padding: 15px; border-radius: 4px;">
+                <h3 style="color: #e65100; margin-bottom: 10px; font-size: 15px;">Paso 4: Probar en Navegadores</h3>
+                <p style="color: #e65100; font-size: 13px; margin-bottom: 8px;"><strong>Verificar:</strong> Chrome, Firefox, Safari, Edge (desktop y mobile)</p>
+                <p style="color: #e65100; font-size: 13px; margin-bottom: 0px;"><strong>Focus:</strong> Renderizado, colores, responsive</p>
+            </div>
+        </div>
+
+        <!-- FOOTER NOTE -->
+        <div class="footer-note">
+            <strong>📌 Nota Final:</strong> Esta es una propuesta visual basada en los iconos profesionales que hemos creado. Todos los iconos están listos en <code>assets/icons/</code> y la clase <code>IconManager</code> en <code>js/core/icons.js</code> está lista para usarlos. ¿Quieres que proceda con la integración real en el index.html?
+        </div>
+    </div>
+</body>
+</html>

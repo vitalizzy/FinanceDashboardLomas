@@ -100,6 +100,54 @@ body {
     flex: 0 1 auto;
 }
 
+/* Icon Styles for Dashboard */
+.db-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    color: var(--text-primary);
+    display: inline-block;
+}
+
+.label-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    color: var(--text-secondary);
+    margin-right: 4px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.kpi-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.action-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
 /* KPI Cards */
 .kpi-cards {
     display: grid;
