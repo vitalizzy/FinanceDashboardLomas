@@ -5,7 +5,7 @@
 /* CSS Variables */
 :root {
     --font-primary: 'Google Sans Text', 'Segoe UI', sans-serif;
-    --font-monospace: 'Roboto Mono', monospace;
+    --font-monospace: 'Google Sans Text', sans-serif;
     --bg-color: #f5f6f8;
     --card-bg-color: #ffffff;
     --text-primary: #1f2933;
