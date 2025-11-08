@@ -110,8 +110,11 @@ export class DashboardApp {
         }
         console.log('🎯 handleSelectPendingCategory called with:', category);
         this.filterManager.toggleCategory(category, true);
-        console.log('✅ Category toggled. Pending selections:', this.filterManager.hasPendingSelections());
-        this.filterPanel.togglePendingControls(this.filterManager.hasPendingSelections());
+        const hasPending = this.filterManager.hasPendingSelections();
+        console.log('✅ Category toggled. Pending selections:', hasPending);
+        console.log('  📊 Showing pending controls:', hasPending);
+        this.filterPanel.togglePendingControls(hasPending);
+        console.log('  ✅ Pending controls toggled');
         this.updateDashboard();
     }
 
@@ -121,8 +124,11 @@ export class DashboardApp {
         }
         console.log('🎯 handleSelectPendingMonth called with:', monthKey);
         this.filterManager.toggleMonth(monthKey, true);
-        console.log('✅ Month toggled. Pending selections:', this.filterManager.hasPendingSelections());
-        this.filterPanel.togglePendingControls(this.filterManager.hasPendingSelections());
+        const hasPending = this.filterManager.hasPendingSelections();
+        console.log('✅ Month toggled. Pending selections:', hasPending);
+        console.log('  📊 Showing pending controls:', hasPending);
+        this.filterPanel.togglePendingControls(hasPending);
+        console.log('  ✅ Pending controls toggled');
         this.updateDashboard();
     }
 
