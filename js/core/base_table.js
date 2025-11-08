@@ -8,6 +8,7 @@ import { AppState } from './state.js';
 import { translate } from './i18n.js';
 import { formatCurrency, formatPercent, formatNumber } from './formatters.js';
 import { parseDate, parseAmount } from './utils.js';
+import { SortManager } from '../managers/SortManager.js';
 
 // Valores reutilizables para todas las tablas que heredan de BaseTable.
 const BASE_TABLE_DEFAULTS = Object.freeze({
@@ -25,13 +26,10 @@ export class BaseTable {
         // Crear un ID seguro para funciones JavaScript (reemplazar guiones con guiones bajos)
         this.safeId = containerId.replace(/-/g, '_');
         const mergedOptions = { ...BASE_TABLE_DEFAULTS, ...options };
-        this.sortColumn = null;
-        this.sortDirection = 'asc';
         this.isCompact = mergedOptions.compact;
         this.initialRows = mergedOptions.initialRows;
         this.rowsIncrement = mergedOptions.rowsIncrement ?? mergedOptions.initialRows;
         this.visibleRows = this.initialRows;
-        this.sortState = [];
         this.lastColumns = [];
         this.lastData = [];
         this.currentData = [];
@@ -39,14 +37,52 @@ export class BaseTable {
         this.handleScrollBound = this.handleScroll.bind(this);
         this.isRendering = false;
 
+        // Inicializar SortManager
         const initialSortState = Array.isArray(mergedOptions.initialSortState)
             ? mergedOptions.initialSortState
             : (mergedOptions.sortColumn
                 ? [{ key: mergedOptions.sortColumn, direction: mergedOptions.sortDirection }]
                 : []);
-        this.setSortState(initialSortState);
+        
+        this.sortManager = new SortManager({
+            initialSortState,
+            onSortChange: () => this.resetVisibleRows()
+        });
+
+        // Exponer funciones en window para handlers onclick en el HTML
+        this.registerWindowHandlers();
     }
 
+    /**
+     * Registra las funciones globales en window para poder ser llamadas desde onclick handlers
+     * Esto hace que la lógica de ordenamiento sea accesible desde el HTML generado
+     */
+    registerWindowHandlers() {
+        const self = this;
+        
+        // Función para manejar clicks en headers de ordenamiento
+        window[`sortTable_${this.safeId}`] = (columnKey) => {
+            self.sortManager.toggleSort(columnKey);
+            self.render(self.lastData, self.lastColumns);
+        };
+
+        // Funciones para filtros por columna
+        window[`toggleColumnFilter_${this.safeId}`] = (columnKey, event) => {
+            self.toggleColumnFilter(columnKey, event);
+        };
+
+        window[`applyColumnFilter_${this.safeId}`] = (columnKey, event) => {
+            self.applyColumnFilterFromDropdown(columnKey);
+        };
+
+        window[`cancelColumnFilter_${this.safeId}`] = (columnKey, event) => {
+            self.cancelColumnFilter(columnKey);
+        };
+
+        window[`clearColumnFilter_${this.safeId}`] = (columnKey, event) => {
+            self.clearColumnFilter(columnKey, event);
+        };
+    }
     /**
      * Método principal para renderizar la tabla
      */
@@ -105,10 +141,9 @@ export class BaseTable {
             const isSortable = col.sortable !== false;
             const isSearchable = col.searchable !== false;
             
-            // Clases de ordenamiento
-            const sortEntryIndex = this.sortState.findIndex(entry => entry.key === col.key);
-            const sortEntry = sortEntryIndex >= 0 ? this.sortState[sortEntryIndex] : null;
-            const sortClass = isSortable && sortEntry ? `sortable sorted-${sortEntry.direction}` : (isSortable ? 'sortable' : '');
+            // Clases de ordenamiento (usar SortManager)
+            const sortInfo = this.sortManager.getSortInfoForColumn(col.key);
+            const sortClass = isSortable && sortInfo ? `sortable sorted-${sortInfo.direction}` : (isSortable ? 'sortable' : '');
             
             // Configuración de alineamiento y clases
             const alignClass = col.headerAlign || col.align || '';
@@ -135,10 +170,10 @@ export class BaseTable {
             const metaParts = [];
 
             if (isSortable) {
-                const sortSymbol = sortEntry ? (sortEntry.direction === 'asc' ? '↑' : '↓') : '⇅';
+                const sortSymbol = sortInfo ? (sortInfo.direction === 'asc' ? '↑' : '↓') : '⇅';
                 const sortClasses = ['th-sort-icon'];
-                if (sortEntry) sortClasses.push(`sorted-${sortEntry.direction}`);
-                const priorityBadge = sortEntry ? `<span class="sort-order-badge">${sortEntryIndex + 1}</span>` : '';
+                if (sortInfo) sortClasses.push(`sorted-${sortInfo.direction}`);
+                const priorityBadge = sortInfo ? `<span class="sort-order-badge">${sortInfo.priority}</span>` : '';
                 metaParts.push(`<span class="${sortClasses.join(' ')}" onclick="window.sortTable_${this.safeId}('${col.key}')">${sortSymbol}${priorityBadge}</span>`);
             }
 
@@ -278,53 +313,21 @@ export class BaseTable {
      * Ordena los datos según la columna y dirección actuales
      */
     sortData(data) {
-        if (this.sortState.length === 0) return data;
-
         const columnsByKey = Object.fromEntries((this.lastColumns || []).map(col => [col.key, col]));
-
-        return [...data].sort((a, b) => {
-            for (const { key, direction } of this.sortState) {
-                const column = columnsByKey[key] || {};
-                const valA = this.getSortableValue(a, key, column);
-                const valB = this.getSortableValue(b, key, column);
-
-                if (valA < valB) return direction === 'asc' ? -1 : 1;
-                if (valA > valB) return direction === 'asc' ? 1 : -1;
-            }
-            return 0;
+        
+        return this.sortManager.applySortToData(data, (row, key) => {
+            const column = columnsByKey[key] || {};
+            return this.getSortableValue(row, key, column);
         });
     }
 
     /**
      * Métodos de control de ordenamiento
-     * Sistema de tres estados por columna:
-     * 1. Sin ordenamiento → DESC (mayor a menor)
-     * 2. DESC → ASC (menor a mayor)
-     * 3. ASC → Sin ordenamiento
-     * 
-     * Si otra columna tiene ordenamiento activo, se mantiene con mayor prioridad
+     * Ahora delegados al SortManager para mejor modularización
      */
     sort(column) {
-        const index = this.sortState.findIndex(entry => entry.key === column);
-
-        if (index === -1) {
-            // Primer click: ordenar descendentemente (DESC) - Nueva columna
-            // Se agrega a la lista manteniendo otras columnas activas
-            this.sortState.push({ key: column, direction: 'desc' });
-        } else {
-            const currentDirection = this.sortState[index].direction;
-            if (currentDirection === 'desc') {
-                // Segundo click: cambiar a ascendentemente (ASC)
-                this.sortState[index].direction = 'asc';
-            } else if (currentDirection === 'asc') {
-                // Tercer click: remover ordenamiento (sin orden)
-                this.sortState.splice(index, 1);
-            }
-        }
-
-        this.sortColumn = this.sortState[0]?.key || null;
-        this.sortDirection = this.sortState[0]?.direction || 'asc';
-        this.resetVisibleRows();
+        // Delegado a SortManager - esto ya llama a resetVisibleRows via callback
+        this.sortManager.toggleSort(column);
     }
 
     /**
@@ -448,18 +451,11 @@ export class BaseTable {
     }
 
     setSortState(sortState = []) {
-        this.sortState = sortState
-            .filter(entry => entry && entry.key)
-            .map(entry => ({
-                key: entry.key,
-                direction: entry.direction === 'desc' ? 'desc' : 'asc'
-            }));
-        this.sortColumn = this.sortState[0]?.key || null;
-        this.sortDirection = this.sortState[0]?.direction || 'asc';
+        this.sortManager.setSortState(sortState);
     }
 
     getSortState() {
-        return this.sortState.map(entry => ({ ...entry }));
+        return this.sortManager.getSortState();
     }
 
     getColumnDefinition(columnKey) {
