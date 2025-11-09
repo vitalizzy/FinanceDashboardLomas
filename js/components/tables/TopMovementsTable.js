@@ -13,7 +13,7 @@ import { formatCurrency } from '../../core/formatters.js';
 // Implementación especializada basada en BaseTable para listar movimientos relevantes.
 export class TopMovementsTable extends BaseTable {
     constructor() {
-        super('top-movements-table', {
+        super('expected-movements-table', {
             compact: true,
             initialRows: 20,
             rowsIncrement: 10,
