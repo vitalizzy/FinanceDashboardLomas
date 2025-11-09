@@ -283,6 +283,35 @@ class BaseECharts {
     }
 
     /**
+     * Register a deferred click handler that will be called after rendering is complete
+     * This is useful when you need to ensure the chart is fully initialized before binding events
+     * 
+     * @param {Array} xAxisData - Array of data points on X-axis (labels, months, etc.)
+     * @param {Function} handler - Callback function that receives the clicked X-axis value
+     * @param {String} [filterType='generic'] - Type of filter for logging and visual feedback
+     * 
+     * @example
+     * // In a chart's render() method AFTER setData() completes:
+     * this._chart.setDeferredClickHandler(
+     *     monthKeys,
+     *     (selectedMonth) => window.selectPendingMonth(null, selectedMonth),
+     *     'month'
+     * );
+     */
+    setDeferredClickHandler(xAxisData, handler, filterType = 'generic') {
+        // Ensure chart is initialized before registering handler
+        if (!this.chart) {
+            console.warn(`⚠️ Chart not yet initialized. Deferring click handler registration for ${filterType}`);
+            // Retry after a short delay
+            setTimeout(() => this.setDeferredClickHandler(xAxisData, handler, filterType), 100);
+            return;
+        }
+
+        console.log(`📊 Setting deferred click handler for ${filterType} filtering`);
+        this.registerClickHandler(xAxisData, handler, filterType);
+    }
+
+    /**
      * Show visual feedback toast/notification for chart selection
      * Displays immediate confirmation that user's click was registered
      * 

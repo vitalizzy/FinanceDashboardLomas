@@ -113,12 +113,12 @@ class MonthlyFlowLineChart {
         // First, render the chart data
         this.setData(labels, datasets);
 
-        // Then, register interactive click handler AFTER chart is rendered
+        // Then, register deferred click handler (will be called after chart is fully initialized)
         // Extract month keys from raw data for precise filtering
         const monthKeys = this.last12MonthsData.map(([month]) => month);
         
-        console.log('📊 Registering click handler with monthKeys:', monthKeys);
-        this._chart.registerClickHandler(
+        console.log('📊 Registering deferred click handler with monthKeys:', monthKeys);
+        this._chart.setDeferredClickHandler(
             monthKeys,
             (selectedMonth) => {
                 console.log('📞 Executing month filter callback with:', selectedMonth);

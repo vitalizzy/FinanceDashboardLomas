@@ -103,25 +103,24 @@ class ExpensesBarChart {
         // First, render the chart data
         this.setData(labels, datasets);
 
-        // Then, setup click handler AFTER chart is rendered with proper data reference
-        const chartData = this.data; // Capture data in closure
-        console.log('📊 Registering click handler for categories with chartData:', chartData ? chartData.length + ' items' : 'null');
-        this.on('click', (event) => {
-            console.log('🖱️ BarChart click event:', event);
-            console.log('  📊 chartData available:', chartData ? chartData.length + ' items' : 'null');
-            if (event.dataIndex !== undefined && chartData && chartData[event.dataIndex]) {
-                const category = chartData[event.dataIndex][0];
-                console.log('✅ Category selected:', category);
+        // Then, setup deferred click handler AFTER chart is rendered
+        // Extract category keys from data for precise filtering
+        const categoryKeys = this.data.map(([category]) => category);
+        
+        console.log('📊 Registering deferred click handler for categories with keys:', categoryKeys);
+        this._chart.setDeferredClickHandler(
+            categoryKeys,
+            (selectedCategory) => {
+                console.log('✅ Category selected from BarChart:', selectedCategory);
                 if (typeof window.selectPendingCategory === 'function') {
-                    console.log('📞 Calling selectPendingCategory with:', category);
-                    window.selectPendingCategory(null, category);
+                    console.log('📞 Calling selectPendingCategory with:', selectedCategory);
+                    window.selectPendingCategory(null, selectedCategory);
                 } else {
                     console.error('❌ selectPendingCategory function not found on window');
                 }
-            } else {
-                console.warn('⚠️ Invalid dataIndex or no data available. dataIndex:', event.dataIndex, 'chartData length:', chartData ? chartData.length : 'null');
-            }
-        });
+            },
+            'category'
+        );
     }
 }
 
