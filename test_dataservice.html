@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test DataService</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 20px 0; padding: 10px; border: 1px solid #ddd; }
+        .success { background: #d4edda; }
+        .error { background: #f8d7da; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Test DataService</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        import { DataService } from './js/services/DataService.js';
+        import { APP_CONFIG } from './js/core/config.js';
+
+        const resultsDiv = document.getElementById('results');
+
+        async function runTests() {
+            try {
+                resultsDiv.innerHTML += '<div class="test"><h3>1. Testing fetch from Google Sheets...</h3>';
+                
+                const response = await fetch(APP_CONFIG.DATA_URL);
+                resultsDiv.innerHTML += `<p>Response status: ${response.status}</p>`;
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                const lines = text.split('\n').length;
+                resultsDiv.innerHTML += `<p class="success">✅ Successfully fetched ${lines} lines from Google Sheets</p></div>`;
+
+                // Test DataService
+                resultsDiv.innerHTML += '<div class="test"><h3>2. Testing DataService...</h3>';
+                const dataService = new DataService();
+                
+                const { data, lastUpdate } = await dataService.loadFinancialData();
+                
+                resultsDiv.innerHTML += `
+                    <p class="success">✅ DataService loaded successfully</p>
+                    <p>Rows: ${data.length}</p>
+                    <p>Last update: ${lastUpdate}</p>
+                </div>`;
+
+                // Show sample data
+                resultsDiv.innerHTML += '<div class="test"><h3>3. Sample Data (first 3 rows)</h3>';
+                resultsDiv.innerHTML += '<pre>' + JSON.stringify(data.slice(0, 3), null, 2) + '</pre></div>';
+
+            } catch (error) {
+                resultsDiv.innerHTML += `
+                    <div class="test error">
+                        <h3>❌ Error</h3>
+                        <p>${error.message}</p>
+                        <pre>${error.stack}</pre>
+                    </div>
+                `;
+            }
+        }
+
+        runTests();
+    </script>
+</body>
+</html>
