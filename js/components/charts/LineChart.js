@@ -110,20 +110,22 @@ class MonthlyFlowLineChart {
         const datasets = this.getDatasets();
         console.log('📊 LineChart data:', { labelsCount: labels.length, datasetsCount: datasets.length });
 
-        // Setup click handler
-        this.on('click', (event) => {
-            console.log('🖱️ LineChart click event:', event);
-            if (event.dataIndex !== undefined) {
-                const monthKey = this.last12MonthsData[event.dataIndex][0];
-                console.log('✅ Month selected:', monthKey);
+        // Register interactive click handler for month filtering
+        // Extract month keys from raw data for precise filtering
+        const monthKeys = this.last12MonthsData.map(([month]) => month);
+        
+        this._chart.registerClickHandler(
+            monthKeys,
+            (selectedMonth) => {
+                console.log('📞 Executing month filter callback with:', selectedMonth);
                 if (typeof window.selectPendingMonth === 'function') {
-                    console.log('📞 Calling selectPendingMonth with:', monthKey);
-                    window.selectPendingMonth(null, monthKey);
+                    window.selectPendingMonth(null, selectedMonth);
                 } else {
                     console.error('❌ selectPendingMonth function not found on window');
                 }
-            }
-        });
+            },
+            'month'
+        );
 
         // Render using parent class
         this.setData(labels, datasets);

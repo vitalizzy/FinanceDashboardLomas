@@ -205,6 +205,46 @@ class BaseECharts {
     }
 
     /**
+     * Register click handler for interactive filtering
+     * Captures X-axis data point when chart is clicked
+     * 
+     * @param {Array} xAxisData - Array of data points on X-axis (labels, months, etc.)
+     * @param {Function} handler - Callback function that receives the clicked X-axis value
+     * @param {String} [filterType='generic'] - Type of filter (month, category, etc.) for logging
+     * 
+     * @example
+     * // For monthly data filtering
+     * const xAxisLabels = ['01/2024', '02/2024', '03/2024'];
+     * chart.registerClickHandler(xAxisLabels, (value) => {
+     *     console.log('Selected month:', value);
+     *     // Apply filter...
+     * }, 'month');
+     */
+    registerClickHandler(xAxisData, handler, filterType = 'generic') {
+        if (!Array.isArray(xAxisData) || typeof handler !== 'function') {
+            console.error('❌ registerClickHandler: xAxisData must be an array and handler must be a function');
+            return;
+        }
+
+        this.on('click', (event) => {
+            if (event.dataIndex !== undefined && event.dataIndex < xAxisData.length) {
+                const selectedValue = xAxisData[event.dataIndex];
+                console.log(`🖱️ Chart clicked - ${filterType} selected:`, selectedValue);
+                try {
+                    handler(selectedValue);
+                    console.log(`✅ ${filterType} filter applied:`, selectedValue);
+                } catch (e) {
+                    console.error(`❌ Error applying ${filterType} filter:`, e);
+                }
+            } else {
+                console.warn(`⚠️ Invalid dataIndex or missing data. dataIndex: ${event.dataIndex}, xAxisData length: ${xAxisData.length}`);
+            }
+        });
+
+        console.log(`📊 Click handler registered for ${filterType} filtering with ${xAxisData.length} data points`);
+    }
+
+    /**
      * Get current options
      */
     getOptions() {
