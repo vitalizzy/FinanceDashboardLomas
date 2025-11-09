@@ -161,7 +161,46 @@ export class DashboardApp {
         console.log('🎯 handleCategoryKPIChange called with metric:', metric);
         this.selectedCategoryKPI = metric;
         console.log('  ✅ Selected category KPI changed to:', metric);
+        
+        // Update the chart title dynamically based on selected KPI
+        this.updateCategoryChartTitle(metric);
+        
         this.updateDashboard();
+    }
+
+    /**
+     * Update the category chart title based on selected KPI metric
+     * Maps metric values to i18n keys for dynamic title display
+     * 
+     * @param {String} metric - The selected KPI metric (gastos, ingresos, perHome, transacciones)
+     */
+    updateCategoryChartTitle(metric) {
+        const titleElement = document.getElementById('category-chart-title');
+        if (!titleElement) {
+            console.warn('⚠️ Category chart title element not found');
+            return;
+        }
+
+        // Map metric to i18n key
+        const metricToKeyMap = {
+            'gastos': 'category_by_metric_gastos',
+            'ingresos': 'category_by_metric_ingresos',
+            'perHome': 'category_by_metric_perHome',
+            'transacciones': 'category_by_metric_transacciones'
+        };
+
+        const i18nKey = metricToKeyMap[metric] || 'category_by_metric_gastos';
+        const translatedText = translate(i18nKey, AppState.language);
+
+        // Update the element's data-i18n attribute and text
+        titleElement.setAttribute('data-i18n', i18nKey);
+        titleElement.textContent = translatedText;
+
+        console.log('  📝 Category chart title updated:', {
+            metric,
+            i18nKey,
+            translatedText
+        });
     }
 
     handleBarRacePlay() {
