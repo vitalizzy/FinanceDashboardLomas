@@ -246,9 +246,50 @@ class CategoryBarRaceChart {
                         clearInterval(this._animationInterval);
                         this._animationInterval = null;
                     }
+                    // Register click handler when animation completes
+                    this.registerClickHandlerOnAnimationEnd();
                 }
             }
         }, frameDuration);
+    }
+
+    /**
+     * Register click handler for the final frame after animation completes
+     * Allows users to select categories from the final race results
+     */
+    registerClickHandlerOnAnimationEnd() {
+        console.log('📊 Registering click handler for completed animation');
+        
+        if (!this.raceData || this.raceData.length === 0) {
+            console.warn('⚠️ No race data available for click handler');
+            return;
+        }
+
+        // Get the final frame data
+        const finalFrame = this.raceData[this.raceData.length - 1];
+        if (!finalFrame || !finalFrame.categories) {
+            console.warn('⚠️ Invalid final frame data');
+            return;
+        }
+
+        // Extract category names from final frame
+        const categoryNames = finalFrame.categories.map(cat => cat.name);
+        console.log('📊 Categories available for selection:', categoryNames);
+
+        // Use deferred click handler from BaseECharts
+        this._chart.setDeferredClickHandler(
+            categoryNames,
+            (selectedCategory) => {
+                console.log('✅ Category selected from BarRaceChart:', selectedCategory);
+                if (typeof window.selectPendingCategory === 'function') {
+                    console.log('📞 Calling selectPendingCategory with:', selectedCategory);
+                    window.selectPendingCategory(null, selectedCategory);
+                } else {
+                    console.error('❌ selectPendingCategory function not found on window');
+                }
+            },
+            'race_category'
+        );
     }
 
     pause() {
