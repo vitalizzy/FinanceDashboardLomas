@@ -336,9 +336,12 @@
                 </h3>
                 <button class="action-btn" style="margin: 0;" onclick="window.exportToCSV()" data-i18n="export_csv">
                     <svg class="action-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" fill="none"/>
-                        <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" fill="none"/>
-                        <path d="M12 13v6m-3-3h6" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <!-- Download arrow -->
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Down arrow -->
+                        <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Vertical line -->
+                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                     <span data-i18n="export_csv">Exportar CSV</span>
                 </button>
