@@ -174,8 +174,9 @@ class EChartsLineChart extends BaseECharts {
                 },
                 axisLabel: {
                     color: this.colors.textSecondary,
-                    fontSize: 12,
-                    margin: 8
+                    fontSize: 11,
+                    margin: 4,
+                    interval: 'auto'
                 },
                 splitLine: {
                     show: true,
@@ -195,7 +196,7 @@ class EChartsLineChart extends BaseECharts {
                     },
                     axisLabel: {
                         color: this.colors.textSecondary,
-                        fontSize: 12,
+                        fontSize: 11,
                         formatter: (value) => this.formatValue(value)
                     },
                     splitLine: {
@@ -217,7 +218,7 @@ class EChartsLineChart extends BaseECharts {
                     },
                     axisLabel: {
                         color: this.colors.perHome,
-                        fontSize: 12,
+                        fontSize: 11,
                         formatter: (value) => this.formatValue(value)
                     },
                     splitLine: {

@@ -88,17 +88,51 @@ class BaseECharts {
     }
 
     /**
+     * Truncate label text to specified length with ellipsis
+     * Used for axis labels and category names that might be too long
+     * 
+     * @param {String} label - Text to truncate
+     * @param {Number} maxLength - Maximum characters before truncation (default 12)
+     * @returns {String} Truncated label with '...' if needed
+     * 
+     * @example
+     * this.truncateLabel('Alimentación y Bebidas', 12) // 'Alimentaci...'
+     */
+    truncateLabel(label, maxLength = 12) {
+        if (!label) return '';
+        return label.length > maxLength ? 
+            label.substring(0, maxLength) + '...' : 
+            label;
+    }
+
+    /**
+     * Get optimized grid configuration based on container size
+     * Maximizes chart area while maintaining label visibility
+     * 
+     * @returns {Object} Grid configuration with responsive spacing
+     * 
+     * Configuration:
+     * - Small containers (<600px): Reduced padding to maximize space
+     * - Large containers (>=600px): Balanced padding for readability
+     */
+    getOptimizedGrid() {
+        const containerWidth = this.container ? this.container.offsetWidth : 800;
+        
+        return {
+            left: containerWidth > 600 ? '35px' : '30px',   // Reduced from 50px
+            right: '15px',                                   // Reduced from 20px
+            top: '20px',                                     // Reduced from 30px
+            bottom: containerWidth > 600 ? '40px' : '35px', // Reduced from 50px
+            containLabel: true
+        };
+    }
+
+    /**
      * Get base configuration for all charts
      */
     getBaseConfig() {
         return {
-            grid: {
-                left: '50px',
-                right: '20px',
-                top: '30px',
-                bottom: '50px',
-                containLabel: true
-            },
+            grid: this.getOptimizedGrid(),
             textStyle: {
                 fontFamily: "'Google Sans Text', 'Segoe UI', sans-serif"
             },
@@ -230,6 +264,10 @@ class BaseECharts {
             if (event.dataIndex !== undefined && event.dataIndex < xAxisData.length) {
                 const selectedValue = xAxisData[event.dataIndex];
                 console.log(`🖱️ Chart clicked - ${filterType} selected:`, selectedValue);
+                
+                // Show immediate visual feedback to user
+                this.showSelectionFeedback(selectedValue, filterType.charAt(0).toUpperCase() + filterType.slice(1), 2000);
+                
                 try {
                     handler(selectedValue);
                     console.log(`✅ ${filterType} filter applied:`, selectedValue);
@@ -242,6 +280,107 @@ class BaseECharts {
         });
 
         console.log(`📊 Click handler registered for ${filterType} filtering with ${xAxisData.length} data points`);
+    }
+
+    /**
+     * Show visual feedback toast/notification for chart selection
+     * Displays immediate confirmation that user's click was registered
+     * 
+     * @param {String} selectedValue - The value that was selected
+     * @param {String} filterType - Type of filter for display message
+     * @param {Number} durationMs - How long to show the toast (default 2000ms)
+     * 
+     * @example
+     * this.showSelectionFeedback('2024-01', 'Month', 2000);
+     * // Shows: "✓ Month selected: 2024-01" in a toast
+     */
+    showSelectionFeedback(selectedValue, filterType = 'Item', durationMs = 2000) {
+        // Create or reuse toast container
+        let toastContainer = document.getElementById('chart-selection-toast');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'chart-selection-toast';
+            toastContainer.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                font-family: 'Google Sans Text', 'Segoe UI', sans-serif;
+                pointer-events: none;
+            `;
+            document.body.appendChild(toastContainer);
+        }
+
+        // Create toast element
+        const toast = document.createElement('div');
+        const toastId = 'toast-' + Date.now();
+        toast.id = toastId;
+        toast.style.cssText = `
+            background: linear-gradient(135deg, #20c997 0%, #1a9d7f 100%);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(32, 201, 151, 0.3);
+            animation: slideIn 0.3s ease-out;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        `;
+
+        // Truncate very long values for display
+        const displayValue = selectedValue && selectedValue.length > 20 ? 
+            selectedValue.substring(0, 20) + '...' : 
+            selectedValue;
+
+        toast.innerHTML = `
+            <span style="font-size: 16px;">✓</span>
+            <span>${filterType} selected: <strong>${displayValue}</strong></span>
+        `;
+
+        toastContainer.appendChild(toast);
+
+        // Fade out and remove after duration
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-out forwards';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, durationMs);
+
+        // Add animations if not already in stylesheet
+        if (!document.getElementById('chart-toast-styles')) {
+            const styleSheet = document.createElement('style');
+            styleSheet.id = 'chart-toast-styles';
+            styleSheet.innerHTML = `
+                @keyframes slideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateX(100px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+                @keyframes slideOut {
+                    from {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translateX(100px);
+                    }
+                }
+            `;
+            document.head.appendChild(styleSheet);
+        }
     }
 
     /**

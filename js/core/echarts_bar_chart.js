@@ -69,10 +69,11 @@ class EChartsBarChart extends BaseECharts {
                 },
                 axisLabel: {
                     color: this.colors.textSecondary,
-                    fontSize: 12,
+                    fontSize: 11,
                     interval: 0,
                     rotate: this.labels.length > 8 ? 45 : 0,
-                    margin: 8
+                    margin: 4,
+                    formatter: (value) => this.truncateLabel(value, 12)
                 },
                 splitLine: {
                     show: false
@@ -85,7 +86,7 @@ class EChartsBarChart extends BaseECharts {
                 },
                 axisLabel: {
                     color: this.colors.textSecondary,
-                    fontSize: 12,
+                    fontSize: 11,
                     formatter: (value) => this.formatValue(value)
                 },
                 splitLine: {
@@ -112,13 +113,7 @@ class EChartsBarChart extends BaseECharts {
                 icon: 'rect',
                 padding: [0, 0, 10, 0]
             },
-            grid: {
-                left: '60px',
-                right: '20px',
-                top: '50px',
-                bottom: '50px',
-                containLabel: true
-            },
+            grid: this.getOptimizedGrid(),
             tooltip: {
                 trigger: 'axis',
                 backgroundColor: 'rgba(0, 0, 0, 0.8)',
