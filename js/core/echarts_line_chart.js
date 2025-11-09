@@ -71,6 +71,7 @@ class EChartsLineChart extends BaseECharts {
                         shadowBlur: 12
                     }
                 },
+                zlevel: 2,  // Lines in foreground (clickable and visible)
                 animation: true,
                 animationDuration: 1000,
                 animationEasing: 'cubicOut'
@@ -138,7 +139,7 @@ class EChartsLineChart extends BaseECharts {
                             opacity: 1
                         }
                     },
-                    zlevel: 1,  // Asegurar que esté por encima
+                    zlevel: 0,  // Background - transactions bars behind lines for better line selection
                     animation: true,
                     animationDuration: 1000,
                     animationEasing: 'cubicOut'
