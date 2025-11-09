@@ -157,45 +157,86 @@ export class TableManager {
     }
 
     _getTopMovements(data) {
-        const categoryTotals = {};
+        const categoryStats = {};
 
+        // Agrupar por categoría y recopilar todos los importes
         data.forEach(item => {
             const category = item.Categoria || 'Sin categoría';
             const ingresos = parseAmount(item.Ingresos || '0');
             const gastos = parseAmount(item.Gastos || '0');
-            const absoluteValue = Math.abs(ingresos > 0 ? ingresos : -gastos);
+            const amount = Math.abs(ingresos > 0 ? ingresos : -gastos);
 
-            if (!categoryTotals[category]) {
-                categoryTotals[category] = { total: 0, movements: [], count: 0, sum: 0 };
+            if (!categoryStats[category]) {
+                categoryStats[category] = { 
+                    amounts: [],
+                    count: 0,
+                    totalPerHome: 0
+                };
             }
 
-            categoryTotals[category].total += absoluteValue;
-            categoryTotals[category].movements.push({
-                ...item,
-                amount: ingresos > 0 ? ingresos : -gastos,
-                absoluteValue
-            });
-            categoryTotals[category].count += 1;
-            categoryTotals[category].sum += absoluteValue;
+            categoryStats[category].amounts.push(amount);
+            categoryStats[category].count += 1;
+            
+            // Calcular per home (importe / 160)
+            const perHome = amount / 160;
+            categoryStats[category].totalPerHome += perHome;
         });
 
-        const top5Categories = Object.entries(categoryTotals)
-            .sort(([, a], [, b]) => b.total - a.total)
-            .slice(0, 5);
+        // Calcular importe típico (moda con margen del 5%)
+        const topMovementsData = Object.entries(categoryStats).map(([category, stats]) => {
+            const typicalAmount = this._calculateTypicalAmount(stats.amounts);
+            const avgPerHome = stats.totalPerHome / stats.count;
 
-        const topMovements = top5Categories.map(([category, data]) => {
-            const topMovement = data.movements.sort((a, b) => b.absoluteValue - a.absoluteValue)[0];
-            // Calculate average movement for the category (typical amount)
-            const averageAmount = data.sum / data.count;
-            // Add typical movement info to the item
             return {
-                ...topMovement,
-                typicalAmount: averageAmount,
-                categoryMovementCount: data.count
+                category,
+                typicalAmount,
+                perHome: avgPerHome,
+                transactionCount: stats.count,
+                totalAmount: stats.amounts.reduce((a, b) => a + b, 0)
             };
         });
 
-        return topMovements.sort((a, b) => b.absoluteValue - a.absoluteValue);
+        // Ordenar por importe típico descendente y tomar top 5
+        return topMovementsData
+            .sort((a, b) => b.typicalAmount - a.typicalAmount)
+            .slice(0, 5);
+    }
+
+    /**
+     * Calcula el importe típico (moda) de una categoría
+     * Encuentra la cantidad que más se repite dentro de un margen del 5%
+     * @param {Array} amounts - Array de importes
+     * @returns {number} Importe típico
+     */
+    _calculateTypicalAmount(amounts) {
+        if (amounts.length === 0) return 0;
+        if (amounts.length === 1) return amounts[0];
+
+        // Ordenar los importes
+        const sorted = [...amounts].sort((a, b) => a - b);
+
+        // Agrupar importes dentro de un margen del 5%
+        const groups = [];
+        let currentGroup = [sorted[0]];
+
+        for (let i = 1; i < sorted.length; i++) {
+            const margin = sorted[i] * 0.05; // 5% de margen
+            if (Math.abs(sorted[i] - sorted[i - 1]) <= margin) {
+                currentGroup.push(sorted[i]);
+            } else {
+                groups.push(currentGroup);
+                currentGroup = [sorted[i]];
+            }
+        }
+        groups.push(currentGroup);
+
+        // Encontrar el grupo más grande (moda)
+        const largestGroup = groups.reduce((max, group) => 
+            group.length > max.length ? group : max
+        );
+
+        // Retornar el promedio del grupo más frecuente
+        return largestGroup.reduce((a, b) => a + b, 0) / largestGroup.length;
     }
 
     /**
