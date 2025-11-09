@@ -240,6 +240,11 @@ export class DashboardApp {
             if (barRaceChart && barRaceChart.setSpeed) {
                 console.log('  ✅ Setting bar race animation speed');
                 barRaceChart.setSpeed(speed);
+                // Automatically start animation after speed change
+                if (barRaceChart.play) {
+                    console.log('  ▶️  Starting animation automatically');
+                    barRaceChart.play();
+                }
             } else {
                 console.warn('  ⚠️  Bar race chart or setSpeed() method not available');
             }

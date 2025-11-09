@@ -54,7 +54,7 @@ class CategoryBarRaceChart {
         this.currentFrame = 0;
         this.isPlaying = false;
         this._animationInterval = null;
-        this.speed = 1; // Animation speed multiplier (1x to 5x)
+        this.speed = 1; // Animation speed multiplier (1x to 100x)
         this.categoryColorMap = {}; // Cache color assignments for categories
         console.log('🏁 BarRaceChart created:', { canvasId, frameCount: this.raceData.length });
     }
@@ -69,7 +69,7 @@ class CategoryBarRaceChart {
 
     setSpeed(speedMultiplier) {
         console.log('⚡ BarRaceChart.setSpeed called:', speedMultiplier);
-        this.speed = Math.max(1, Math.min(5, parseFloat(speedMultiplier)));
+        this.speed = Math.max(1, Math.min(100, parseFloat(speedMultiplier)));
         console.log('  ✅ Speed set to:', this.speed + 'x');
     }
 
@@ -100,8 +100,9 @@ class CategoryBarRaceChart {
 
         console.log('🏁 BarRaceChart rendering with', this.raceData.length, 'frames');
 
-        // Initialize with first frame
-        this.showFrame(0);
+        // Initialize with last frame by default (show final state)
+        const lastFrameIndex = this.raceData.length - 1;
+        this.showFrame(lastFrameIndex);
     }
 
     showFrame(frameIndex) {
