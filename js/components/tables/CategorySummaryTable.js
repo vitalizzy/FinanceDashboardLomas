@@ -65,6 +65,9 @@ export class CategorySummaryTable extends BaseTable {
     }
 
     render(categoryStats, totalGastos) {
+        // Guardar los datos originales para re-renders posteriores (sort, filtros, etc)
+        this.originalCategoryStats = categoryStats;
+        this.originalTotalGastos = totalGastos;
         this.totalGastos = totalGastos;
         
         const data = Object.entries(categoryStats).map(([category, stats]) => ({
@@ -75,6 +78,19 @@ export class CategorySummaryTable extends BaseTable {
         }));
         
         super.render(data, this.columns);
+    }
+
+    /**
+     * Sobrescribir resetVisibleRows para usar los datos originales
+     */
+    resetVisibleRows() {
+        console.log(`[CategorySummaryTable.resetVisibleRows] Called`);
+        if (this.originalCategoryStats && this.originalTotalGastos !== undefined) {
+            this.render(this.originalCategoryStats, this.originalTotalGastos);
+        } else {
+            console.warn(`⚠️ Original data not available for CategorySummaryTable`);
+            super.resetVisibleRows();
+        }
     }
 
     /**
