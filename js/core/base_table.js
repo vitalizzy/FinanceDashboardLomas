@@ -23,6 +23,13 @@ export class BaseTable {
     constructor(containerId, options = {}) {
         this.containerId = containerId;
         this.container = document.getElementById(containerId);
+        
+        // Validar que el contenedor existe
+        if (!this.container) {
+            console.error(`❌ Container element not found for ID: ${containerId}`);
+            throw new Error(`Container element not found: ${containerId}`);
+        }
+        
         // Crear un ID seguro para funciones JavaScript (reemplazar guiones con guiones bajos)
         this.safeId = containerId.replace(/-/g, '_');
         const mergedOptions = { ...BASE_TABLE_DEFAULTS, ...options };
@@ -40,6 +47,13 @@ export class BaseTable {
         this.totalRows = 0;
         this.handleScrollBound = this.handleScroll.bind(this);
         this.isRendering = false;
+        
+        // DEBUG: Logging estructurado
+        console.log(`✅ BaseTable initialized for: ${containerId}`, { 
+            compact: this.isCompact, 
+            initialRows: this.initialRows,
+            sortStateKey: this.sortStateKey
+        });
 
         // Inicializar SortManager
         const initialSortState = Array.isArray(mergedOptions.initialSortState)
@@ -99,14 +113,65 @@ export class BaseTable {
             self.clearColumnFilter(columnKey, event);
         };
     }
+
+    /**
+     * Validar datos antes de procesarlos
+     * @param {any} data - Datos a validar
+     * @param {string} expectedType - Tipo esperado (array, object, etc)
+     * @returns {boolean} True si es válido
+     */
+    validateData(data, expectedType = 'array') {
+        if (expectedType === 'array') {
+            if (!Array.isArray(data)) {
+                console.error(`❌ Invalid data passed to table. Expected array, got: ${typeof data}`);
+                return false;
+            }
+            return true;
+        }
+        if (expectedType === 'object') {
+            if (typeof data !== 'object' || data === null) {
+                console.error(`❌ Invalid data passed to table. Expected object, got: ${typeof data}`);
+                return false;
+            }
+            return true;
+        }
+        return true;
+    }
+
+    /**
+     * Validar columnas antes de procesarlas
+     * @param {Array} columns - Definición de columnas
+     * @returns {boolean} True si es válida
+     */
+    validateColumns(columns) {
+        if (!Array.isArray(columns) || columns.length === 0) {
+            console.error('❌ Invalid or empty columns definition');
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Método principal para renderizar la tabla
      */
     render(data, columns) {
         console.log(`[BaseTable.render] Called with ${data?.length || 0} rows`);
         
+        // Validar datos de entrada
+        if (!this.validateData(data, 'array')) {
+            console.warn('⚠️ Rendering skipped due to invalid data');
+            this.container.innerHTML = `<p style="text-align:center; color: #dc3545;">❌ ${translate('error_loading_data', AppState.language)}</p>`;
+            return;
+        }
+        
         // Usar columns del parámetro, o fallback a this.columns
         const colsToUse = columns || this.columns;
+        
+        // Validar columnas
+        if (!this.validateColumns(colsToUse)) {
+            console.warn('⚠️ Invalid columns definition');
+            return;
+        }
         
         // RESTAURAR ESTADO PERSISTIDO al inicio (sin triggerar callbacks)
         if (this.sortStateKey && AppState.ui[this.sortStateKey]) {
@@ -117,7 +182,7 @@ export class BaseTable {
         
         if (!this.container) return;
         
-        if (!data || data.length === 0) {
+        if (data.length === 0) {
             this.container.innerHTML = `<p style="text-align:center; color: var(--text-secondary);">${translate('no_movements', AppState.language)}</p>`;
             return;
         }
@@ -293,27 +358,37 @@ export class BaseTable {
     }
 
     /**
-     * Renderiza una fila individual
+     * Renderiza una fila individual con error handling
      * Puede ser sobrescrito, pero preferiblemente implementar getRowClass() y getRowAttributes()
      */
     renderRow(item, columns) {
-        // Permitir que subclases personalicen atributos de fila
-        const rowClass = this.getRowClass ? this.getRowClass(item) : '';
-        const rowAttrs = this.getRowAttributes ? this.getRowAttributes(item) : '';
-        
-        let html = `<tr${rowClass ? ` class="${rowClass}"` : ''}${rowAttrs ? ` ${rowAttrs}` : ''}>`;
-        
-        columns.forEach(col => {
-            const value = this.formatCellValue(item[col.key], col);
-            const cellClass = col.cellClass ? (typeof col.cellClass === 'function' ? col.cellClass(item) : col.cellClass) : '';
-            const cssClass = col.cssClass || '';
-            const align = col.align || '';
-            const allClasses = [cellClass, cssClass, align].filter(c => c).join(' ');
-            html += `<td class="${allClasses}">${value}</td>`;
-        });
-        
-        html += '</tr>';
-        return html;
+        try {
+            // Permitir que subclases personalicen atributos de fila
+            const rowClass = this.getRowClass ? this.getRowClass(item) : '';
+            const rowAttrs = this.getRowAttributes ? this.getRowAttributes(item) : '';
+            
+            let html = `<tr${rowClass ? ` class="${rowClass}"` : ''}${rowAttrs ? ` ${rowAttrs}` : ''}>`;
+            
+            columns.forEach(col => {
+                try {
+                    const value = this.formatCellValue(item[col.key], col);
+                    const cellClass = col.cellClass ? (typeof col.cellClass === 'function' ? col.cellClass(item) : col.cellClass) : '';
+                    const cssClass = col.cssClass || '';
+                    const align = col.align || '';
+                    const allClasses = [cellClass, cssClass, align].filter(c => c).join(' ');
+                    html += `<td class="${allClasses}">${value}</td>`;
+                } catch (colError) {
+                    console.warn(`⚠️ Error formatting column ${col.key}:`, colError);
+                    html += `<td>${item[col.key] || ''}</td>`;
+                }
+            });
+            
+            html += '</tr>';
+            return html;
+        } catch (e) {
+            console.error('❌ Error rendering row:', e, item);
+            return `<tr><td colspan="${columns?.length || 1}" style="color: #dc3545;">Error rendering row</td></tr>`;
+        }
     }
 
     /**
