@@ -1,6 +1,7 @@
 import { parseAmount } from '../core/utils.js';
 import { allTransactionsTable } from '../components/tables/AllTransactionsTable.js';
 import { topMovementsTable } from '../components/tables/TopMovementsTable.js';
+import { expectedMovementsTable } from '../components/tables/ExpectedMovementsTable.js';
 import { categorySummaryTable } from '../components/tables/CategorySummaryTable.js';
 
 const DEFAULT_TABLES = [
@@ -11,10 +12,10 @@ const DEFAULT_TABLES = [
         }
     },
     {
-        key: 'top-movements',
+        key: 'expected-movements',
         render: (dataset, helpers) => {
-            const topMovements = helpers.getTopMovements(dataset);
-            helpers.topMovements.render(topMovements);
+            const expectedMovements = helpers.getExpectedMovements(dataset);
+            helpers.expectedMovements.render(expectedMovements);
         }
     },
     {
@@ -36,9 +37,11 @@ export class TableManager {
         this.helpers = {
             allTransactions: allTransactionsTable,
             topMovements: topMovementsTable,
+            expectedMovements: expectedMovementsTable,
             categorySummary: categorySummaryTable,
             getCategoryStats: data => this._getCategoryStats(data),
-            getTopMovements: data => this._getTopMovements(data)
+            getTopMovements: data => this._getTopMovements(data),
+            getExpectedMovements: data => this._getExpectedMovements(data)
         };
     }
 
@@ -110,5 +113,52 @@ export class TableManager {
         });
 
         return topMovements.sort((a, b) => b.absoluteValue - a.absoluteValue);
+    }
+
+    /**
+     * Calcula los 10 importes esperados (promedio) por categoría
+     * @param {Array} data - Dataset de transacciones
+     * @returns {Array} Array de objetos con categoria y importe esperado
+     */
+    _getExpectedMovements(data) {
+        const categoryStats = {};
+
+        data.forEach(item => {
+            const category = item.Categoria || 'Sin categoría';
+            const ingresos = parseAmount(item.Ingresos || '0');
+            const gastos = parseAmount(item.Gastos || '0');
+            const amount = ingresos > 0 ? ingresos : -gastos;
+
+            if (!categoryStats[category]) {
+                categoryStats[category] = { 
+                    totalAmount: 0, 
+                    count: 0,
+                    minAmount: amount,
+                    maxAmount: amount,
+                    type: ingresos > 0 ? 'income' : 'expense'
+                };
+            }
+
+            categoryStats[category].totalAmount += Math.abs(amount);
+            categoryStats[category].count += 1;
+            categoryStats[category].minAmount = Math.min(categoryStats[category].minAmount, Math.abs(amount));
+            categoryStats[category].maxAmount = Math.max(categoryStats[category].maxAmount, Math.abs(amount));
+        });
+
+        // Convertir a array y ordenar por total (mayor a menor)
+        const expectedMovements = Object.entries(categoryStats)
+            .map(([category, stats]) => ({
+                category,
+                expectedAmount: stats.totalAmount / stats.count,
+                transactionCount: stats.count,
+                totalAmount: stats.totalAmount,
+                minAmount: stats.minAmount,
+                maxAmount: stats.maxAmount,
+                type: stats.type
+            }))
+            .sort((a, b) => b.totalAmount - a.totalAmount)
+            .slice(0, 10); // Top 10 categorías
+
+        return expectedMovements;
     }
 }

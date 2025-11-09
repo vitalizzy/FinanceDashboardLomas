@@ -1062,7 +1062,7 @@ body {
 
 #all-transactions-table,
 #category-summary-table,
-#top-movements-table { 
+#expected-movements-table { 
     font-family: var(--font-primary);
     width: 100%;
     overflow-x: auto;
