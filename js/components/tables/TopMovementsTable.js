@@ -66,6 +66,17 @@ export class TopMovementsTable extends BaseTable {
                 headerAlign: 'text-right',
                 sortable: true,
                 searchable: false
+            },
+            { 
+                key: 'typicalAmount', 
+                labelKey: 'typical_amount', 
+                type: 'currency', 
+                width: '140px',
+                align: 'text-right',
+                headerAlign: 'text-right',
+                cssClass: 'color-secondary',
+                sortable: true,
+                searchable: false
             }
         ];
     }

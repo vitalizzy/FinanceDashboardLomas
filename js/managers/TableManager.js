@@ -80,7 +80,7 @@ export class TableManager {
             const absoluteValue = Math.abs(ingresos > 0 ? ingresos : -gastos);
 
             if (!categoryTotals[category]) {
-                categoryTotals[category] = { total: 0, movements: [] };
+                categoryTotals[category] = { total: 0, movements: [], count: 0, sum: 0 };
             }
 
             categoryTotals[category].total += absoluteValue;
@@ -89,6 +89,8 @@ export class TableManager {
                 amount: ingresos > 0 ? ingresos : -gastos,
                 absoluteValue
             });
+            categoryTotals[category].count += 1;
+            categoryTotals[category].sum += absoluteValue;
         });
 
         const top5Categories = Object.entries(categoryTotals)
@@ -96,7 +98,15 @@ export class TableManager {
             .slice(0, 5);
 
         const topMovements = top5Categories.map(([category, data]) => {
-            return data.movements.sort((a, b) => b.absoluteValue - a.absoluteValue)[0];
+            const topMovement = data.movements.sort((a, b) => b.absoluteValue - a.absoluteValue)[0];
+            // Calculate average movement for the category (typical amount)
+            const averageAmount = data.sum / data.count;
+            // Add typical movement info to the item
+            return {
+                ...topMovement,
+                typicalAmount: averageAmount,
+                categoryMovementCount: data.count
+            };
         });
 
         return topMovements.sort((a, b) => b.absoluteValue - a.absoluteValue);
