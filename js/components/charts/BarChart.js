@@ -100,8 +100,12 @@ class ExpensesBarChart {
         console.log('📊 BarChart data:', { labelsCount: labels.length, datasetsCount: datasets.length });
         console.log('  📊 BarChart this.data:', this.data);
 
-        // Setup click handler with proper data reference
+        // First, render the chart data
+        this.setData(labels, datasets);
+
+        // Then, setup click handler AFTER chart is rendered with proper data reference
         const chartData = this.data; // Capture data in closure
+        console.log('📊 Registering click handler for categories with chartData:', chartData ? chartData.length + ' items' : 'null');
         this.on('click', (event) => {
             console.log('🖱️ BarChart click event:', event);
             console.log('  📊 chartData available:', chartData ? chartData.length + ' items' : 'null');
@@ -118,9 +122,6 @@ class ExpensesBarChart {
                 console.warn('⚠️ Invalid dataIndex or no data available. dataIndex:', event.dataIndex, 'chartData length:', chartData ? chartData.length : 'null');
             }
         });
-
-        // Render using instance
-        this.setData(labels, datasets);
     }
 }
 

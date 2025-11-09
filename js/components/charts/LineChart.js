@@ -110,10 +110,14 @@ class MonthlyFlowLineChart {
         const datasets = this.getDatasets();
         console.log('📊 LineChart data:', { labelsCount: labels.length, datasetsCount: datasets.length });
 
-        // Register interactive click handler for month filtering
+        // First, render the chart data
+        this.setData(labels, datasets);
+
+        // Then, register interactive click handler AFTER chart is rendered
         // Extract month keys from raw data for precise filtering
         const monthKeys = this.last12MonthsData.map(([month]) => month);
         
+        console.log('📊 Registering click handler with monthKeys:', monthKeys);
         this._chart.registerClickHandler(
             monthKeys,
             (selectedMonth) => {
@@ -126,9 +130,6 @@ class MonthlyFlowLineChart {
             },
             'month'
         );
-
-        // Render using parent class
-        this.setData(labels, datasets);
     }
 }
 
