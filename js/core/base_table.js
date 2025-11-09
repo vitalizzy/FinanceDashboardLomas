@@ -515,7 +515,10 @@ export class BaseTable {
                 const filterKey = this.resolveFilterKey(col);
                 const currentFilterValue = AppState.getColumnFilterValue(filterKey, { preferPending: true });
                 const inputValue = this.escapeAttribute(currentFilterValue);
-                metaParts.push(`<span class="th-search-icon" onclick="window.toggleColumnFilter_${this.safeId}('${col.key}', event)">🔍</span>`);
+                metaParts.push(`<svg class="th-search-icon" onclick="window.toggleColumnFilter_${this.safeId}('${col.key}', event)" viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" style="cursor: pointer;" aria-hidden="true" focusable="false">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>`);
                 metaParts.push(`<div class="column-filter-dropdown" id="filter_${this.safeId}_${col.key}" style="display:none;">
                     <input 
                         type="text" 
