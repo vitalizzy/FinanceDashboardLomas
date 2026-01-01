@@ -123,6 +123,8 @@ export class FilterManager {
                     return itemDate >= new Date(2024, 0, 1);
                 case 'from_2025':
                     return itemDate >= new Date(2025, 0, 1);
+                case 'from_2026':
+                    return itemDate >= new Date(2026, 0, 1);
                 default:
                     return true;
             }
