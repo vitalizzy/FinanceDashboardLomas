@@ -119,6 +119,10 @@ export class FilterManager {
                     return itemDate >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 5, 1);
                 case 'last_12_months':
                     return itemDate >= new Date(currentDate.getFullYear(), currentDate.getMonth() - 11, 1);
+                case 'from_2024':
+                    return itemDate >= new Date(2024, 0, 1);
+                case 'from_2025':
+                    return itemDate >= new Date(2025, 0, 1);
                 default:
                     return true;
             }

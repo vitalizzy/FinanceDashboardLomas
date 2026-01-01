@@ -15,7 +15,7 @@ export const APP_CONFIG = {
     DEFAULT_ITEMS_PER_PAGE: 50,
     DEFAULT_SORT_COLUMN: 'F. Operativa',
     DEFAULT_SORT_DIRECTION: 'desc',
-    DEFAULT_FILTER: 'current_year',
+    DEFAULT_FILTER: 'from_2025',
     
     // Performance
     SEARCH_DEBOUNCE_DELAY: 300,
