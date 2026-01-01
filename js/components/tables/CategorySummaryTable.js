@@ -16,7 +16,8 @@ export class CategorySummaryTable extends BaseTable {
             compact: true,
             initialRows: 20,
             rowsIncrement: 10,
-            sortStateKey: 'categorySummarySortState'
+            sortStateKey: 'categorySummarySortState',
+            initialSortState: [{ key: 'percentage', direction: 'desc' }]
         });
         
         this.columns = [
